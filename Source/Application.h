@@ -75,6 +75,8 @@ private:
 
 	void ProcessEvents();
 
+	void OnResize( int32_t newWidth, int32_t newHeight );
+
 private:
 	static constexpr char c_windowTitle[] = "DirectX 12 Engine";
 

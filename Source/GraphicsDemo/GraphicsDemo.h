@@ -22,6 +22,8 @@ public:
 
 	void Render();
 
+	void OnResize();
+
 private:
 	void InitDebugAndDxgiFactory();
 
@@ -32,6 +34,8 @@ private:
 	void InitSwapChain();
 
 	void InitRtvDsvHeapManagers();
+
+	void FlushCommandQueue();
 
 private:
 	static constexpr int32_t c_swapChainBufferCount = 2;
@@ -56,8 +60,8 @@ private:
 	std::array<ComPtr<ID3D12Resource>, c_swapChainBufferCount> m_swapChainBuffers;
 	ComPtr<ID3D12Resource> m_depthStencilBuffer;
 
-	D3D12_VIEWPORT m_viewport;
-	D3D12_RECT m_scissorRect;
+	D3D12_VIEWPORT m_viewport = {};
+	D3D12_RECT m_scissorRect = {};
 
 	CDescriptorHeapManager m_rtvHeapManager;
 	CDescriptorHeapManager m_dsvHeapManager;

@@ -12,6 +12,8 @@ CGraphicsDemo::CGraphicsDemo()
 	InitCommandObjects();
 	InitSwapChain();
 	InitRtvDsvHeapManagers();
+
+	OnResize();
 }
 
 void CGraphicsDemo::InitDebugAndDxgiFactory()
@@ -99,6 +101,23 @@ void CGraphicsDemo::InitRtvDsvHeapManagers()
 	m_dsvHeapManager.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 );
 }
 
+void CGraphicsDemo::FlushCommandQueue()
+{
+	++m_currFenceValue;
+	ASSERT_SUCCEEDED( m_commandQueue->Signal( m_fence.Get(), m_currFenceValue ) );
+
+	if ( m_fence->GetCompletedValue() >= m_currFenceValue )
+	{
+		return;
+	}
+
+	HANDLE eventHandle = CreateEventEx( nullptr, nullptr, 0, EVENT_ALL_ACCESS );
+	m_fence->SetEventOnCompletion( m_currFenceValue, eventHandle );
+
+	WaitForSingleObject( eventHandle, INFINITE );
+	CloseHandle( eventHandle );
+}
+
 void CGraphicsDemo::Update()
 {
 	CApplication& app = CApplication::GetInstance();
@@ -112,4 +131,62 @@ void CGraphicsDemo::Update()
 
 void CGraphicsDemo::Render()
 {
+}
+
+void CGraphicsDemo::OnResize()
+{
+	const CApplication& app = CApplication::GetInstance();
+	const int32_t width = app.GetWidth();
+	const int32_t height = app.GetHeight();
+
+	FlushCommandQueue();
+
+	for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
+	{
+		m_swapChainBuffers[i].Reset();
+	}
+
+	ASSERT_SUCCEEDED( m_dxgiSwapChain->ResizeBuffers( c_swapChainBufferCount, width, height, m_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
+
+	for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
+	{
+		m_dxgiSwapChain->GetBuffer( i, IID_PPV_ARGS( m_swapChainBuffers[i].GetAddressOf() ) );
+		m_device->CreateRenderTargetView( m_swapChainBuffers[i].Get(), nullptr, m_rtvHeapManager.GetCpuHandle( i ) );
+	}
+
+	const CD3DX12_RESOURCE_DESC depthStencilBufferDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		m_depthStencilFormat,                      // format
+		width,                                     // width
+		height,                                    // height
+		1,                                         // arraySize
+		1,                                         // mipLevels
+		1,                                         // sampleCount
+		0,                                         // sampleQuality
+		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL ); // flags
+
+	ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),   // pHeapProperties
+		D3D12_HEAP_FLAG_NONE,                                  // HeapFlags
+		&depthStencilBufferDesc,                               // pDesc
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,                      // InitialResourceState
+		&CD3DX12_CLEAR_VALUE( m_depthStencilFormat, 1.0f, 0 ), // pOptimizedClearValue
+		IID_PPV_ARGS( m_depthStencilBuffer.ReleaseAndGetAddressOf() ) ) );
+
+	std::printf( "Resized to: %dx%d\n", width, height );
+
+	m_device->CreateDepthStencilView( m_depthStencilBuffer.Get(), nullptr, m_dsvHeapManager.GetCpuHandle( 0 ) );
+
+	m_viewport.TopLeftX = 0.0f;
+	m_viewport.TopLeftY = 0.0f;
+	m_viewport.Width = static_cast<float>( width );
+	m_viewport.Height = static_cast<float>( height );
+	m_viewport.MaxDepth = 1.0f;
+	m_viewport.MinDepth = 0.0f;
+
+	m_scissorRect.left = 0;
+	m_scissorRect.top = 0;
+	m_scissorRect.right = width;
+	m_scissorRect.bottom = height;
+
+	m_currBackBufferIndex = 0;
 }

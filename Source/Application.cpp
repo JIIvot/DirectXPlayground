@@ -90,9 +90,23 @@ void CApplication::ProcessEvents()
 	SDL_Event event;
 	while ( SDL_PollEvent( &event ) )
 	{
-		if ( event.type == SDL_EVENT_QUIT )
+		switch ( event.type )
 		{
+		case SDL_EVENT_WINDOW_RESIZED:
+			OnResize( event.window.data1, event.window.data2 );
+			break;
+
+		case SDL_EVENT_QUIT:
 			Quit();
+			break;
 		}
 	}
+}
+
+void CApplication::OnResize( int32_t newWidth, int32_t newHeight )
+{
+	m_clientWidth = newWidth;
+	m_clientHeight = newHeight;
+
+	m_demo->OnResize();
 }
