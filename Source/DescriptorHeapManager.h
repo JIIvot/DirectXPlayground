@@ -6,6 +6,10 @@
 
 class CDescriptorHeapManager
 {
+private:
+	template<typename T>
+	using ComPtr = Microsoft::WRL::ComPtr<T>;
+
 public:
 	CDescriptorHeapManager() = default;
 
@@ -34,6 +38,6 @@ public:
 	}
 
 protected:
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_heap;
+	ComPtr<ID3D12DescriptorHeap> m_heap;
 	uint32_t m_descriptorSize = 0;
 };
