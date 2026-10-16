@@ -1,6 +1,6 @@
 Bin/
 Bin-Int/
-.packages/
+packages/
 .vs/
 
 *.vcxproj.user
