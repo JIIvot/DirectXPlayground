@@ -1,6 +1,6 @@
-Bin\
-Bin-Int\
-.packages\
-.vs\
+Bin/
+Bin-Int/
+.packages/
+.vs/
 
 *.vcxproj.user
