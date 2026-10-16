@@ -9,6 +9,7 @@ __declspec( dllexport ) extern const char* D3D12SDKPath = ".\\D3D12\\";
 int main()
 {
 	CApplication::Init();
+	CApplication::GetInstance().SetGraphicsDemo<CGraphicsDemo>();
 	CApplication::GetInstance().Run();
 	CApplication::Destroy();
 }

@@ -2,13 +2,16 @@
 
 #include "DescriptorHeapManager.h"
 #include "Input.h"
+#include "GraphicsDemo/GraphicsDemo.h"
 
 #include <Windows.h>
+#include <cassert>
 #include <cstdint>
 #include <string>
 #include <dxgi1_6.h>
 #include <wrl.h>
 #include <array>
+#include <memory>
 
 struct SDL_Window;
 
@@ -29,11 +32,32 @@ public:
 
 	static void Destroy();
 
+	template<typename TGraphicsDemo>
+	void SetGraphicsDemo();
+
 	void Run();
 
 	void Quit()
 	{
 		m_shouldRun = false;
+	}
+
+	[[nodiscard]]
+	int32_t GetWidth() const
+	{
+		return m_clientWidth;
+	}
+
+	[[nodiscard]]
+	int32_t GetHeight() const
+	{
+		return m_clientHeight;
+	}
+
+	[[nodiscard]]
+	HWND GetWindowHandle() const
+	{
+		return m_windowHandle;
 	}
 
 	[[nodiscard]]
@@ -49,57 +73,29 @@ private:
 
 	bool InitWindow();
 
-	bool InitGraphics();
-
-	void InitDebugAndDxgiFactory();
-
-	void InitAdapterAndDevice();
-
-	void InitCommandObjects();
-
-	void InitSwapChain();
-
-	void InitRtvDsvHeapManagers();
-
 	void ProcessEvents();
 
 private:
-	static constexpr int32_t c_swapChainBufferCount = 2;
+	static constexpr char c_windowTitle[] = "DirectX 12 Engine";
 
 	bool m_shouldRun = false;
 
 	CInput m_input;
+
+	std::unique_ptr<CGraphicsDemo> m_demo;
 
 	SDL_Window* m_window = nullptr;
 	HWND m_windowHandle = nullptr;
 
 	int32_t m_clientWidth = 1280;
 	int32_t m_clientHeight = 720;
-	std::string m_windowTitle = "DirectX 12 Engine";
-
-	DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	ComPtr<IDXGIFactory6> m_dxgiFactory;
-	ComPtr<IDXGISwapChain4> m_dxgiSwapChain;
-	ComPtr<IDXGIAdapter4> m_dxgiAdapter;
-
-	ComPtr<ID3D12Device5> m_device;
-
-	ComPtr<ID3D12CommandQueue> m_commandQueue;
-	ComPtr<ID3D12GraphicsCommandList> m_commandList;
-	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
-
-	ComPtr<ID3D12Fence> m_fence;
-	uint64_t m_currFenceValue = 0;
-
-	int32_t m_currBackBufferIndex = 0;
-	std::array<ComPtr<ID3D12Resource>, c_swapChainBufferCount> m_swapChainBuffers;
-	ComPtr<ID3D12Resource> m_depthStencilBuffer;
-
-	D3D12_VIEWPORT m_viewport;
-	D3D12_RECT m_scissorRect;
-
-	CDescriptorHeapManager m_rtvHeapManager;
-	CDescriptorHeapManager m_dsvHeapManager;
 };
+
+template<typename TGraphicsDemo>
+inline void CApplication::SetGraphicsDemo()
+{
+	assert( m_shouldRun );
+	assert( !m_demo );
+
+	m_demo = std::make_unique<TGraphicsDemo>();
+}

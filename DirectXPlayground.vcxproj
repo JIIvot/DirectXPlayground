@@ -140,6 +140,7 @@
     <ClCompile Include="External\DirectXTK12\Src\WICTextureLoader.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\DescriptorHeapManager.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\GraphicsDemo.cpp" />
     <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\Main.cpp" />
   </ItemGroup>
@@ -319,6 +320,7 @@
     <ClInclude Include="External\DirectXTK12\Src\vbo.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\DescriptorHeapManager.h" />
+    <ClInclude Include="Source\GraphicsDemo\GraphicsDemo.h" />
     <ClInclude Include="Source\Input.h" />
     <ClInclude Include="Source\Utility.h" />
   </ItemGroup>
