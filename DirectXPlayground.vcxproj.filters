@@ -150,9 +150,11 @@
     <ClCompile Include="Source\DescriptorHeapManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="External\DirectXTK12\Src\TeapotData.inc">
       <Filter>Header Files</Filter>
     </None>
@@ -618,6 +620,7 @@
     <None Include="External\DirectXTK12\Src\Shaders\Compiled\ToneMap_VSQuad.inc">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -672,6 +675,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\DescriptorHeapManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

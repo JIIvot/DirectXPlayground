@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DescriptorHeapManager.h"
+#include "Input.h"
 
 #include <Windows.h>
 #include <cstdint>
@@ -30,7 +31,16 @@ public:
 
 	void Run();
 
-	void Quit();
+	void Quit()
+	{
+		m_shouldRun = false;
+	}
+
+	[[nodiscard]]
+	const CInput& GetInput() const
+	{
+		return m_input;
+	}
 
 private:
 	CApplication();
@@ -58,11 +68,13 @@ private:
 
 	bool m_shouldRun = false;
 
+	CInput m_input;
+
 	SDL_Window* m_window = nullptr;
 	HWND m_windowHandle = nullptr;
 
-	int32_t m_clientWidth = 1920;
-	int32_t m_clientHeight = 1080;
+	int32_t m_clientWidth = 1280;
+	int32_t m_clientHeight = 720;
 	std::string m_windowTitle = "DirectX 12 Engine";
 
 	DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;

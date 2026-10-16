@@ -30,13 +30,14 @@ void CApplication::Run()
 
 	while ( m_shouldRun )
 	{
+		m_input.Update();
 		ProcessEvents();
-	}
-}
 
-void CApplication::Quit()
-{
-	m_shouldRun = false;
+		if ( m_input.IsKeyJustPressed( SDL_SCANCODE_ESCAPE ) )
+		{
+			Quit();
+		}
+	}
 }
 
 CApplication::CApplication()
@@ -46,6 +47,7 @@ CApplication::CApplication()
 		return;
 	}
 
+	m_input.Init();
 	m_shouldRun = true;
 }
 
@@ -181,7 +183,7 @@ void CApplication::ProcessEvents()
 	SDL_Event event;
 	while ( SDL_PollEvent( &event ) )
 	{
-		if ( event.type == SDL_EVENT_QUIT || ( event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_ESCAPE ) )
+		if ( event.type == SDL_EVENT_QUIT )
 		{
 			Quit();
 		}
