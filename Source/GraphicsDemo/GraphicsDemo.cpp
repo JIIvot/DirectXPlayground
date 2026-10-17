@@ -195,12 +195,6 @@ void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height
 	m_currBackBufferIndex = 0;
 }
 
-void CGraphicsDemo::BeginImGuiFrame()
-{
-	ImGui_ImplDX12_NewFrame();
-	ImGui::NewFrame();
-}
-
 CGraphicsDemo::~CGraphicsDemo()
 {
 	ImGui_ImplDX12_Shutdown();

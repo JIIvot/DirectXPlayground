@@ -1,7 +1,7 @@
 ﻿BasedOnStyle: Microsoft
 
 Language: Cpp
-  
+
 BreakBeforeBraces: Custom
 BraceWrapping:
   BeforeLambdaBody: true

@@ -41,7 +41,8 @@ void CClearScreenDemo::Render()
 
 void CClearScreenDemo::BuildImmediateUi()
 {
-	BeginImGuiFrame();
+	ImGui_ImplDX12_NewFrame();
+	ImGui::NewFrame();
 
 	const ImGuiIO& io = ImGui::GetIO();
 
