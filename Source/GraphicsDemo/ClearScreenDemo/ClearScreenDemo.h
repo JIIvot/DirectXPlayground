@@ -5,8 +5,8 @@
 class CClearScreenDemo final : public CGraphicsDemo
 {
 public:
-	CClearScreenDemo()
-		: CGraphicsDemo()
+	CClearScreenDemo( HWND windowHandle )
+		: CGraphicsDemo( windowHandle )
 	{
 	}
 

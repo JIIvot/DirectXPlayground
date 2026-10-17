@@ -49,12 +49,6 @@ public:
 	}
 
 	[[nodiscard]]
-	HWND GetWindowHandle() const
-	{
-		return m_windowHandle;
-	}
-
-	[[nodiscard]]
 	const CInput& GetInput() const
 	{
 		return m_input;
@@ -97,6 +91,6 @@ void CApplication::Init()
 	s_instance = new CApplication;
 	if ( s_instance->m_shouldRun )
 	{
-		s_instance->m_demo = std::make_unique<TGraphicsDemo>();
+		s_instance->m_demo = std::make_unique<TGraphicsDemo>( s_instance->m_windowHandle );
 	}
 }

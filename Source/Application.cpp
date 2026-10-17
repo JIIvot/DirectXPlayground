@@ -53,7 +53,6 @@ bool CApplication::InitWindow()
 {
 	if ( !SDL_Init( SDL_INIT_VIDEO ) )
 	{
-		SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, c_windowTitle, "Failed to initialize SDL3!", nullptr );
 		return false;
 	}
 
@@ -65,7 +64,6 @@ bool CApplication::InitWindow()
 
 	if ( !m_window )
 	{
-		SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, c_windowTitle, "Failed to create a window!", nullptr );
 		return false;
 	}
 
@@ -74,7 +72,6 @@ bool CApplication::InitWindow()
 
 	if ( !m_windowHandle )
 	{
-		SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, c_windowTitle, "Failed to get the native window handle!", nullptr );
 		return false;
 	}
 

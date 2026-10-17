@@ -2,16 +2,14 @@
 #include "Utility.h"
 #include "Application.h"
 
-CGraphicsDemo::CGraphicsDemo()
+CGraphicsDemo::CGraphicsDemo( HWND windowHandle )
 {
 	InitDebugAndDxgiFactory();
 	InitAdapterAndDevice();
-
-	ASSERT_SUCCEEDED( m_device->CreateFence( m_currFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( m_fence.GetAddressOf() ) ) );
-
 	InitCommandObjects();
-	InitSwapChain();
+	InitSwapChain( windowHandle );
 	InitRtvDsvHeapManagers();
+	InitFenceObjects();
 
 	OnResize();
 }
@@ -36,12 +34,11 @@ void CGraphicsDemo::InitDebugAndDxgiFactory()
 
 void CGraphicsDemo::InitAdapterAndDevice()
 {
-	ComPtr<IDXGIAdapter> adapter;
 	HRESULT deviceCreationResult = E_FAIL;
 
-	for ( int32_t i = 0; m_dxgiFactory->EnumAdapters( i, adapter.ReleaseAndGetAddressOf() ) != DXGI_ERROR_NOT_FOUND; ++i )
+	for ( int32_t i = 0; m_dxgiFactory->EnumAdapterByGpuPreference( i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS( m_dxgiAdapter.ReleaseAndGetAddressOf() ) ) != DXGI_ERROR_NOT_FOUND; ++i )
 	{
-		deviceCreationResult = D3D12CreateDevice( adapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS( m_device.ReleaseAndGetAddressOf() ) );
+		deviceCreationResult = D3D12CreateDevice( m_dxgiAdapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS( m_device.ReleaseAndGetAddressOf() ) );
 
 		if ( SUCCEEDED( deviceCreationResult ) )
 		{
@@ -50,28 +47,26 @@ void CGraphicsDemo::InitAdapterAndDevice()
 	}
 
 	ASSERT_SUCCEEDED( deviceCreationResult );
-	ASSERT_SUCCEEDED( adapter.As( &m_dxgiAdapter ) );
 }
 
 void CGraphicsDemo::InitCommandObjects()
 {
-	const D3D12_COMMAND_QUEUE_DESC queueDesc = {
+	static constexpr D3D12_COMMAND_QUEUE_DESC c_queueDesc = {
 		.Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
 		.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE
 	};
 
-	ASSERT_SUCCEEDED( m_device->CreateCommandQueue( &queueDesc, IID_PPV_ARGS( m_commandQueue.GetAddressOf() ) ) );
+	ASSERT_SUCCEEDED( m_device->CreateCommandQueue( &c_queueDesc, IID_PPV_ARGS( m_commandQueue.GetAddressOf() ) ) );
 	ASSERT_SUCCEEDED( m_device->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( m_commandAllocator.GetAddressOf() ) ) );
 	ASSERT_SUCCEEDED( m_device->CreateCommandList1( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS( m_commandList.GetAddressOf() ) ) );
 }
 
-void CGraphicsDemo::InitSwapChain()
+void CGraphicsDemo::InitSwapChain( HWND windowHandle )
 {
 	const CApplication& app = CApplication::GetInstance();
 
 	const uint32_t width = static_cast<uint32_t>( app.GetWidth() );
 	const uint32_t height = static_cast<uint32_t>( app.GetHeight() );
-	const HWND windowHandle = app.GetWindowHandle();
 
 	const DXGI_SWAP_CHAIN_DESC1 desc = {
 		.Width = width,
@@ -99,6 +94,12 @@ void CGraphicsDemo::InitRtvDsvHeapManagers()
 	m_dsvHeapManager.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 );
 }
 
+void CGraphicsDemo::InitFenceObjects()
+{
+	ASSERT_SUCCEEDED( m_device->CreateFence( m_currFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( m_fence.GetAddressOf() ) ) );
+	m_fenceEventHandle = CreateEventEx( nullptr, nullptr, 0, EVENT_ALL_ACCESS );
+}
+
 void CGraphicsDemo::FlushCommandQueue()
 {
 	++m_currFenceValue;
@@ -109,11 +110,54 @@ void CGraphicsDemo::FlushCommandQueue()
 		return;
 	}
 
-	HANDLE eventHandle = CreateEventEx( nullptr, nullptr, 0, EVENT_ALL_ACCESS );
-	m_fence->SetEventOnCompletion( m_currFenceValue, eventHandle );
+	m_fence->SetEventOnCompletion( m_currFenceValue, m_fenceEventHandle );
+	WaitForSingleObject( m_fenceEventHandle, INFINITE );
+}
 
-	WaitForSingleObject( eventHandle, INFINITE );
-	CloseHandle( eventHandle );
+void CGraphicsDemo::CreateDepthStencilBufferAndView( int32_t width, int32_t height )
+{
+	const CD3DX12_RESOURCE_DESC depthStencilBufferDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		m_depthStencilFormat,                      // format
+		width,                                     // width
+		height,                                    // height
+		1,                                         // arraySize
+		1,                                         // mipLevels
+		1,                                         // sampleCount
+		0,                                         // sampleQuality
+		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL ); // flags
+
+	ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),   // pHeapProperties
+		D3D12_HEAP_FLAG_NONE,                                  // HeapFlags
+		&depthStencilBufferDesc,                               // pDesc
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,                      // InitialResourceState
+		&CD3DX12_CLEAR_VALUE( m_depthStencilFormat, 1.0f, 0 ), // pOptimizedClearValue
+		IID_PPV_ARGS( m_depthStencilBuffer.ReleaseAndGetAddressOf() ) ) );
+
+	m_device->CreateDepthStencilView( m_depthStencilBuffer.Get(), nullptr, m_dsvHeapManager.GetCpuHandle( 0 ) );
+}
+
+void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height )
+{
+	for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
+	{
+		m_swapChainBuffers[i].Reset();
+	}
+
+	ASSERT_SUCCEEDED( m_dxgiSwapChain->ResizeBuffers( c_swapChainBufferCount, width, height, m_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
+
+	for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
+	{
+		m_dxgiSwapChain->GetBuffer( i, IID_PPV_ARGS( m_swapChainBuffers[i].GetAddressOf() ) );
+		m_device->CreateRenderTargetView( m_swapChainBuffers[i].Get(), nullptr, m_rtvHeapManager.GetCpuHandle( i ) );
+	}
+
+	m_currBackBufferIndex = 0;
+}
+
+CGraphicsDemo::~CGraphicsDemo()
+{
+	FlushCommandQueue();
 }
 
 void CGraphicsDemo::Update()
@@ -134,39 +178,8 @@ void CGraphicsDemo::OnResize()
 	const int32_t height = app.GetHeight();
 
 	FlushCommandQueue();
-
-	for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
-	{
-		m_swapChainBuffers[i].Reset();
-	}
-
-	ASSERT_SUCCEEDED( m_dxgiSwapChain->ResizeBuffers( c_swapChainBufferCount, width, height, m_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
-
-	for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
-	{
-		m_dxgiSwapChain->GetBuffer( i, IID_PPV_ARGS( m_swapChainBuffers[i].GetAddressOf() ) );
-		m_device->CreateRenderTargetView( m_swapChainBuffers[i].Get(), nullptr, m_rtvHeapManager.GetCpuHandle( i ) );
-	}
-
-	const CD3DX12_RESOURCE_DESC depthStencilBufferDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-		m_depthStencilFormat,                      // format
-		width,                                     // width
-		height,                                    // height
-		1,                                         // arraySize
-		1,                                         // mipLevels
-		1,                                         // sampleCount
-		0,                                         // sampleQuality
-		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL ); // flags
-
-	ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),   // pHeapProperties
-		D3D12_HEAP_FLAG_NONE,                                  // HeapFlags
-		&depthStencilBufferDesc,                               // pDesc
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,                      // InitialResourceState
-		&CD3DX12_CLEAR_VALUE( m_depthStencilFormat, 1.0f, 0 ), // pOptimizedClearValue
-		IID_PPV_ARGS( m_depthStencilBuffer.ReleaseAndGetAddressOf() ) ) );
-
-	m_device->CreateDepthStencilView( m_depthStencilBuffer.Get(), nullptr, m_dsvHeapManager.GetCpuHandle( 0 ) );
+	ResizeSwapChainAndCreateViews( width, height );
+	CreateDepthStencilBufferAndView( width, height );
 
 	m_viewport.TopLeftX = 0.0f;
 	m_viewport.TopLeftY = 0.0f;
@@ -179,6 +192,4 @@ void CGraphicsDemo::OnResize()
 	m_scissorRect.top = 0;
 	m_scissorRect.right = width;
 	m_scissorRect.bottom = height;
-
-	m_currBackBufferIndex = 0;
 }

@@ -3,6 +3,7 @@
 #include "DescriptorHeapManager.h"
 
 #include <dxgi1_6.h>
+#include <Windows.h>
 #include <array>
 
 class CGraphicsDemo
@@ -12,6 +13,8 @@ protected:
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
+	virtual ~CGraphicsDemo();
+
 	CGraphicsDemo( const CGraphicsDemo& ) = delete;
 
 	CGraphicsDemo& operator=( const CGraphicsDemo& ) = delete;
@@ -23,7 +26,7 @@ public:
 	void OnResize();
 
 protected:
-	CGraphicsDemo();
+	CGraphicsDemo( HWND windowHandle );
 
 	void InitDebugAndDxgiFactory();
 
@@ -31,11 +34,17 @@ protected:
 
 	void InitCommandObjects();
 
-	void InitSwapChain();
+	void InitSwapChain( HWND windowHandle );
 
 	void InitRtvDsvHeapManagers();
 
+	void InitFenceObjects();
+
 	void FlushCommandQueue();
+
+	void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
+
+	void ResizeSwapChainAndCreateViews( int32_t width, int32_t height );
 
 	[[nodiscard]]
 	ID3D12Resource* GetCurrBackBufferResource() const
@@ -73,6 +82,7 @@ protected:
 
 	ComPtr<ID3D12Fence> m_fence;
 	uint64_t m_currFenceValue = 0;
+	HANDLE m_fenceEventHandle = nullptr;
 
 	int32_t m_currBackBufferIndex = 0;
 	std::array<ComPtr<ID3D12Resource>, c_swapChainBufferCount> m_swapChainBuffers;
