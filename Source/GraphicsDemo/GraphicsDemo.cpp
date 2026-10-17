@@ -114,7 +114,7 @@ void CGraphicsDemo::InitImGui()
 	ImGui_ImplDX12_InitInfo initInfo = {};
 	initInfo.Device = m_device.Get();
 	initInfo.CommandQueue = m_commandQueue.Get();
-	initInfo.NumFramesInFlight = 3;
+	initInfo.NumFramesInFlight = 1;
 	initInfo.RTVFormat = m_backBufferFormat;
 	initInfo.DSVFormat = m_depthStencilFormat;
 	initInfo.UserData = &m_cbvSrvUavHeap;

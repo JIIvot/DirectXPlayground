@@ -4,6 +4,15 @@
 #include <DirectXColors.h>
 #include <backends/imgui_impl_dx12.h>
 
+CClearScreenDemo::CClearScreenDemo( HWND windowHandle )
+	: CGraphicsDemo( windowHandle )
+{
+	DXGI_ADAPTER_DESC1 desc;
+	ASSERT_SUCCEEDED( m_dxgiAdapter->GetDesc1( &desc ) );
+	
+	m_adapterName = desc.Description;
+}
+
 void CClearScreenDemo::Render()
 {
 	ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
@@ -39,7 +48,7 @@ void CClearScreenDemo::Render()
 	FlushCommandQueue();
 }
 
-void CClearScreenDemo::BuildImmediateUi()
+void CClearScreenDemo::BuildImmediateUi() const
 {
 	ImGui_ImplDX12_NewFrame();
 	ImGui::NewFrame();
@@ -47,8 +56,9 @@ void CClearScreenDemo::BuildImmediateUi()
 	const ImGuiIO& io = ImGui::GetIO();
 
 	ImGui::Begin( "Options" );
-	ImGui::Text( "FPS:       %d", static_cast<int32_t>( io.Framerate ) );
-	ImGui::Text( "FrameTime: %.3f", 1000.0f / io.Framerate );
+	ImGui::Text( "Adapter name: %ws", m_adapterName.c_str() );
+	ImGui::Text( "FPS:          %d", static_cast<int32_t>( io.Framerate ) );
+	ImGui::Text( "FrameTime:    %.3f", 1000.0f / io.Framerate );
 	ImGui::End();
 
 	ImGui::Render();
