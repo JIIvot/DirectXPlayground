@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include <SDL3/SDL.h>
+#include <imgui.h>
 #include <backends/imgui_impl_sdl3.h>
 
 CApplication& CApplication::GetInstance()
@@ -26,6 +27,8 @@ void CApplication::Run()
 		ProcessEvents();
 
 		m_demo->Update();
+
+		ImGui_ImplSDL3_NewFrame();
 		m_demo->Render();
 	}
 }
@@ -37,6 +40,9 @@ CApplication::CApplication()
 		return;
 	}
 
+	ImGui::CreateContext();
+	ImGui_ImplSDL3_InitForD3D( m_window );
+
 	m_input.Init();
 	m_shouldRun = true;
 }
@@ -44,6 +50,9 @@ CApplication::CApplication()
 CApplication::~CApplication()
 {
 	m_demo.reset();
+
+	ImGui_ImplSDL3_Shutdown();
+	ImGui::DestroyContext();
 
 	SDL_DestroyWindow( m_window );
 	SDL_Quit();

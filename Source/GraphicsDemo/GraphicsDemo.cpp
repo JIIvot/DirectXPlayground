@@ -4,7 +4,6 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_dx12.h>
-#include <backends/imgui_impl_sdl3.h>
 
 CGraphicsDemo::CGraphicsDemo( SDL_Window* window, HWND windowHandle )
 {
@@ -110,9 +109,6 @@ void CGraphicsDemo::InitFenceObjects()
 
 void CGraphicsDemo::InitImGui( SDL_Window* window )
 {
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-
 	ImGui_ImplDX12_InitInfo initInfo = {};
 	initInfo.Device = m_device.Get();
 	initInfo.CommandQueue = m_commandQueue.Get();
@@ -140,7 +136,6 @@ void CGraphicsDemo::InitImGui( SDL_Window* window )
 		};
 
 	ImGui_ImplDX12_Init( &initInfo );
-	ImGui_ImplSDL3_InitForD3D( window );
 }
 
 void CGraphicsDemo::FlushCommandQueue()
@@ -182,9 +177,9 @@ void CGraphicsDemo::CreateDepthStencilBufferAndView( int32_t width, int32_t heig
 
 void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height )
 {
-	for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
+	for ( ComPtr<ID3D12Resource>& buffer : m_swapChainBuffers )
 	{
-		m_swapChainBuffers[i].Reset();
+		buffer.Reset();
 	}
 
 	ASSERT_SUCCEEDED( m_dxgiSwapChain->ResizeBuffers( c_swapChainBufferCount, width, height, m_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
@@ -198,19 +193,15 @@ void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height
 	m_currBackBufferIndex = 0;
 }
 
-void CGraphicsDemo::BeginImGuiBuild()
+void CGraphicsDemo::BeginImGuiFrame()
 {
 	ImGui_ImplDX12_NewFrame();
-	ImGui_ImplSDL3_NewFrame();
 	ImGui::NewFrame();
 }
 
 CGraphicsDemo::~CGraphicsDemo()
 {
 	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplSDL3_Shutdown();
-	ImGui::DestroyContext();
-
 	FlushCommandQueue();
 }
 
