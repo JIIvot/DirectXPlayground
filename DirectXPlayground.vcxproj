@@ -60,7 +60,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)External\DirectXTK12\Inc\;$(SolutionDir)External\DirectXTK12\Src\Shaders\Compiled\;$(SolutionDir)External\SDL3\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)External\DirectXTK12\Inc\;$(SolutionDir)External\DirectXTK12\Src\Shaders\Compiled\;$(SolutionDir)External\SDL3\Include\;$(SolutionDir)External\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -82,7 +82,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)External\DirectXTK12\Inc\;$(SolutionDir)External\DirectXTK12\Src\Shaders\Compiled\;$(SolutionDir)External\SDL3\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)External\DirectXTK12\Inc\;$(SolutionDir)External\DirectXTK12\Src\Shaders\Compiled\;$(SolutionDir)External\SDL3\Include\;$(SolutionDir)External\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,6 +138,13 @@
     <ClCompile Include="External\DirectXTK12\Src\ToneMapPostProcess.cpp" />
     <ClCompile Include="External\DirectXTK12\Src\VertexTypes.cpp" />
     <ClCompile Include="External\DirectXTK12\Src\WICTextureLoader.cpp" />
+    <ClCompile Include="External\imgui\backends\imgui_impl_dx12.cpp" />
+    <ClCompile Include="External\imgui\backends\imgui_impl_sdl3.cpp" />
+    <ClCompile Include="External\imgui\imgui.cpp" />
+    <ClCompile Include="External\imgui\imgui_demo.cpp" />
+    <ClCompile Include="External\imgui\imgui_draw.cpp" />
+    <ClCompile Include="External\imgui\imgui_tables.cpp" />
+    <ClCompile Include="External\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\DescriptorHeapManager.cpp" />
     <ClCompile Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.cpp" />
@@ -319,6 +326,14 @@
     <ClInclude Include="External\DirectXTK12\Src\SDKMesh.h" />
     <ClInclude Include="External\DirectXTK12\Src\SharedResourcePool.h" />
     <ClInclude Include="External\DirectXTK12\Src\vbo.h" />
+    <ClInclude Include="External\imgui\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="External\imgui\backends\imgui_impl_sdl3.h" />
+    <ClInclude Include="External\imgui\imconfig.h" />
+    <ClInclude Include="External\imgui\imgui.h" />
+    <ClInclude Include="External\imgui\imgui_internal.h" />
+    <ClInclude Include="External\imgui\imstb_rectpack.h" />
+    <ClInclude Include="External\imgui\imstb_textedit.h" />
+    <ClInclude Include="External\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\DescriptorHeapManager.h" />
     <ClInclude Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.h" />

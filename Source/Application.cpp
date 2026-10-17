@@ -65,6 +65,10 @@ bool CApplication::InitWindow()
 		return false;
 	}
 
+	const SDL_DisplayMode* const displayMode = SDL_GetCurrentDisplayMode( SDL_GetPrimaryDisplay() );
+
+	m_clientWidth = displayMode->w * 2 / 3;
+	m_clientHeight = displayMode->h * 2 / 3;
 	m_window = SDL_CreateWindow( c_windowTitle, m_clientWidth, m_clientHeight, SDL_WINDOW_RESIZABLE );
 
 	if ( !m_window )
