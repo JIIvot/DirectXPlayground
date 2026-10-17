@@ -2,14 +2,19 @@
 #include "Utility.h"
 #include "Application.h"
 
-CGraphicsDemo::CGraphicsDemo( HWND windowHandle )
+#include <imgui.h>
+#include <backends/imgui_impl_dx12.h>
+#include <backends/imgui_impl_sdl3.h>
+
+CGraphicsDemo::CGraphicsDemo( SDL_Window* window, HWND windowHandle )
 {
 	InitDebugAndDxgiFactory();
 	InitAdapterAndDevice();
 	InitCommandObjects();
 	InitSwapChain( windowHandle );
-	InitRtvDsvHeapManagers();
+	InitResourceViewHeaps();
 	InitFenceObjects();
+	InitImGui( window );
 
 	OnResize();
 }
@@ -88,16 +93,54 @@ void CGraphicsDemo::InitSwapChain( HWND windowHandle )
 	ASSERT_SUCCEEDED( swapChain.As( &m_dxgiSwapChain ) );
 }
 
-void CGraphicsDemo::InitRtvDsvHeapManagers()
+void CGraphicsDemo::InitResourceViewHeaps()
 {
-	m_rtvHeapManager.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, c_swapChainBufferCount );
-	m_dsvHeapManager.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 );
+	static constexpr uint32_t c_cbvSrvUavHeapCapacity = 16384;
+
+	m_rtvHeap.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, c_swapChainBufferCount );
+	m_dsvHeap.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 );
+	m_cbvSrvUavHeap.Init( m_device.Get(), c_cbvSrvUavHeapCapacity );
 }
 
 void CGraphicsDemo::InitFenceObjects()
 {
 	ASSERT_SUCCEEDED( m_device->CreateFence( m_currFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( m_fence.GetAddressOf() ) ) );
 	m_fenceEventHandle = CreateEventEx( nullptr, nullptr, 0, EVENT_ALL_ACCESS );
+}
+
+void CGraphicsDemo::InitImGui( SDL_Window* window )
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	ImGui_ImplDX12_InitInfo initInfo = {};
+	initInfo.Device = m_device.Get();
+	initInfo.CommandQueue = m_commandQueue.Get();
+	initInfo.NumFramesInFlight = 3;
+	initInfo.RTVFormat = m_backBufferFormat;
+	initInfo.DSVFormat = m_depthStencilFormat;
+	initInfo.UserData = &m_cbvSrvUavHeap;
+	initInfo.SrvDescriptorHeap = m_cbvSrvUavHeap.GetHeap();
+
+	initInfo.SrvDescriptorAllocFn = []( ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE* cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* gpuHandle )
+		{
+			CCbvSrvUavHeap* const heap = static_cast<CCbvSrvUavHeap*>( info->UserData );
+			const uint32_t index = heap->GetNextIndex();
+
+			*cpuHandle = heap->GetCpuHandle( index );
+			*gpuHandle = heap->GetGpuHandle( index );
+		};
+
+	initInfo.SrvDescriptorFreeFn = []( ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle )
+		{
+			CCbvSrvUavHeap* const heap = static_cast<CCbvSrvUavHeap*>( info->UserData );
+			heap->ReleaseIndex( heap->GetIndexFromCpuHandle( cpuHandle ) );
+
+			assert( heap->GetIndexFromCpuHandle( cpuHandle ) == heap->GetIndexFromGpuHandle( gpuHandle ) );
+		};
+
+	ImGui_ImplDX12_Init( &initInfo );
+	ImGui_ImplSDL3_InitForD3D( window );
 }
 
 void CGraphicsDemo::FlushCommandQueue()
@@ -134,7 +177,7 @@ void CGraphicsDemo::CreateDepthStencilBufferAndView( int32_t width, int32_t heig
 		&CD3DX12_CLEAR_VALUE( m_depthStencilFormat, 1.0f, 0 ), // pOptimizedClearValue
 		IID_PPV_ARGS( m_depthStencilBuffer.ReleaseAndGetAddressOf() ) ) );
 
-	m_device->CreateDepthStencilView( m_depthStencilBuffer.Get(), nullptr, m_dsvHeapManager.GetCpuHandle( 0 ) );
+	m_device->CreateDepthStencilView( m_depthStencilBuffer.Get(), nullptr, m_dsvHeap.GetCpuHandle( 0 ) );
 }
 
 void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height )
@@ -149,14 +192,25 @@ void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height
 	for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
 	{
 		m_dxgiSwapChain->GetBuffer( i, IID_PPV_ARGS( m_swapChainBuffers[i].GetAddressOf() ) );
-		m_device->CreateRenderTargetView( m_swapChainBuffers[i].Get(), nullptr, m_rtvHeapManager.GetCpuHandle( i ) );
+		m_device->CreateRenderTargetView( m_swapChainBuffers[i].Get(), nullptr, m_rtvHeap.GetCpuHandle( i ) );
 	}
 
 	m_currBackBufferIndex = 0;
 }
 
+void CGraphicsDemo::BeginImGuiBuild()
+{
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplSDL3_NewFrame();
+	ImGui::NewFrame();
+}
+
 CGraphicsDemo::~CGraphicsDemo()
 {
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplSDL3_Shutdown();
+	ImGui::DestroyContext();
+
 	FlushCommandQueue();
 }
 

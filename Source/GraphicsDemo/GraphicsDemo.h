@@ -1,10 +1,11 @@
 #pragma once
 
-#include "DescriptorHeapManager.h"
+#include "CbvSrvUavHeap.h"
 
 #include <dxgi1_6.h>
-#include <Windows.h>
 #include <array>
+
+struct SDL_Window;
 
 class CGraphicsDemo
 {
@@ -15,10 +16,6 @@ protected:
 public:
 	virtual ~CGraphicsDemo();
 
-	CGraphicsDemo( const CGraphicsDemo& ) = delete;
-
-	CGraphicsDemo& operator=( const CGraphicsDemo& ) = delete;
-
 	virtual void Update();
 
 	virtual void Render() = 0;
@@ -26,7 +23,7 @@ public:
 	void OnResize();
 
 protected:
-	CGraphicsDemo( HWND windowHandle );
+	CGraphicsDemo( SDL_Window* window, HWND windowHandle );
 
 	void InitDebugAndDxgiFactory();
 
@@ -36,15 +33,19 @@ protected:
 
 	void InitSwapChain( HWND windowHandle );
 
-	void InitRtvDsvHeapManagers();
+	void InitResourceViewHeaps();
 
 	void InitFenceObjects();
+
+	void InitImGui( SDL_Window* window );
 
 	void FlushCommandQueue();
 
 	void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
 
 	void ResizeSwapChainAndCreateViews( int32_t width, int32_t height );
+
+	void BeginImGuiBuild();
 
 	[[nodiscard]]
 	ID3D12Resource* GetCurrBackBufferResource() const
@@ -55,13 +56,13 @@ protected:
 	[[nodiscard]]
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrBackBufferViewHandle() const
 	{
-		return m_rtvHeapManager.GetCpuHandle( m_currBackBufferIndex );
+		return m_rtvHeap.GetCpuHandle( m_currBackBufferIndex );
 	}
 
 	[[nodiscard]]
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewHandle() const
 	{
-		return m_dsvHeapManager.GetCpuHandle( 0 );
+		return m_dsvHeap.GetCpuHandle( 0 );
 	}
 
 protected:
@@ -91,6 +92,7 @@ protected:
 	D3D12_VIEWPORT m_viewport = {};
 	D3D12_RECT m_scissorRect = {};
 
-	CDescriptorHeapManager m_rtvHeapManager;
-	CDescriptorHeapManager m_dsvHeapManager;
+	CResourceViewHeap m_rtvHeap;
+	CResourceViewHeap m_dsvHeap;
+	CCbvSrvUavHeap m_cbvSrvUavHeap;
 };

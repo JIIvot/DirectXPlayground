@@ -1,7 +1,7 @@
 #include "Application.h"
-#include "Utility.h"
 
 #include <SDL3/SDL.h>
+#include <backends/imgui_impl_sdl3.h>
 
 CApplication& CApplication::GetInstance()
 {
@@ -83,6 +83,8 @@ void CApplication::ProcessEvents()
 	SDL_Event event;
 	while ( SDL_PollEvent( &event ) )
 	{
+		ImGui_ImplSDL3_ProcessEvent( &event );
+
 		switch ( event.type )
 		{
 		case SDL_EVENT_WINDOW_RESIZED:

@@ -147,7 +147,7 @@
     <ClCompile Include="External\DirectXTK12\Src\WICTextureLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DescriptorHeapManager.cpp">
+    <ClCompile Include="Source\ResourceViewHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Input.cpp">
@@ -175,6 +175,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="External\imgui\backends\imgui_impl_dx12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CbvSrvUavHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="External\imgui\backends\imgui_impl_sdl3.cpp">
@@ -701,7 +704,7 @@
     <ClInclude Include="Source\Utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DescriptorHeapManager.h">
+    <ClInclude Include="Source\ResourceViewHeap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Input.h">
@@ -731,10 +734,13 @@
     <ClInclude Include="External\imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="External\imgui\backends\imgui_impl_sdl3.h">
+    <ClInclude Include="External\imgui\backends\imgui_impl_dx12.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="External\imgui\backends\imgui_impl_dx12.h">
+    <ClInclude Include="Source\CbvSrvUavHeap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\backends\imgui_impl_sdl3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

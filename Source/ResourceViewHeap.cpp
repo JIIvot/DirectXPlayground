@@ -1,9 +1,9 @@
-#include "DescriptorHeapManager.h"
+#include "ResourceViewHeap.h"
 #include "Utility.h"
 
 #include <cassert>
 
-void CDescriptorHeapManager::Init( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity )
+void CResourceViewHeap::Init( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity )
 {
 	assert( !m_heap );
 
@@ -13,11 +13,12 @@ void CDescriptorHeapManager::Init( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_T
 		.Flags =
 			type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV || type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER
 			? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
-			: D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-		.NodeMask = 0
+			: D3D12_DESCRIPTOR_HEAP_FLAG_NONE
 	};
 
 	ASSERT_SUCCEEDED( device->CreateDescriptorHeap( &desc, IID_PPV_ARGS( m_heap.GetAddressOf() ) ) );
 
 	m_descriptorSize = device->GetDescriptorHandleIncrementSize( type );
+	m_heapStartCpuHandle = m_heap->GetCPUDescriptorHandleForHeapStart();
+	m_heapStartGpuHandle = m_heap->GetGPUDescriptorHandleForHeapStart();
 }
