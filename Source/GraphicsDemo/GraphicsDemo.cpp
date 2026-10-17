@@ -67,8 +67,6 @@ void CGraphicsDemo::InitCommandObjects()
 
 void CGraphicsDemo::InitSwapChain()
 {
-	m_dxgiSwapChain.Reset();
-
 	const CApplication& app = CApplication::GetInstance();
 
 	const uint32_t width = static_cast<uint32_t>( app.GetWidth() );
@@ -129,10 +127,6 @@ void CGraphicsDemo::Update()
 	}
 }
 
-void CGraphicsDemo::Render()
-{
-}
-
 void CGraphicsDemo::OnResize()
 {
 	const CApplication& app = CApplication::GetInstance();
@@ -171,8 +165,6 @@ void CGraphicsDemo::OnResize()
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,                      // InitialResourceState
 		&CD3DX12_CLEAR_VALUE( m_depthStencilFormat, 1.0f, 0 ), // pOptimizedClearValue
 		IID_PPV_ARGS( m_depthStencilBuffer.ReleaseAndGetAddressOf() ) ) );
-
-	std::printf( "Resized to: %dx%d\n", width, height );
 
 	m_device->CreateDepthStencilView( m_depthStencilBuffer.Get(), nullptr, m_dsvHeapManager.GetCpuHandle( 0 ) );
 

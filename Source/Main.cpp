@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "GraphicsDemo/ClearScreenDemo/ClearScreenDemo.h"
 
 extern "C"
 {
@@ -9,7 +10,7 @@ __declspec( dllexport ) extern const char* D3D12SDKPath = ".\\D3D12\\";
 int main()
 {
 	CApplication::Init();
-	CApplication::GetInstance().SetGraphicsDemo<CGraphicsDemo>();
+	CApplication::GetInstance().SetGraphicsDemo<CClearScreenDemo>();
 	CApplication::GetInstance().Run();
 	CApplication::Destroy();
 }

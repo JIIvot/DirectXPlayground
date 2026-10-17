@@ -7,24 +7,24 @@
 
 class CGraphicsDemo
 {
-private:
+protected:
 	template<typename T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
-	CGraphicsDemo();
-
 	CGraphicsDemo( const CGraphicsDemo& ) = delete;
 
 	CGraphicsDemo& operator=( const CGraphicsDemo& ) = delete;
 
-	void Update();
+	virtual void Update();
 
-	void Render();
+	virtual void Render() = 0;
 
 	void OnResize();
 
-private:
+protected:
+	CGraphicsDemo();
+
 	void InitDebugAndDxgiFactory();
 
 	void InitAdapterAndDevice();
@@ -37,7 +37,25 @@ private:
 
 	void FlushCommandQueue();
 
-private:
+	[[nodiscard]]
+	ID3D12Resource* GetCurrBackBufferResource() const
+	{
+		return m_swapChainBuffers[m_currBackBufferIndex].Get();
+	}
+
+	[[nodiscard]]
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrBackBufferViewHandle() const
+	{
+		return m_rtvHeapManager.GetCpuHandle( m_currBackBufferIndex );
+	}
+
+	[[nodiscard]]
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewHandle() const
+	{
+		return m_dsvHeapManager.GetCpuHandle( 0 );
+	}
+
+protected:
 	static constexpr int32_t c_swapChainBufferCount = 2;
 
 	DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
