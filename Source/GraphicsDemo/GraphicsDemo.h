@@ -23,7 +23,7 @@ public:
 	void OnResize();
 
 protected:
-	CGraphicsDemo( SDL_Window* window, HWND windowHandle );
+	CGraphicsDemo( HWND windowHandle );
 
 	void InitDebugAndDxgiFactory();
 
@@ -37,7 +37,7 @@ protected:
 
 	void InitFenceObjects();
 
-	void InitImGui( SDL_Window* window );
+	void InitImGui();
 
 	void FlushCommandQueue();
 
@@ -45,7 +45,7 @@ protected:
 
 	void ResizeSwapChainAndCreateViews( int32_t width, int32_t height );
 
-	void BeginImGuiFrame();
+	static void BeginImGuiFrame();
 
 	[[nodiscard]]
 	ID3D12Resource* GetCurrBackBufferResource() const
@@ -57,12 +57,6 @@ protected:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrBackBufferViewHandle() const
 	{
 		return m_rtvHeap.GetCpuHandle( m_currBackBufferIndex );
-	}
-
-	[[nodiscard]]
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDepthStencilViewHandle() const
-	{
-		return m_dsvHeap.GetCpuHandle( 0 );
 	}
 
 protected:

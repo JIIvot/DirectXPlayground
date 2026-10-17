@@ -2,7 +2,6 @@
 
 #include "ResourceViewHeap.h"
 
-#include <memory>
 #include <queue>
 
 class CCbvSrvUavHeap final : public CResourceViewHeap

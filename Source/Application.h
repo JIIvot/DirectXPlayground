@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Input.h"
 #include "GraphicsDemo/GraphicsDemo.h"
+#include "Input.h"
 
-#include <memory>
 #include <cassert>
+#include <memory>
 
 struct SDL_Window;
 
@@ -84,6 +84,6 @@ void CApplication::Init()
 	s_instance = new CApplication;
 	if ( s_instance->m_shouldRun )
 	{
-		s_instance->m_demo = std::make_unique<TGraphicsDemo>( s_instance->m_window, s_instance->m_windowHandle );
+		s_instance->m_demo = std::make_unique<TGraphicsDemo>( s_instance->m_windowHandle );
 	}
 }

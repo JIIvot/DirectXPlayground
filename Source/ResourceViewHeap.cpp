@@ -13,12 +13,11 @@ void CResourceViewHeap::Init( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE t
 		.Flags =
 			type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV || type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER
 			? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
-			: D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+			: D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+		.NodeMask = 0
 	};
 
 	ASSERT_SUCCEEDED( device->CreateDescriptorHeap( &desc, IID_PPV_ARGS( m_heap.GetAddressOf() ) ) );
 
 	m_descriptorSize = device->GetDescriptorHandleIncrementSize( type );
-	m_heapStartCpuHandle = m_heap->GetCPUDescriptorHandleForHeapStart();
-	m_heapStartGpuHandle = m_heap->GetGPUDescriptorHandleForHeapStart();
 }

@@ -2,6 +2,7 @@ Bin/
 Bin-Int/
 packages/
 .vs/
+.idea/
 
 *.vcxproj.user
 *.ini

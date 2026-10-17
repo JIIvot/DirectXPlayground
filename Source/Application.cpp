@@ -103,6 +103,9 @@ void CApplication::ProcessEvents()
 		case SDL_EVENT_QUIT:
 			Quit();
 			break;
+
+		default:
+			break;
 		}
 	}
 }

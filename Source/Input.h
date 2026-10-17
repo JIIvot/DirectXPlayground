@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <cstdint>
 #include <SDL3/SDL_scancode.h>
 
 class CInput

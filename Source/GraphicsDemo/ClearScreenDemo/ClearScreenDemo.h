@@ -5,13 +5,13 @@
 class CClearScreenDemo final : public CGraphicsDemo
 {
 public:
-	CClearScreenDemo( SDL_Window* window, HWND windowHandle )
-		: CGraphicsDemo( window, windowHandle )
+	CClearScreenDemo( HWND windowHandle )
+		: CGraphicsDemo( windowHandle )
 	{
 	}
 
 	void Render() override;
 
 private:
-	void BuildImmediateUi();
+	static void BuildImmediateUi();
 };

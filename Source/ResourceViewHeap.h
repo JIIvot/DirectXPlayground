@@ -32,45 +32,30 @@ public:
 	}
 
 	[[nodiscard]]
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetHeapStartCpuHandle() const
+	CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuHandle( uint32_t index = 0 ) const
 	{
-		return m_heapStartCpuHandle;
+		return CD3DX12_GPU_DESCRIPTOR_HANDLE( m_heap->GetGPUDescriptorHandleForHeapStart(), index, m_descriptorSize );
 	}
 
 	[[nodiscard]]
-	CD3DX12_GPU_DESCRIPTOR_HANDLE GetHeapStartGpuHandle() const
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuHandle( uint32_t index = 0 ) const
 	{
-		return m_heapStartGpuHandle;
-	}
-
-	[[nodiscard]]
-	CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuHandle( uint32_t index ) const
-	{
-		return CD3DX12_GPU_DESCRIPTOR_HANDLE( m_heap->GetGPUDescriptorHandleForHeapStart(), index * m_descriptorSize );
-	}
-
-	[[nodiscard]]
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuHandle( uint32_t index ) const
-	{
-		return CD3DX12_CPU_DESCRIPTOR_HANDLE( m_heap->GetCPUDescriptorHandleForHeapStart(), index * m_descriptorSize );
+		return CD3DX12_CPU_DESCRIPTOR_HANDLE( m_heap->GetCPUDescriptorHandleForHeapStart(), index, m_descriptorSize );
 	}
 
 	[[nodiscard]]
 	uint32_t GetIndexFromCpuHandle( D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle ) const
 	{
-		return static_cast<uint32_t>( ( cpuHandle.ptr - m_heapStartCpuHandle.ptr ) / m_descriptorSize );
+		return static_cast<uint32_t>( ( cpuHandle.ptr - GetCpuHandle().ptr ) / m_descriptorSize );
 	}
 
 	[[nodiscard]]
 	uint32_t GetIndexFromGpuHandle( D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle ) const
 	{
-		return static_cast<uint32_t>( ( gpuHandle.ptr - m_heapStartGpuHandle.ptr ) / m_descriptorSize );
+		return static_cast<uint32_t>( ( gpuHandle.ptr - GetGpuHandle().ptr ) / m_descriptorSize );
 	}
 
 protected:
 	ComPtr<ID3D12DescriptorHeap> m_heap;
 	uint32_t m_descriptorSize = 0;
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE m_heapStartCpuHandle;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE m_heapStartGpuHandle;
 };

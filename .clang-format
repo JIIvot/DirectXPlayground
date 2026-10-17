@@ -1,0 +1,34 @@
+﻿BasedOnStyle: Microsoft
+
+Language: Cpp
+  
+BreakBeforeBraces: Custom
+BraceWrapping:
+  BeforeLambdaBody: true
+IndentPPDirectives: BeforeHash
+Cpp11BracedListStyle: false
+BreakBeforeTernaryOperators: true
+AlignOperands: DontAlign 
+IndentCaseBlocks: false
+IndentCaseLabels: false
+ColumnLimit: 0 
+SortIncludes: Never
+AllowShortFunctionsOnASingleLine: None
+FixNamespaceComments: true
+InsertNewlineAtEOF: true
+SpaceAfterTemplateKeyword: false
+PointerAlignment: Left
+AlignTrailingComments:
+  Kind: Always
+AlignEscapedNewlines: Left
+AccessModifierOffset: -4
+SpacesInParens: Custom
+SpacesInParensOptions:
+  ExceptDoubleParentheses: false
+  InConditionalStatements: true
+  InEmptyParentheses: false
+  InCStyleCasts: true
+  Other: true
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
