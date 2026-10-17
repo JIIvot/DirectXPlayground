@@ -61,7 +61,7 @@ private:
 private:
 	static constexpr char c_windowTitle[] = "DirectX 12 Engine";
 
-	inline static CApplication* s_instance = nullptr;
+	static CApplication* s_instance;
 
 	bool m_shouldRun = false;
 
