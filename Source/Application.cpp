@@ -3,14 +3,6 @@
 
 #include <SDL3/SDL.h>
 
-static CApplication* s_instance = nullptr;
-
-void CApplication::Init()
-{
-	assert( !s_instance );
-	s_instance = new CApplication;
-}
-
 CApplication& CApplication::GetInstance()
 {
 	assert( s_instance );

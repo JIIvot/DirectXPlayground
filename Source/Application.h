@@ -22,18 +22,12 @@ private:
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
-	CApplication( const CApplication& ) = delete;
-
-	CApplication& operator=( const CApplication& ) = delete;
-
+	template<typename TGraphicsDemo>
 	static void Init();
 
 	static CApplication& GetInstance();
 
 	static void Destroy();
-
-	template<typename TGraphicsDemo>
-	void SetGraphicsDemo();
 
 	void Run();
 
@@ -80,6 +74,8 @@ private:
 private:
 	static constexpr char c_windowTitle[] = "DirectX 12 Engine";
 
+	inline static CApplication* s_instance = nullptr;
+
 	bool m_shouldRun = false;
 
 	CInput m_input;
@@ -94,10 +90,13 @@ private:
 };
 
 template<typename TGraphicsDemo>
-inline void CApplication::SetGraphicsDemo()
+void CApplication::Init()
 {
-	assert( m_shouldRun );
-	assert( !m_demo );
+	assert( !s_instance );
 
-	m_demo = std::make_unique<TGraphicsDemo>();
+	s_instance = new CApplication;
+	if ( s_instance->m_shouldRun )
+	{
+		s_instance->m_demo = std::make_unique<TGraphicsDemo>();
+	}
 }
