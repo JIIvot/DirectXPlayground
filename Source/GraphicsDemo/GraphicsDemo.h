@@ -5,12 +5,13 @@
 #include <dxgi1_6.h>
 #include <array>
 
-struct SDL_Window;
-
 class CGraphicsDemo
 {
 public:
+    CGraphicsDemo( const CGraphicsDemo& ) = delete;
     virtual ~CGraphicsDemo();
+
+    CGraphicsDemo& operator=( const CGraphicsDemo& ) = delete;
 
     virtual void Update();
     virtual void Render() = 0;

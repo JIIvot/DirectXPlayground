@@ -22,6 +22,8 @@ void CApplication::Run()
 {
     assert( s_pInstance );
     assert( m_pDemo );
+    
+    SDL_ShowWindow( m_pWindow );
 
     while ( m_shouldRun )
     {
@@ -71,7 +73,7 @@ bool CApplication::InitWindow()
 
     m_clientWidth = displayMode->w * 2 / 3;
     m_clientHeight = displayMode->h * 2 / 3;
-    m_pWindow = SDL_CreateWindow( c_windowTitle, m_clientWidth, m_clientHeight, SDL_WINDOW_RESIZABLE );
+    m_pWindow = SDL_CreateWindow( c_windowTitle, m_clientWidth, m_clientHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN );
 
     if ( !m_pWindow )
     {

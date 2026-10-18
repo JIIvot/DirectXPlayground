@@ -11,6 +11,10 @@ struct SDL_Window;
 class CApplication
 {
 public:
+    CApplication( const CApplication& ) = delete;
+
+    CApplication& operator=( const CApplication& ) = delete;
+
     template<typename TGraphicsDemo>
     static void Init();
 
@@ -19,7 +23,7 @@ public:
     static void Destroy();
 
     void Run();
-    
+
     void Quit()
     {
         m_shouldRun = false;

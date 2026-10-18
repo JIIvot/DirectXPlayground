@@ -70,9 +70,8 @@ void CGraphicsDemo::InitCommandObjects()
 void CGraphicsDemo::InitSwapChain( HWND hWindow )
 {
     const CApplication& app = CApplication::GetInstance();
-
-    const uint32_t width = static_cast<uint32_t>( app.GetWidth() );
-    const uint32_t height = static_cast<uint32_t>( app.GetHeight() );
+    const uint32_t      width = static_cast<uint32_t>( app.GetWidth() );
+    const uint32_t      height = static_cast<uint32_t>( app.GetHeight() );
 
     const DXGI_SWAP_CHAIN_DESC1 desc = {
         .Width = width,
@@ -90,8 +89,9 @@ void CGraphicsDemo::InitSwapChain( HWND hWindow )
 
     Microsoft::WRL::ComPtr<IDXGISwapChain1> pSwapChain;
     ASSERT_SUCCEEDED( m_pDxgiFactory->CreateSwapChainForHwnd( m_pCommandQueue.Get(), hWindow, &desc, nullptr, nullptr, pSwapChain.GetAddressOf() ) );
-
     ASSERT_SUCCEEDED( pSwapChain.As( &m_pDxgiSwapChain ) );
+    
+    ASSERT_SUCCEEDED( m_pDxgiFactory->MakeWindowAssociation( hWindow, DXGI_MWA_NO_ALT_ENTER ) );
 }
 
 void CGraphicsDemo::InitResourceViewHeaps()
