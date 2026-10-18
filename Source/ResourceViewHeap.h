@@ -1,15 +1,11 @@
 #pragma once
 
-#include <wrl.h>
+#include <wrl/client.h>
 #include <d3dx12.h>
 #include <cstdint>
 
 class CResourceViewHeap
 {
-private:
-	template<typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 public:
 	CResourceViewHeap() = default;
 
@@ -34,13 +30,13 @@ public:
 	[[nodiscard]]
 	CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuHandle( uint32_t index = 0 ) const
 	{
-		return CD3DX12_GPU_DESCRIPTOR_HANDLE( m_pHeap->GetGPUDescriptorHandleForHeapStart(), index, m_descriptorSize );
+		return CD3DX12_GPU_DESCRIPTOR_HANDLE( m_pHeap->GetGPUDescriptorHandleForHeapStart(), static_cast<int32_t>( index ), m_descriptorSize );
 	}
 
 	[[nodiscard]]
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuHandle( uint32_t index = 0 ) const
 	{
-		return CD3DX12_CPU_DESCRIPTOR_HANDLE( m_pHeap->GetCPUDescriptorHandleForHeapStart(), index, m_descriptorSize );
+		return CD3DX12_CPU_DESCRIPTOR_HANDLE( m_pHeap->GetCPUDescriptorHandleForHeapStart(), static_cast<int32_t>( index ), m_descriptorSize );
 	}
 
 	[[nodiscard]]
@@ -56,6 +52,6 @@ public:
 	}
 
 protected:
-	ComPtr<ID3D12DescriptorHeap> m_pHeap;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_pHeap;
 	uint32_t m_descriptorSize = 0;
 };

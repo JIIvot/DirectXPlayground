@@ -42,7 +42,7 @@ void CClearScreenDemo::Render()
 	ID3D12CommandList* const pCommandList = m_pCommandList.Get();
 	m_pCommandQueue->ExecuteCommandLists( 1, &pCommandList );
 
-	ASSERT_SUCCEEDED( m_pDxgiSwapChain->Present1( 1, 0, &DXGI_PRESENT_PARAMETERS() ) );
+	ASSERT_SUCCEEDED( m_pDxgiSwapChain->Present( 0, 0 ) );
 	m_currBackBufferIndex = ( m_currBackBufferIndex + 1 ) % c_swapChainBufferCount;
 
 	FlushCommandQueue();

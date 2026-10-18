@@ -25,10 +25,10 @@ void CGraphicsDemo::InitDebugAndDxgiFactory()
 
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 
-	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController;
-	ASSERT_SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( debugController.GetAddressOf() ) ) );
+	Microsoft::WRL::ComPtr<ID3D12Debug1> pDebugController;
+	ASSERT_SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( pDebugController.GetAddressOf() ) ) );
 
-	debugController->EnableDebugLayer();
+	pDebugController->EnableDebugLayer();
 #else
 	static constexpr uint32_t c_factoryFlags = 0;
 #endif
@@ -88,10 +88,10 @@ void CGraphicsDemo::InitSwapChain( HWND hWindow )
 		.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 	};
 
-	Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain;
-	ASSERT_SUCCEEDED( m_pDxgiFactory->CreateSwapChainForHwnd( m_pCommandQueue.Get(), hWindow, &desc, nullptr, nullptr, swapChain.GetAddressOf() ) );
+	Microsoft::WRL::ComPtr<IDXGISwapChain1> pSwapChain;
+	ASSERT_SUCCEEDED( m_pDxgiFactory->CreateSwapChainForHwnd( m_pCommandQueue.Get(), hWindow, &desc, nullptr, nullptr, pSwapChain.GetAddressOf() ) );
 
-	ASSERT_SUCCEEDED( swapChain.As( &m_pDxgiSwapChain ) );
+	ASSERT_SUCCEEDED( pSwapChain.As( &m_pDxgiSwapChain ) );
 }
 
 void CGraphicsDemo::InitResourceViewHeaps()
