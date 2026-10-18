@@ -157,20 +157,20 @@ void CGraphicsDemo::FlushCommandQueue()
 void CGraphicsDemo::CreateDepthStencilBufferAndView( int32_t width, int32_t height )
 {
 	const CD3DX12_RESOURCE_DESC depthStencilBufferDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-		m_depthStencilFormat,					   // format
-		width,									   // width
-		height,									   // height
-		1,										   // arraySize
-		1,										   // mipLevels
-		1,										   // sampleCount
-		0,										   // sampleQuality
+		m_depthStencilFormat,                      // format
+		width,                                     // width
+		height,                                    // height
+		1,                                         // arraySize
+		1,                                         // mipLevels
+		1,                                         // sampleCount
+		0,                                         // sampleQuality
 		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL ); // flags
 
 	ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),   // pHeapProperties
-		D3D12_HEAP_FLAG_NONE,								   // HeapFlags
-		&depthStencilBufferDesc,							   // pDesc
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,					   // InitialResourceState
+		D3D12_HEAP_FLAG_NONE,                                  // HeapFlags
+		&depthStencilBufferDesc,                               // pDesc
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,                      // InitialResourceState
 		&CD3DX12_CLEAR_VALUE( m_depthStencilFormat, 1.0f, 0 ), // pOptimizedClearValue
 		IID_PPV_ARGS( m_depthStencilBuffer.ReleaseAndGetAddressOf() ) ) );
 

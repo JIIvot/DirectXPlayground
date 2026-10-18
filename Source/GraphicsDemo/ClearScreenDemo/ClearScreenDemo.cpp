@@ -9,7 +9,7 @@ CClearScreenDemo::CClearScreenDemo( HWND windowHandle )
 {
 	DXGI_ADAPTER_DESC1 desc;
 	ASSERT_SUCCEEDED( m_dxgiAdapter->GetDesc1( &desc ) );
-	
+
 	m_adapterName = desc.Description;
 }
 

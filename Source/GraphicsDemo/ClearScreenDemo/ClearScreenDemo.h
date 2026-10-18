@@ -13,7 +13,7 @@ public:
 
 private:
 	void BuildImmediateUi() const;
-	
+
 private:
 	std::wstring m_adapterName;
 };
