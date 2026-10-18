@@ -19,7 +19,7 @@ public:
 	void OnResize();
 
 protected:
-	CGraphicsDemo( HWND hWindow );
+	explicit CGraphicsDemo( HWND hWindow );
 
 	void InitDebugAndDxgiFactory();
 
@@ -59,28 +59,28 @@ protected:
 	DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-	Microsoft::WRL::ComPtr<IDXGIFactory6> m_pDxgiFactory;
+	Microsoft::WRL::ComPtr<IDXGIFactory6>   m_pDxgiFactory;
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> m_pDxgiSwapChain;
-	Microsoft::WRL::ComPtr<IDXGIAdapter4> m_pDxgiAdapter;
+	Microsoft::WRL::ComPtr<IDXGIAdapter4>   m_pDxgiAdapter;
 
 	Microsoft::WRL::ComPtr<ID3D12Device5> m_pDevice;
 
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_pCommandQueue;
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue>        m_pCommandQueue;
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_pCommandList;
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_pCommandAllocator;
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator>    m_pCommandAllocator;
 
 	Microsoft::WRL::ComPtr<ID3D12Fence> m_pFence;
-	uint64_t m_currFenceValue = 0;
-	HANDLE m_hFenceEvent = nullptr;
+	uint64_t                            m_currFenceValue = 0;
+	HANDLE                              m_hFenceEvent = nullptr;
 
-	int32_t m_currBackBufferIndex = 0;
+	int32_t                                                                    m_currBackBufferIndex = 0;
 	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, c_swapChainBufferCount> m_swapChainBuffers;
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_pDepthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D12Resource>                                     m_pDepthStencilBuffer;
 
 	D3D12_VIEWPORT m_viewport = {};
-	D3D12_RECT m_scissorRect = {};
+	D3D12_RECT     m_scissorRect = {};
 
 	CResourceViewHeap m_rtvHeap;
 	CResourceViewHeap m_dsvHeap;
-	CCbvSrvUavHeap m_cbvSrvUavHeap;
+	CCbvSrvUavHeap    m_cbvSrvUavHeap;
 };

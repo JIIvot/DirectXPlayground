@@ -23,7 +23,7 @@ public:
 	}
 
 private:
-	int32_t m_keyCount = 0;
-	const bool* m_pCurrKeys = nullptr;
+	int32_t              m_keyCount = 0;
+	const bool*          m_pCurrKeys = nullptr;
 	std::vector<uint8_t> m_lastKeys;
 };

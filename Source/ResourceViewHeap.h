@@ -53,5 +53,5 @@ public:
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_pHeap;
-	uint32_t m_descriptorSize = 0;
+	uint32_t                                     m_descriptorSize = 0;
 };

@@ -10,10 +10,6 @@ struct SDL_Window;
 
 class CApplication
 {
-private:
-	template<typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 public:
 	template<typename TGraphicsDemo>
 	static void Init();
@@ -70,7 +66,7 @@ private:
 	std::unique_ptr<CGraphicsDemo> m_pDemo;
 
 	SDL_Window* m_pWindow = nullptr;
-	HWND m_hNativeWindow = nullptr;
+	HWND        m_hNativeWindow = nullptr;
 
 	int32_t m_clientWidth = 1280;
 	int32_t m_clientHeight = 720;
