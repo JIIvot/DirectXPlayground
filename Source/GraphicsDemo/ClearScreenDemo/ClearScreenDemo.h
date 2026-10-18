@@ -7,13 +7,13 @@
 class CClearScreenDemo final : public CGraphicsDemo
 {
 public:
-	explicit CClearScreenDemo( HWND hWindow );
+    explicit CClearScreenDemo( HWND hWindow );
 
-	void Render() override;
-
-private:
-	void BuildImmediateUi() const;
+    void Render() override;
 
 private:
-	std::wstring m_adapterName;
+    void BuildImmediateUi() const;
+
+private:
+    std::wstring m_adapterName;
 };

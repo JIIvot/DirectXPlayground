@@ -53,6 +53,6 @@ SpacesInParensOptions:
   InEmptyParentheses: false
   InCStyleCasts: true
   Other: true
-UseTab: ForContinuationAndIndentation
+UseTab: Never
 IndentWidth: 4
 TabWidth: 4

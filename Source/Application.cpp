@@ -8,114 +8,114 @@ CApplication* CApplication::s_pInstance;
 
 CApplication& CApplication::GetInstance()
 {
-	assert( s_pInstance );
-	return *s_pInstance;
+    assert( s_pInstance );
+    return *s_pInstance;
 }
 
 void CApplication::Destroy()
 {
-	delete s_pInstance;
-	s_pInstance = nullptr;
+    delete s_pInstance;
+    s_pInstance = nullptr;
 }
 
 void CApplication::Run()
 {
-	assert( s_pInstance );
-	assert( m_pDemo );
+    assert( s_pInstance );
+    assert( m_pDemo );
 
-	while ( m_shouldRun )
-	{
-		m_input.Update();
-		ProcessEvents();
+    while ( m_shouldRun )
+    {
+        m_input.Update();
+        ProcessEvents();
 
-		m_pDemo->Update();
+        m_pDemo->Update();
 
-		ImGui_ImplSDL3_NewFrame();
-		m_pDemo->Render();
-	}
+        ImGui_ImplSDL3_NewFrame();
+        m_pDemo->Render();
+    }
 }
 
 CApplication::CApplication()
 {
-	if ( !InitWindow() )
-	{
-		return;
-	}
+    if ( !InitWindow() )
+    {
+        return;
+    }
 
-	ImGui::CreateContext();
-	ImGui_ImplSDL3_InitForD3D( m_pWindow );
+    ImGui::CreateContext();
+    ImGui_ImplSDL3_InitForD3D( m_pWindow );
 
-	m_input.Init();
-	m_shouldRun = true;
+    m_input.Init();
+    m_shouldRun = true;
 }
 
 CApplication::~CApplication()
 {
-	m_pDemo.reset();
+    m_pDemo.reset();
 
-	ImGui_ImplSDL3_Shutdown();
-	ImGui::DestroyContext();
+    ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext();
 
-	SDL_DestroyWindow( m_pWindow );
-	SDL_Quit();
+    SDL_DestroyWindow( m_pWindow );
+    SDL_Quit();
 }
 
 bool CApplication::InitWindow()
 {
-	if ( !SDL_Init( SDL_INIT_VIDEO ) )
-	{
-		return false;
-	}
+    if ( !SDL_Init( SDL_INIT_VIDEO ) )
+    {
+        return false;
+    }
 
-	const SDL_DisplayMode* const displayMode = SDL_GetCurrentDisplayMode( SDL_GetPrimaryDisplay() );
+    const SDL_DisplayMode* const displayMode = SDL_GetCurrentDisplayMode( SDL_GetPrimaryDisplay() );
 
-	m_clientWidth = displayMode->w * 2 / 3;
-	m_clientHeight = displayMode->h * 2 / 3;
-	m_pWindow = SDL_CreateWindow( c_windowTitle, m_clientWidth, m_clientHeight, SDL_WINDOW_RESIZABLE );
+    m_clientWidth = displayMode->w * 2 / 3;
+    m_clientHeight = displayMode->h * 2 / 3;
+    m_pWindow = SDL_CreateWindow( c_windowTitle, m_clientWidth, m_clientHeight, SDL_WINDOW_RESIZABLE );
 
-	if ( !m_pWindow )
-	{
-		return false;
-	}
+    if ( !m_pWindow )
+    {
+        return false;
+    }
 
-	const SDL_PropertiesID propertiesId = SDL_GetWindowProperties( m_pWindow );
-	m_hNativeWindow = static_cast<HWND>( SDL_GetPointerProperty( propertiesId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr ) );
+    const SDL_PropertiesID propertiesId = SDL_GetWindowProperties( m_pWindow );
+    m_hNativeWindow = static_cast<HWND>( SDL_GetPointerProperty( propertiesId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr ) );
 
-	if ( !m_hNativeWindow )
-	{
-		return false;
-	}
+    if ( !m_hNativeWindow )
+    {
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 void CApplication::ProcessEvents()
 {
-	SDL_Event event;
-	while ( SDL_PollEvent( &event ) )
-	{
-		ImGui_ImplSDL3_ProcessEvent( &event );
+    SDL_Event event;
+    while ( SDL_PollEvent( &event ) )
+    {
+        ImGui_ImplSDL3_ProcessEvent( &event );
 
-		switch ( event.type )
-		{
-		case SDL_EVENT_WINDOW_RESIZED:
-			OnResize( event.window.data1, event.window.data2 );
-			break;
+        switch ( event.type )
+        {
+        case SDL_EVENT_WINDOW_RESIZED:
+            OnResize( event.window.data1, event.window.data2 );
+            break;
 
-		case SDL_EVENT_QUIT:
-			Quit();
-			break;
+        case SDL_EVENT_QUIT:
+            Quit();
+            break;
 
-		default:
-			break;
-		}
-	}
+        default:
+            break;
+        }
+    }
 }
 
 void CApplication::OnResize( int32_t newWidth, int32_t newHeight )
 {
-	m_clientWidth = newWidth;
-	m_clientHeight = newHeight;
+    m_clientWidth = newWidth;
+    m_clientHeight = newHeight;
 
-	m_pDemo->OnResize();
+    m_pDemo->OnResize();
 }

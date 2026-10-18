@@ -11,73 +11,73 @@ struct SDL_Window;
 class CApplication
 {
 public:
-	template<typename TGraphicsDemo>
-	static void Init();
+    template<typename TGraphicsDemo>
+    static void Init();
 
-	static CApplication& GetInstance();
+    static CApplication& GetInstance();
 
-	static void Destroy();
+    static void Destroy();
 
-	void Run();
+    void Run();
+    
+    void Quit()
+    {
+        m_shouldRun = false;
+    }
 
-	void Quit()
-	{
-		m_shouldRun = false;
-	}
+    [[nodiscard]]
+    int32_t GetWidth() const
+    {
+        return m_clientWidth;
+    }
 
-	[[nodiscard]]
-	int32_t GetWidth() const
-	{
-		return m_clientWidth;
-	}
+    [[nodiscard]]
+    int32_t GetHeight() const
+    {
+        return m_clientHeight;
+    }
 
-	[[nodiscard]]
-	int32_t GetHeight() const
-	{
-		return m_clientHeight;
-	}
-
-	[[nodiscard]]
-	const CInput& GetInput() const
-	{
-		return m_input;
-	}
-
-private:
-	CApplication();
-	~CApplication();
-
-	bool InitWindow();
-
-	void ProcessEvents();
-	void OnResize( int32_t newWidth, int32_t newHeight );
+    [[nodiscard]]
+    const CInput& GetInput() const
+    {
+        return m_input;
+    }
 
 private:
-	static constexpr char c_windowTitle[] = "DirectX 12 Engine";
+    CApplication();
+    ~CApplication();
 
-	static CApplication* s_pInstance;
+    bool InitWindow();
 
-	bool m_shouldRun = false;
+    void ProcessEvents();
+    void OnResize( int32_t newWidth, int32_t newHeight );
 
-	CInput m_input;
+private:
+    static constexpr char c_windowTitle[] = "DirectX 12 Engine";
 
-	std::unique_ptr<CGraphicsDemo> m_pDemo;
+    static CApplication* s_pInstance;
 
-	SDL_Window* m_pWindow = nullptr;
-	HWND        m_hNativeWindow = nullptr;
+    bool m_shouldRun = false;
 
-	int32_t m_clientWidth = 1280;
-	int32_t m_clientHeight = 720;
+    CInput m_input;
+
+    std::unique_ptr<CGraphicsDemo> m_pDemo;
+
+    SDL_Window* m_pWindow = nullptr;
+    HWND        m_hNativeWindow = nullptr;
+
+    int32_t m_clientWidth = 1280;
+    int32_t m_clientHeight = 720;
 };
 
 template<typename TGraphicsDemo>
 void CApplication::Init()
 {
-	assert( !s_pInstance );
+    assert( !s_pInstance );
 
-	s_pInstance = new CApplication;
-	if ( s_pInstance->m_shouldRun )
-	{
-		s_pInstance->m_pDemo = std::make_unique<TGraphicsDemo>( s_pInstance->m_hNativeWindow );
-	}
+    s_pInstance = new CApplication;
+    if ( s_pInstance->m_shouldRun )
+    {
+        s_pInstance->m_pDemo = std::make_unique<TGraphicsDemo>( s_pInstance->m_hNativeWindow );
+    }
 }

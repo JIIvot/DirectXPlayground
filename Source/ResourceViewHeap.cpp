@@ -5,19 +5,19 @@
 
 void CResourceViewHeap::Init( ID3D12Device* pDevice, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity )
 {
-	assert( !m_pHeap );
+    assert( !m_pHeap );
 
-	const D3D12_DESCRIPTOR_HEAP_DESC desc = {
-		.Type = type,
-		.NumDescriptors = capacity,
-		.Flags =
-			type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV || type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER
-			? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
-			: D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-		.NodeMask = 0
-	};
+    const D3D12_DESCRIPTOR_HEAP_DESC desc = {
+        .Type = type,
+        .NumDescriptors = capacity,
+        .Flags =
+            type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV || type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER
+            ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
+            : D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+        .NodeMask = 0
+    };
 
-	ASSERT_SUCCEEDED( pDevice->CreateDescriptorHeap( &desc, IID_PPV_ARGS( m_pHeap.GetAddressOf() ) ) );
+    ASSERT_SUCCEEDED( pDevice->CreateDescriptorHeap( &desc, IID_PPV_ARGS( m_pHeap.GetAddressOf() ) ) );
 
-	m_descriptorSize = pDevice->GetDescriptorHandleIncrementSize( type );
+    m_descriptorSize = pDevice->GetDescriptorHandleIncrementSize( type );
 }
