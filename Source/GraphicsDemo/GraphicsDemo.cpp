@@ -5,12 +5,12 @@
 #include <imgui.h>
 #include <backends/imgui_impl_dx12.h>
 
-CGraphicsDemo::CGraphicsDemo( HWND windowHandle )
+CGraphicsDemo::CGraphicsDemo( HWND hWindow )
 {
 	InitDebugAndDxgiFactory();
 	InitAdapterAndDevice();
 	InitCommandObjects();
-	InitSwapChain( windowHandle );
+	InitSwapChain( hWindow );
 	InitResourceViewHeaps();
 	InitFenceObjects();
 	InitImGui();
@@ -25,7 +25,7 @@ void CGraphicsDemo::InitDebugAndDxgiFactory()
 
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 
-	ComPtr<ID3D12Debug1> debugController;
+	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController;
 	ASSERT_SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( debugController.GetAddressOf() ) ) );
 
 	debugController->EnableDebugLayer();
@@ -33,16 +33,16 @@ void CGraphicsDemo::InitDebugAndDxgiFactory()
 	static constexpr uint32_t c_factoryFlags = 0;
 #endif
 
-	ASSERT_SUCCEEDED( CreateDXGIFactory2( c_factoryFlags, IID_PPV_ARGS( m_dxgiFactory.GetAddressOf() ) ) );
+	ASSERT_SUCCEEDED( CreateDXGIFactory2( c_factoryFlags, IID_PPV_ARGS( m_pDxgiFactory.GetAddressOf() ) ) );
 }
 
 void CGraphicsDemo::InitAdapterAndDevice()
 {
 	HRESULT deviceCreationResult = E_FAIL;
 
-	for ( int32_t i = 0; m_dxgiFactory->EnumAdapterByGpuPreference( i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS( m_dxgiAdapter.ReleaseAndGetAddressOf() ) ) != DXGI_ERROR_NOT_FOUND; ++i )
+	for ( int32_t i = 0; m_pDxgiFactory->EnumAdapterByGpuPreference( i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS( m_pDxgiAdapter.ReleaseAndGetAddressOf() ) ) != DXGI_ERROR_NOT_FOUND; ++i )
 	{
-		deviceCreationResult = D3D12CreateDevice( m_dxgiAdapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS( m_device.ReleaseAndGetAddressOf() ) );
+		deviceCreationResult = D3D12CreateDevice( m_pDxgiAdapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS( m_pDevice.ReleaseAndGetAddressOf() ) );
 
 		if ( SUCCEEDED( deviceCreationResult ) )
 		{
@@ -62,12 +62,12 @@ void CGraphicsDemo::InitCommandObjects()
 		.NodeMask = 0
 	};
 
-	ASSERT_SUCCEEDED( m_device->CreateCommandQueue( &c_queueDesc, IID_PPV_ARGS( m_commandQueue.GetAddressOf() ) ) );
-	ASSERT_SUCCEEDED( m_device->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( m_commandAllocator.GetAddressOf() ) ) );
-	ASSERT_SUCCEEDED( m_device->CreateCommandList1( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS( m_commandList.GetAddressOf() ) ) );
+	ASSERT_SUCCEEDED( m_pDevice->CreateCommandQueue( &c_queueDesc, IID_PPV_ARGS( m_pCommandQueue.GetAddressOf() ) ) );
+	ASSERT_SUCCEEDED( m_pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( m_pCommandAllocator.GetAddressOf() ) ) );
+	ASSERT_SUCCEEDED( m_pDevice->CreateCommandList1( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS( m_pCommandList.GetAddressOf() ) ) );
 }
 
-void CGraphicsDemo::InitSwapChain( HWND windowHandle )
+void CGraphicsDemo::InitSwapChain( HWND hWindow )
 {
 	const CApplication& app = CApplication::GetInstance();
 
@@ -88,53 +88,53 @@ void CGraphicsDemo::InitSwapChain( HWND windowHandle )
 		.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 	};
 
-	ComPtr<IDXGISwapChain1> swapChain;
-	ASSERT_SUCCEEDED( m_dxgiFactory->CreateSwapChainForHwnd( m_commandQueue.Get(), windowHandle, &desc, nullptr, nullptr, swapChain.GetAddressOf() ) );
+	Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain;
+	ASSERT_SUCCEEDED( m_pDxgiFactory->CreateSwapChainForHwnd( m_pCommandQueue.Get(), hWindow, &desc, nullptr, nullptr, swapChain.GetAddressOf() ) );
 
-	ASSERT_SUCCEEDED( swapChain.As( &m_dxgiSwapChain ) );
+	ASSERT_SUCCEEDED( swapChain.As( &m_pDxgiSwapChain ) );
 }
 
 void CGraphicsDemo::InitResourceViewHeaps()
 {
 	static constexpr uint32_t c_cbvSrvUavHeapCapacity = 16384;
 
-	m_rtvHeap.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, c_swapChainBufferCount );
-	m_dsvHeap.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 );
-	m_cbvSrvUavHeap.Init( m_device.Get(), c_cbvSrvUavHeapCapacity );
+	m_rtvHeap.Init( m_pDevice.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, c_swapChainBufferCount );
+	m_dsvHeap.Init( m_pDevice.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 );
+	m_cbvSrvUavHeap.Init( m_pDevice.Get(), c_cbvSrvUavHeapCapacity );
 }
 
 void CGraphicsDemo::InitFenceObjects()
 {
-	ASSERT_SUCCEEDED( m_device->CreateFence( m_currFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( m_fence.GetAddressOf() ) ) );
-	m_fenceEventHandle = CreateEventEx( nullptr, nullptr, 0, EVENT_ALL_ACCESS );
+	ASSERT_SUCCEEDED( m_pDevice->CreateFence( m_currFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( m_pFence.GetAddressOf() ) ) );
+	m_hFenceEvent = CreateEventEx( nullptr, nullptr, 0, EVENT_ALL_ACCESS );
 }
 
 void CGraphicsDemo::InitImGui()
 {
 	ImGui_ImplDX12_InitInfo initInfo = {};
-	initInfo.Device = m_device.Get();
-	initInfo.CommandQueue = m_commandQueue.Get();
+	initInfo.Device = m_pDevice.Get();
+	initInfo.CommandQueue = m_pCommandQueue.Get();
 	initInfo.NumFramesInFlight = 1;
 	initInfo.RTVFormat = m_backBufferFormat;
 	initInfo.DSVFormat = m_depthStencilFormat;
 	initInfo.UserData = &m_cbvSrvUavHeap;
 	initInfo.SrvDescriptorHeap = m_cbvSrvUavHeap.GetHeap();
 
-	initInfo.SrvDescriptorAllocFn = []( ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE* cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* gpuHandle )
+	initInfo.SrvDescriptorAllocFn = []( ImGui_ImplDX12_InitInfo* pInfo, D3D12_CPU_DESCRIPTOR_HANDLE* cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* gpuHandle )
 	{
-		CCbvSrvUavHeap* const heap = static_cast<CCbvSrvUavHeap*>( info->UserData );
-		const uint32_t index = heap->GetNextIndex();
+		CCbvSrvUavHeap* const pHeap = static_cast<CCbvSrvUavHeap*>( pInfo->UserData );
+		const uint32_t index = pHeap->GetNextIndex();
 
-		*cpuHandle = heap->GetCpuHandle( index );
-		*gpuHandle = heap->GetGpuHandle( index );
+		*cpuHandle = pHeap->GetCpuHandle( index );
+		*gpuHandle = pHeap->GetGpuHandle( index );
 	};
 
-	initInfo.SrvDescriptorFreeFn = []( ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle )
+	initInfo.SrvDescriptorFreeFn = []( ImGui_ImplDX12_InitInfo* pInfo, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle )
 	{
-		CCbvSrvUavHeap* const heap = static_cast<CCbvSrvUavHeap*>( info->UserData );
-		heap->ReleaseIndex( heap->GetIndexFromCpuHandle( cpuHandle ) );
+		CCbvSrvUavHeap* const pHeap = static_cast<CCbvSrvUavHeap*>( pInfo->UserData );
+		pHeap->ReleaseIndex( pHeap->GetIndexFromCpuHandle( cpuHandle ) );
 
-		assert( heap->GetIndexFromCpuHandle( cpuHandle ) == heap->GetIndexFromGpuHandle( gpuHandle ) );
+		assert( pHeap->GetIndexFromCpuHandle( cpuHandle ) == pHeap->GetIndexFromGpuHandle( gpuHandle ) );
 	};
 
 	ImGui_ImplDX12_Init( &initInfo );
@@ -143,15 +143,15 @@ void CGraphicsDemo::InitImGui()
 void CGraphicsDemo::FlushCommandQueue()
 {
 	++m_currFenceValue;
-	ASSERT_SUCCEEDED( m_commandQueue->Signal( m_fence.Get(), m_currFenceValue ) );
+	ASSERT_SUCCEEDED( m_pCommandQueue->Signal( m_pFence.Get(), m_currFenceValue ) );
 
-	if ( m_fence->GetCompletedValue() >= m_currFenceValue )
+	if ( m_pFence->GetCompletedValue() >= m_currFenceValue )
 	{
 		return;
 	}
 
-	ASSERT_SUCCEEDED( m_fence->SetEventOnCompletion( m_currFenceValue, m_fenceEventHandle ) );
-	WaitForSingleObject( m_fenceEventHandle, INFINITE );
+	ASSERT_SUCCEEDED( m_pFence->SetEventOnCompletion( m_currFenceValue, m_hFenceEvent ) );
+	WaitForSingleObject( m_hFenceEvent, INFINITE );
 }
 
 void CGraphicsDemo::CreateDepthStencilBufferAndView( int32_t width, int32_t height )
@@ -166,30 +166,30 @@ void CGraphicsDemo::CreateDepthStencilBufferAndView( int32_t width, int32_t heig
 		0,                                         // sampleQuality
 		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL ); // flags
 
-	ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
+	ASSERT_SUCCEEDED( m_pDevice->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),   // pHeapProperties
 		D3D12_HEAP_FLAG_NONE,                                  // HeapFlags
 		&depthStencilBufferDesc,                               // pDesc
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,                      // InitialResourceState
 		&CD3DX12_CLEAR_VALUE( m_depthStencilFormat, 1.0f, 0 ), // pOptimizedClearValue
-		IID_PPV_ARGS( m_depthStencilBuffer.ReleaseAndGetAddressOf() ) ) );
+		IID_PPV_ARGS( m_pDepthStencilBuffer.ReleaseAndGetAddressOf() ) ) );
 
-	m_device->CreateDepthStencilView( m_depthStencilBuffer.Get(), nullptr, m_dsvHeap.GetCpuHandle( 0 ) );
+	m_pDevice->CreateDepthStencilView( m_pDepthStencilBuffer.Get(), nullptr, m_dsvHeap.GetCpuHandle() );
 }
 
 void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height )
 {
-	for ( ComPtr<ID3D12Resource>& buffer : m_swapChainBuffers )
+	for ( Microsoft::WRL::ComPtr<ID3D12Resource>& buffer : m_swapChainBuffers )
 	{
 		buffer.Reset();
 	}
 
-	ASSERT_SUCCEEDED( m_dxgiSwapChain->ResizeBuffers( c_swapChainBufferCount, width, height, m_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
+	ASSERT_SUCCEEDED( m_pDxgiSwapChain->ResizeBuffers( c_swapChainBufferCount, width, height, m_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
 
 	for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
 	{
-		ASSERT_SUCCEEDED( m_dxgiSwapChain->GetBuffer( i, IID_PPV_ARGS( m_swapChainBuffers[i].GetAddressOf() ) ) );
-		m_device->CreateRenderTargetView( m_swapChainBuffers[i].Get(), nullptr, m_rtvHeap.GetCpuHandle( i ) );
+		ASSERT_SUCCEEDED( m_pDxgiSwapChain->GetBuffer( i, IID_PPV_ARGS( m_swapChainBuffers[i].GetAddressOf() ) ) );
+		m_pDevice->CreateRenderTargetView( m_swapChainBuffers[i].Get(), nullptr, m_rtvHeap.GetCpuHandle( i ) );
 	}
 
 	m_currBackBufferIndex = 0;

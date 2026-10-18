@@ -13,17 +13,17 @@ public:
 	[[nodiscard]]
 	bool IsKeyPressed( SDL_Scancode code ) const
 	{
-		return m_currKeys[code];
+		return m_pCurrKeys[code];
 	}
 
 	[[nodiscard]]
 	bool IsKeyJustPressed( SDL_Scancode code ) const
 	{
-		return m_currKeys[code] && !m_lastKeys[code];
+		return m_pCurrKeys[code] && !m_lastKeys[code];
 	}
 
 private:
 	int32_t m_keyCount = 0;
-	const bool* m_currKeys = nullptr;
+	const bool* m_pCurrKeys = nullptr;
 	std::vector<uint8_t> m_lastKeys;
 };

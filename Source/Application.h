@@ -61,16 +61,16 @@ private:
 private:
 	static constexpr char c_windowTitle[] = "DirectX 12 Engine";
 
-	static CApplication* s_instance;
+	static CApplication* s_pInstance;
 
 	bool m_shouldRun = false;
 
 	CInput m_input;
 
-	std::unique_ptr<CGraphicsDemo> m_demo;
+	std::unique_ptr<CGraphicsDemo> m_pDemo;
 
-	SDL_Window* m_window = nullptr;
-	HWND m_windowHandle = nullptr;
+	SDL_Window* m_pWindow = nullptr;
+	HWND m_hNativeWindow = nullptr;
 
 	int32_t m_clientWidth = 1280;
 	int32_t m_clientHeight = 720;
@@ -79,11 +79,11 @@ private:
 template<typename TGraphicsDemo>
 void CApplication::Init()
 {
-	assert( !s_instance );
+	assert( !s_pInstance );
 
-	s_instance = new CApplication;
-	if ( s_instance->m_shouldRun )
+	s_pInstance = new CApplication;
+	if ( s_pInstance->m_shouldRun )
 	{
-		s_instance->m_demo = std::make_unique<TGraphicsDemo>( s_instance->m_windowHandle );
+		s_pInstance->m_pDemo = std::make_unique<TGraphicsDemo>( s_pInstance->m_hNativeWindow );
 	}
 }

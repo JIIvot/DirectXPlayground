@@ -4,34 +4,34 @@
 #include <imgui.h>
 #include <backends/imgui_impl_sdl3.h>
 
-CApplication* CApplication::s_instance;
+CApplication* CApplication::s_pInstance;
 
 CApplication& CApplication::GetInstance()
 {
-	assert( s_instance );
-	return *s_instance;
+	assert( s_pInstance );
+	return *s_pInstance;
 }
 
 void CApplication::Destroy()
 {
-	delete s_instance;
-	s_instance = nullptr;
+	delete s_pInstance;
+	s_pInstance = nullptr;
 }
 
 void CApplication::Run()
 {
-	assert( s_instance );
-	assert( m_demo );
+	assert( s_pInstance );
+	assert( m_pDemo );
 
 	while ( m_shouldRun )
 	{
 		m_input.Update();
 		ProcessEvents();
 
-		m_demo->Update();
+		m_pDemo->Update();
 
 		ImGui_ImplSDL3_NewFrame();
-		m_demo->Render();
+		m_pDemo->Render();
 	}
 }
 
@@ -43,7 +43,7 @@ CApplication::CApplication()
 	}
 
 	ImGui::CreateContext();
-	ImGui_ImplSDL3_InitForD3D( m_window );
+	ImGui_ImplSDL3_InitForD3D( m_pWindow );
 
 	m_input.Init();
 	m_shouldRun = true;
@@ -51,12 +51,12 @@ CApplication::CApplication()
 
 CApplication::~CApplication()
 {
-	m_demo.reset();
+	m_pDemo.reset();
 
 	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
 
-	SDL_DestroyWindow( m_window );
+	SDL_DestroyWindow( m_pWindow );
 	SDL_Quit();
 }
 
@@ -71,17 +71,17 @@ bool CApplication::InitWindow()
 
 	m_clientWidth = displayMode->w * 2 / 3;
 	m_clientHeight = displayMode->h * 2 / 3;
-	m_window = SDL_CreateWindow( c_windowTitle, m_clientWidth, m_clientHeight, SDL_WINDOW_RESIZABLE );
+	m_pWindow = SDL_CreateWindow( c_windowTitle, m_clientWidth, m_clientHeight, SDL_WINDOW_RESIZABLE );
 
-	if ( !m_window )
+	if ( !m_pWindow )
 	{
 		return false;
 	}
 
-	const SDL_PropertiesID propertiesId = SDL_GetWindowProperties( m_window );
-	m_windowHandle = static_cast<HWND>( SDL_GetPointerProperty( propertiesId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr ) );
+	const SDL_PropertiesID propertiesId = SDL_GetWindowProperties( m_pWindow );
+	m_hNativeWindow = static_cast<HWND>( SDL_GetPointerProperty( propertiesId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr ) );
 
-	if ( !m_windowHandle )
+	if ( !m_hNativeWindow )
 	{
 		return false;
 	}
@@ -117,5 +117,5 @@ void CApplication::OnResize( int32_t newWidth, int32_t newHeight )
 	m_clientWidth = newWidth;
 	m_clientHeight = newHeight;
 
-	m_demo->OnResize();
+	m_pDemo->OnResize();
 }

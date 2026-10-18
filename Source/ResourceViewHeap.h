@@ -17,12 +17,12 @@ public:
 
 	CResourceViewHeap& operator=( const CResourceViewHeap& ) = delete;
 
-	void Init( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity );
+	void Init( ID3D12Device* pDevice, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity );
 
 	[[nodiscard]]
 	ID3D12DescriptorHeap* GetHeap() const
 	{
-		return m_heap.Get();
+		return m_pHeap.Get();
 	}
 
 	[[nodiscard]]
@@ -34,13 +34,13 @@ public:
 	[[nodiscard]]
 	CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuHandle( uint32_t index = 0 ) const
 	{
-		return CD3DX12_GPU_DESCRIPTOR_HANDLE( m_heap->GetGPUDescriptorHandleForHeapStart(), index, m_descriptorSize );
+		return CD3DX12_GPU_DESCRIPTOR_HANDLE( m_pHeap->GetGPUDescriptorHandleForHeapStart(), index, m_descriptorSize );
 	}
 
 	[[nodiscard]]
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuHandle( uint32_t index = 0 ) const
 	{
-		return CD3DX12_CPU_DESCRIPTOR_HANDLE( m_heap->GetCPUDescriptorHandleForHeapStart(), index, m_descriptorSize );
+		return CD3DX12_CPU_DESCRIPTOR_HANDLE( m_pHeap->GetCPUDescriptorHandleForHeapStart(), index, m_descriptorSize );
 	}
 
 	[[nodiscard]]
@@ -56,6 +56,6 @@ public:
 	}
 
 protected:
-	ComPtr<ID3D12DescriptorHeap> m_heap;
+	ComPtr<ID3D12DescriptorHeap> m_pHeap;
 	uint32_t m_descriptorSize = 0;
 };

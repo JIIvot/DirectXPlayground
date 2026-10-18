@@ -3,9 +3,9 @@
 
 #include <cassert>
 
-void CResourceViewHeap::Init( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity )
+void CResourceViewHeap::Init( ID3D12Device* pDevice, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity )
 {
-	assert( !m_heap );
+	assert( !m_pHeap );
 
 	const D3D12_DESCRIPTOR_HEAP_DESC desc = {
 		.Type = type,
@@ -17,7 +17,7 @@ void CResourceViewHeap::Init( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE t
 		.NodeMask = 0
 	};
 
-	ASSERT_SUCCEEDED( device->CreateDescriptorHeap( &desc, IID_PPV_ARGS( m_heap.GetAddressOf() ) ) );
+	ASSERT_SUCCEEDED( pDevice->CreateDescriptorHeap( &desc, IID_PPV_ARGS( m_pHeap.GetAddressOf() ) ) );
 
-	m_descriptorSize = device->GetDescriptorHandleIncrementSize( type );
+	m_descriptorSize = pDevice->GetDescriptorHandleIncrementSize( type );
 }
