@@ -11,7 +11,6 @@ public:
 
 	[[nodiscard]]
 	uint32_t GetNextIndex();
-
 	void ReleaseIndex( uint32_t index );
 
 private:

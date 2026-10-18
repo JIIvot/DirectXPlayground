@@ -7,7 +7,6 @@ class CInput
 {
 public:
 	void Init();
-
 	void Update();
 
 	[[nodiscard]]

@@ -13,7 +13,6 @@ public:
 	virtual ~CGraphicsDemo();
 
 	virtual void Update();
-
 	virtual void Render() = 0;
 
 	void OnResize();
@@ -22,23 +21,16 @@ protected:
 	explicit CGraphicsDemo( HWND hWindow );
 
 	void InitDebugAndDxgiFactory();
-
 	void InitAdapterAndDevice();
-
 	void InitCommandObjects();
-
 	void InitSwapChain( HWND hWindow );
-
 	void InitResourceViewHeaps();
-
 	void InitFenceObjects();
-
 	void InitImGui();
 
 	void FlushCommandQueue();
 
 	void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
-
 	void ResizeSwapChainAndCreateViews( int32_t width, int32_t height );
 
 	[[nodiscard]]

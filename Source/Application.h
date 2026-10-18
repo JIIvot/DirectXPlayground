@@ -45,13 +45,11 @@ public:
 
 private:
 	CApplication();
-
 	~CApplication();
 
 	bool InitWindow();
 
 	void ProcessEvents();
-
 	void OnResize( int32_t newWidth, int32_t newHeight );
 
 private:

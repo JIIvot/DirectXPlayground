@@ -8,7 +8,6 @@ class CResourceViewHeap
 {
 public:
 	CResourceViewHeap() = default;
-
 	CResourceViewHeap( const CResourceViewHeap& ) = delete;
 
 	CResourceViewHeap& operator=( const CResourceViewHeap& ) = delete;
