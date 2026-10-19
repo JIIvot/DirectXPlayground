@@ -2,6 +2,9 @@
 
 Language: Cpp
 
+AccessModifierOffset: -4
+AlignAfterOpenBracket: DontAlign
+AlignArrayOfStructures: None
 AlignConsecutiveAssignments:
   Enabled: false
   AcrossEmptyLines: false
@@ -26,26 +29,69 @@ AlignConsecutiveMacros:
   AcrossComments: false
   AlignCompound: false
   PadOperators: false
+AlignTrailingComments:
+  Kind: Always
+AlignEscapedNewlines: Left
+AlignOperands: DontAlign
+AllowShortBlocksOnASingleLine: Never
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: None
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakBeforeMultilineStrings: true
+BreakTemplateDeclarations: Yes
 BreakBeforeBraces: Custom
+BinPackArguments: false
+BinPackParameters: OnePerLine
+PackConstructorInitializers: Never
+BitFieldColonSpacing: Both
 BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
   BeforeLambdaBody: true
-IndentPPDirectives: BeforeHash
-Cpp11BracedListStyle: false
+  BeforeWhile: true
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+BreakAfterAttributes: Always
+BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
-AlignOperands: DontAlign 
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+CompactNamespaces: false
+ConstructorInitializerIndentWidth: 4
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+IndentAccessModifiers: false
+IndentPPDirectives: BeforeHash
 IndentCaseBlocks: false
 IndentCaseLabels: false
-ColumnLimit: 0 
+IndentExternBlock: AfterExternBlock
+IndentWrappedFunctionNames: false
+NamespaceIndentation: None
+Cpp11BracedListStyle: false
+ColumnLimit: 0
 SortIncludes: Never
-AllowShortFunctionsOnASingleLine: None
 FixNamespaceComments: true
 InsertNewlineAtEOF: true
 SpaceAfterTemplateKeyword: false
 PointerAlignment: Left
-AlignTrailingComments:
-  Kind: Always
-AlignEscapedNewlines: Left
-AccessModifierOffset: -4
+ReferenceAlignment: Pointer
 SpacesInParens: Custom
 SpacesInParensOptions:
   ExceptDoubleParentheses: false
