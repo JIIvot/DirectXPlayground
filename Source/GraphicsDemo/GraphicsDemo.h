@@ -9,9 +9,11 @@ class CGraphicsDemo
 {
 public:
     CGraphicsDemo( const CGraphicsDemo& ) = delete;
+    CGraphicsDemo( CGraphicsDemo&& ) = delete;
     virtual ~CGraphicsDemo();
 
     CGraphicsDemo& operator=( const CGraphicsDemo& ) = delete;
+    CGraphicsDemo& operator=( CGraphicsDemo&& ) = delete;
 
     virtual void Update();
     virtual void Render() = 0;

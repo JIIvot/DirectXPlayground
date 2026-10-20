@@ -2,7 +2,7 @@
 
 #include "ResourceViewHeap.h"
 
-#include <queue>
+#include <vector>
 
 class CCbvSrvUavHeap final : public CResourceViewHeap
 {
@@ -11,8 +11,12 @@ public:
 
     [[nodiscard]]
     uint32_t GetNextIndex();
-    void     ReleaseIndex( uint32_t index );
+
+    void ReleaseIndex( uint32_t index )
+    {
+        m_freeIndices.push_back( index );
+    }
 
 private:
-    std::queue<uint32_t> m_freeIndexQueue;
+    std::vector<uint32_t> m_freeIndices;
 };

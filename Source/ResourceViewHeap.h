@@ -9,8 +9,11 @@ class CResourceViewHeap
 public:
     CResourceViewHeap() = default;
     CResourceViewHeap( const CResourceViewHeap& ) = delete;
+    CResourceViewHeap( CResourceViewHeap&& other ) noexcept = default;
+    ~CResourceViewHeap() = default;
 
     CResourceViewHeap& operator=( const CResourceViewHeap& ) = delete;
+    CResourceViewHeap& operator=( CResourceViewHeap&& other ) noexcept = default;
 
     void Init( ID3D12Device* pDevice, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity );
 

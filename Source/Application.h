@@ -12,8 +12,10 @@ class CApplication
 {
 public:
     CApplication( const CApplication& ) = delete;
+    CApplication( CApplication&& ) = delete;
 
     CApplication& operator=( const CApplication& ) = delete;
+    CApplication& operator=( CApplication&& ) = delete;
 
     template<typename TGraphicsDemo>
     static void Init();
