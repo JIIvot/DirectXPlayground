@@ -29,8 +29,8 @@ namespace Utility
 Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileArgs, const wchar_t** ppCompileArgs );
 
 [[nodiscard]]
-inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* blob )
+inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* pBlob )
 {
-    return { .pShaderBytecode = blob->GetBufferPointer(), .BytecodeLength = blob->GetBufferSize() };
+    return { .pShaderBytecode = pBlob->GetBufferPointer(), .BytecodeLength = pBlob->GetBufferSize() };
 }
 } // namespace Utility
