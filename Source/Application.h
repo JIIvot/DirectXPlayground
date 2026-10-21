@@ -12,9 +12,9 @@ class CApplication
 {
 public:
     CApplication( const CApplication& ) = delete;
-    CApplication( CApplication&& ) = delete;
-
     CApplication& operator=( const CApplication& ) = delete;
+
+    CApplication( CApplication&& ) = delete;
     CApplication& operator=( CApplication&& ) = delete;
 
     template<typename TGraphicsDemo>
@@ -59,7 +59,7 @@ private:
     void OnResize( int32_t newWidth, int32_t newHeight );
 
 private:
-    static constexpr char c_windowTitle[] = "DirectX 12 Engine";
+    static constexpr char kWindowTitle[] = "DirectX 12 Engine";
 
     static CApplication* s_pInstance;
 

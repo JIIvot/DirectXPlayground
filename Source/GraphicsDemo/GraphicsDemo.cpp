@@ -21,19 +21,19 @@ CGraphicsDemo::CGraphicsDemo( HWND hWindow )
 void CGraphicsDemo::InitDebugAndDxgiFactory()
 {
 #ifdef _DEBUG
-    static constexpr uint32_t c_factoryFlags = DXGI_CREATE_FACTORY_DEBUG;
+    static constexpr uint32_t kFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
 
     _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 
-    Microsoft::WRL::ComPtr<ID3D12Debug1> pDebugController;
+    ComPtr<ID3D12Debug1> pDebugController;
     ASSERT_SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( pDebugController.GetAddressOf() ) ) );
 
     pDebugController->EnableDebugLayer();
 #else
-    static constexpr uint32_t c_factoryFlags = 0;
+    static constexpr uint32_t kFactoryFlags = 0;
 #endif
 
-    ASSERT_SUCCEEDED( CreateDXGIFactory2( c_factoryFlags, IID_PPV_ARGS( m_pDxgiFactory.GetAddressOf() ) ) );
+    ASSERT_SUCCEEDED( CreateDXGIFactory2( kFactoryFlags, IID_PPV_ARGS( m_pDxgiFactory.GetAddressOf() ) ) );
 }
 
 void CGraphicsDemo::InitAdapterAndDevice()
@@ -80,14 +80,14 @@ void CGraphicsDemo::InitSwapChain( HWND hWindow )
         .Stereo = false,
         .SampleDesc = { .Count = 1, .Quality = 0 },
         .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-        .BufferCount = c_swapChainBufferCount,
+        .BufferCount = kNumSwapChainBuffers,
         .Scaling = DXGI_SCALING_NONE,
         .SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
         .AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED,
         .Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
     };
 
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> pSwapChain;
+    ComPtr<IDXGISwapChain1> pSwapChain;
     ASSERT_SUCCEEDED( m_pDxgiFactory->CreateSwapChainForHwnd( m_pCommandQueue.Get(), hWindow, &desc, nullptr, nullptr, pSwapChain.GetAddressOf() ) );
     ASSERT_SUCCEEDED( pSwapChain.As( &m_pDxgiSwapChain ) );
 
@@ -96,11 +96,11 @@ void CGraphicsDemo::InitSwapChain( HWND hWindow )
 
 void CGraphicsDemo::InitResourceViewHeaps()
 {
-    static constexpr uint32_t c_cbvSrvUavHeapCapacity = 16384;
+    static constexpr uint32_t kCbvSrvUavHeapCapacity = 16384;
 
-    m_rtvHeap.Init( m_pDevice.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, c_swapChainBufferCount );
+    m_rtvHeap.Init( m_pDevice.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, kNumSwapChainBuffers );
     m_dsvHeap.Init( m_pDevice.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 );
-    m_cbvSrvUavHeap.Init( m_pDevice.Get(), c_cbvSrvUavHeapCapacity );
+    m_cbvSrvUavHeap.Init( m_pDevice.Get(), kCbvSrvUavHeapCapacity );
 }
 
 void CGraphicsDemo::InitFenceObjects()
@@ -120,6 +120,7 @@ void CGraphicsDemo::InitImGui()
     initInfo.UserData = &m_cbvSrvUavHeap;
     initInfo.SrvDescriptorHeap = m_cbvSrvUavHeap.GetHeap();
 
+    // ReSharper disable once CppParameterMayBeConstPtrOrRef
     initInfo.SrvDescriptorAllocFn = []( ImGui_ImplDX12_InitInfo* pInfo, D3D12_CPU_DESCRIPTOR_HANDLE* cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* gpuHandle )
     {
         CCbvSrvUavHeap* const pHeap = static_cast<CCbvSrvUavHeap*>( pInfo->UserData );
@@ -129,6 +130,7 @@ void CGraphicsDemo::InitImGui()
         *gpuHandle = pHeap->GetGpuHandle( index );
     };
 
+    // ReSharper disable once CppParameterMayBeConstPtrOrRef
     initInfo.SrvDescriptorFreeFn = []( ImGui_ImplDX12_InitInfo* pInfo, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle )
     {
         CCbvSrvUavHeap* const pHeap = static_cast<CCbvSrvUavHeap*>( pInfo->UserData );
@@ -184,9 +186,9 @@ void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height
         buffer.Reset();
     }
 
-    ASSERT_SUCCEEDED( m_pDxgiSwapChain->ResizeBuffers( c_swapChainBufferCount, width, height, m_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
+    ASSERT_SUCCEEDED( m_pDxgiSwapChain->ResizeBuffers( kNumSwapChainBuffers, width, height, m_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
 
-    for ( int32_t i = 0; i < c_swapChainBufferCount; ++i )
+    for ( int32_t i = 0; i < kNumSwapChainBuffers; ++i )
     {
         ASSERT_SUCCEEDED( m_pDxgiSwapChain->GetBuffer( i, IID_PPV_ARGS( m_swapChainBuffers[i].GetAddressOf() ) ) );
         m_pDevice->CreateRenderTargetView( m_swapChainBuffers[i].Get(), nullptr, m_rtvHeap.GetCpuHandle( i ) );
@@ -199,6 +201,7 @@ CGraphicsDemo::~CGraphicsDemo()
 {
     ImGui_ImplDX12_Shutdown();
     FlushCommandQueue();
+    CloseHandle( m_hFenceEvent );
 }
 
 void CGraphicsDemo::Update()

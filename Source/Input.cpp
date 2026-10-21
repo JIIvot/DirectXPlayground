@@ -5,8 +5,6 @@
 void CInput::Init()
 {
     m_pCurrKeys = SDL_GetKeyboardState( &m_keyCount );
-
-    m_lastKeys.clear();
     m_lastKeys.resize( m_keyCount );
 }
 

@@ -43,7 +43,7 @@ void CClearScreenDemo::Render()
     m_pCommandQueue->ExecuteCommandLists( 1, &pCommandList );
 
     ASSERT_SUCCEEDED( m_pDxgiSwapChain->Present( 0, 0 ) );
-    m_currBackBufferIndex = ( m_currBackBufferIndex + 1 ) % c_swapChainBufferCount;
+    m_currBackBufferIndex = ( m_currBackBufferIndex + 1 ) % kNumSwapChainBuffers;
 
     FlushCommandQueue();
 }

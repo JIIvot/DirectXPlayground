@@ -6,14 +6,19 @@
 
 class CResourceViewHeap
 {
+private:
+    template<typename T>
+    using ComPtr = Microsoft::WRL::ComPtr<T>;
+
 public:
     CResourceViewHeap() = default;
-    CResourceViewHeap( const CResourceViewHeap& ) = delete;
-    CResourceViewHeap( CResourceViewHeap&& other ) noexcept = default;
     ~CResourceViewHeap() = default;
 
+    CResourceViewHeap( const CResourceViewHeap& ) = delete;
     CResourceViewHeap& operator=( const CResourceViewHeap& ) = delete;
-    CResourceViewHeap& operator=( CResourceViewHeap&& other ) noexcept = default;
+
+    CResourceViewHeap( CResourceViewHeap&& ) noexcept = default;
+    CResourceViewHeap& operator=( CResourceViewHeap&& ) noexcept = default;
 
     void Init( ID3D12Device* pDevice, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity );
 
@@ -54,6 +59,6 @@ public:
     }
 
 protected:
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_pHeap;
-    uint32_t                                     m_descriptorSize = 0;
+    ComPtr<ID3D12DescriptorHeap> m_pHeap;
+    uint32_t                     m_descriptorSize = 0;
 };

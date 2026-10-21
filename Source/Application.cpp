@@ -73,7 +73,7 @@ bool CApplication::InitWindow()
 
     m_clientWidth = displayMode->w * 2 / 3;
     m_clientHeight = displayMode->h * 2 / 3;
-    m_pWindow = SDL_CreateWindow( c_windowTitle, m_clientWidth, m_clientHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN );
+    m_pWindow = SDL_CreateWindow( kWindowTitle, m_clientWidth, m_clientHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN );
 
     if ( !m_pWindow )
     {

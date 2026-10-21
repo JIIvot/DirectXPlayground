@@ -7,12 +7,17 @@
 
 class CGraphicsDemo
 {
+private:
+    template<typename T>
+    using ComPtr = Microsoft::WRL::ComPtr<T>;
+
 public:
-    CGraphicsDemo( const CGraphicsDemo& ) = delete;
-    CGraphicsDemo( CGraphicsDemo&& ) = delete;
     virtual ~CGraphicsDemo();
 
+    CGraphicsDemo( const CGraphicsDemo& ) = delete;
     CGraphicsDemo& operator=( const CGraphicsDemo& ) = delete;
+
+    CGraphicsDemo( CGraphicsDemo&& ) = delete;
     CGraphicsDemo& operator=( CGraphicsDemo&& ) = delete;
 
     virtual void Update();
@@ -49,28 +54,28 @@ protected:
     }
 
 protected:
-    static constexpr int32_t c_swapChainBufferCount = 2;
+    static constexpr int32_t kNumSwapChainBuffers = 2;
 
     DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-    Microsoft::WRL::ComPtr<IDXGIFactory6>   m_pDxgiFactory;
-    Microsoft::WRL::ComPtr<IDXGISwapChain4> m_pDxgiSwapChain;
-    Microsoft::WRL::ComPtr<IDXGIAdapter4>   m_pDxgiAdapter;
+    ComPtr<IDXGIFactory6>   m_pDxgiFactory;
+    ComPtr<IDXGISwapChain4> m_pDxgiSwapChain;
+    ComPtr<IDXGIAdapter4>   m_pDxgiAdapter;
 
-    Microsoft::WRL::ComPtr<ID3D12Device5> m_pDevice;
+    ComPtr<ID3D12Device5> m_pDevice;
 
-    Microsoft::WRL::ComPtr<ID3D12CommandQueue>        m_pCommandQueue;
-    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_pCommandList;
-    Microsoft::WRL::ComPtr<ID3D12CommandAllocator>    m_pCommandAllocator;
+    ComPtr<ID3D12CommandQueue>        m_pCommandQueue;
+    ComPtr<ID3D12GraphicsCommandList> m_pCommandList;
+    ComPtr<ID3D12CommandAllocator>    m_pCommandAllocator;
 
-    Microsoft::WRL::ComPtr<ID3D12Fence> m_pFence;
-    uint64_t                            m_currFenceValue = 0;
-    HANDLE                              m_hFenceEvent = nullptr;
+    ComPtr<ID3D12Fence> m_pFence;
+    uint64_t            m_currFenceValue = 0;
+    HANDLE              m_hFenceEvent = nullptr;
 
-    int32_t                                                                    m_currBackBufferIndex = 0;
-    std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, c_swapChainBufferCount> m_swapChainBuffers;
-    Microsoft::WRL::ComPtr<ID3D12Resource>                                     m_pDepthStencilBuffer;
+    int32_t                                                    m_currBackBufferIndex = 0;
+    std::array<ComPtr<ID3D12Resource>, kNumSwapChainBuffers> m_swapChainBuffers;
+    ComPtr<ID3D12Resource>                                     m_pDepthStencilBuffer;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT     m_scissorRect = {};
