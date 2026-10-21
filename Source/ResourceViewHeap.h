@@ -6,10 +6,6 @@
 
 class CResourceViewHeap
 {
-private:
-    template<typename T>
-    using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 public:
     CResourceViewHeap() = default;
     ~CResourceViewHeap() = default;
@@ -59,6 +55,6 @@ public:
     }
 
 protected:
-    ComPtr<ID3D12DescriptorHeap> m_pHeap;
-    uint32_t                     m_descriptorSize = 0;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_pHeap;
+    uint32_t                                     m_descriptorSize = 0;
 };

@@ -25,7 +25,7 @@ void CGraphicsDemo::InitDebugAndDxgiFactory()
 
     _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 
-    ComPtr<ID3D12Debug1> pDebugController;
+    Microsoft::WRL::ComPtr<ID3D12Debug1> pDebugController;
     ASSERT_SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( pDebugController.GetAddressOf() ) ) );
 
     pDebugController->EnableDebugLayer();
@@ -87,7 +87,7 @@ void CGraphicsDemo::InitSwapChain( HWND hWindow )
         .Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
     };
 
-    ComPtr<IDXGISwapChain1> pSwapChain;
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> pSwapChain;
     ASSERT_SUCCEEDED( m_pDxgiFactory->CreateSwapChainForHwnd( m_pCommandQueue.Get(), hWindow, &desc, nullptr, nullptr, pSwapChain.GetAddressOf() ) );
     ASSERT_SUCCEEDED( pSwapChain.As( &m_pDxgiSwapChain ) );
 

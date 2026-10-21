@@ -7,10 +7,6 @@
 
 class CGraphicsDemo
 {
-private:
-    template<typename T>
-    using ComPtr = Microsoft::WRL::ComPtr<T>;
-
 public:
     virtual ~CGraphicsDemo();
 
@@ -59,23 +55,23 @@ protected:
     DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-    ComPtr<IDXGIFactory6>   m_pDxgiFactory;
-    ComPtr<IDXGISwapChain4> m_pDxgiSwapChain;
-    ComPtr<IDXGIAdapter4>   m_pDxgiAdapter;
+    Microsoft::WRL::ComPtr<IDXGIFactory6>   m_pDxgiFactory;
+    Microsoft::WRL::ComPtr<IDXGISwapChain4> m_pDxgiSwapChain;
+    Microsoft::WRL::ComPtr<IDXGIAdapter4>   m_pDxgiAdapter;
 
-    ComPtr<ID3D12Device5> m_pDevice;
+    Microsoft::WRL::ComPtr<ID3D12Device5> m_pDevice;
 
-    ComPtr<ID3D12CommandQueue>        m_pCommandQueue;
-    ComPtr<ID3D12GraphicsCommandList> m_pCommandList;
-    ComPtr<ID3D12CommandAllocator>    m_pCommandAllocator;
+    Microsoft::WRL::ComPtr<ID3D12CommandQueue>        m_pCommandQueue;
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_pCommandList;
+    Microsoft::WRL::ComPtr<ID3D12CommandAllocator>    m_pCommandAllocator;
 
-    ComPtr<ID3D12Fence> m_pFence;
-    uint64_t            m_currFenceValue = 0;
-    HANDLE              m_hFenceEvent = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Fence> m_pFence;
+    uint64_t                            m_currFenceValue = 0;
+    HANDLE                              m_hFenceEvent = nullptr;
 
-    int32_t                                                    m_currBackBufferIndex = 0;
-    std::array<ComPtr<ID3D12Resource>, kNumSwapChainBuffers> m_swapChainBuffers;
-    ComPtr<ID3D12Resource>                                     m_pDepthStencilBuffer;
+    int32_t                                                                  m_currBackBufferIndex = 0;
+    std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, kNumSwapChainBuffers> m_swapChainBuffers;
+    Microsoft::WRL::ComPtr<ID3D12Resource>                                   m_pDepthStencilBuffer;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT     m_scissorRect = {};

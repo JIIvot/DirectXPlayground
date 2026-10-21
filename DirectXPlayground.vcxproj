@@ -60,13 +60,13 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)External\DirectXTK12\Inc\;$(SolutionDir)External\DirectXTK12\Src\Shaders\Compiled\;$(SolutionDir)External\SDL3\Include\;$(SolutionDir)External\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)External\DirectXTK12\Inc\;$(SolutionDir)External\DirectXTK12\Src\Shaders\Compiled\;$(SolutionDir)External\SDL3\Include\;$(SolutionDir)External\imgui\;$(SolutionDir)External\dxc\inc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);d3d12.lib;d3dcompiler.lib;dxgi.lib;SDL3.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL3\Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);d3d12.lib;d3dcompiler.lib;dxgi.lib;SDL3.lib;dxcompiler.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL3\Lib;$(SolutionDir)External\dxc\lib</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -82,14 +82,14 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)External\DirectXTK12\Inc\;$(SolutionDir)External\DirectXTK12\Src\Shaders\Compiled\;$(SolutionDir)External\SDL3\Include\;$(SolutionDir)External\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)External\DirectXTK12\Inc\;$(SolutionDir)External\DirectXTK12\Src\Shaders\Compiled\;$(SolutionDir)External\SDL3\Include\;$(SolutionDir)External\imgui\;$(SolutionDir)External\dxc\inc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);d3d12.lib;d3dcompiler.lib;dxgi.lib;SDL3.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL3\Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);d3d12.lib;d3dcompiler.lib;dxgi.lib;SDL3.lib;dxcompiler.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL3\Lib;$(SolutionDir)External\dxc\lib</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -152,6 +152,7 @@
     <ClCompile Include="Source\GraphicsDemo\GraphicsDemo.cpp" />
     <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="External\DirectXTK12\Src\Shaders\Compiled\AlphaTestEffect_PSAlphaTestEqNe.inc" />

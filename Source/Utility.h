@@ -1,7 +1,11 @@
 #pragma once
 
+#include <wrl/client.h>
+#include <dxcapi.h>
+#include <cstdint>
+#include <d3d12.h>
+
 #ifdef _DEBUG
-    #include <cstdio>
     #include <Windows.h>
 
     #define MAKE_STRING_INTERNAL( x ) #x
@@ -18,3 +22,15 @@
 #else
     #define ASSERT_SUCCEEDED( hr, ... ) ( void )( hr )
 #endif
+
+namespace Utility
+{
+[[nodiscard]]
+Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileArgs, const wchar_t** ppCompileArgs );
+
+[[nodiscard]]
+inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* blob )
+{
+    return { .pShaderBytecode = blob->GetBufferPointer(), .BytecodeLength = blob->GetBufferSize() };
+}
+} // namespace Utility
