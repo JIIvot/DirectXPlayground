@@ -70,8 +70,8 @@ void CGraphicsDemo::InitCommandObjects()
 void CGraphicsDemo::InitSwapChain( HWND hWindow )
 {
     const CApplication& app = CApplication::GetInstance();
-    const uint32_t      width = static_cast<uint32_t>( app.GetWidth() );
-    const uint32_t      height = static_cast<uint32_t>( app.GetHeight() );
+    const uint32_t width = static_cast<uint32_t>( app.GetWidth() );
+    const uint32_t height = static_cast<uint32_t>( app.GetHeight() );
 
     const DXGI_SWAP_CHAIN_DESC1 desc = {
         .Width = width,
@@ -124,7 +124,7 @@ void CGraphicsDemo::InitImGui()
     initInfo.SrvDescriptorAllocFn = []( ImGui_ImplDX12_InitInfo* pInfo, D3D12_CPU_DESCRIPTOR_HANDLE* cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* gpuHandle )
     {
         CCbvSrvUavHeap* const pHeap = static_cast<CCbvSrvUavHeap*>( pInfo->UserData );
-        const uint32_t        index = pHeap->GetNextIndex();
+        const uint32_t index = pHeap->GetNextIndex();
 
         *cpuHandle = pHeap->GetCpuHandle( index );
         *gpuHandle = pHeap->GetGpuHandle( index );
@@ -218,8 +218,8 @@ void CGraphicsDemo::Update()
 void CGraphicsDemo::OnResize()
 {
     const CApplication& app = CApplication::GetInstance();
-    const int32_t       width = app.GetWidth();
-    const int32_t       height = app.GetHeight();
+    const int32_t width = app.GetWidth();
+    const int32_t height = app.GetHeight();
 
     FlushCommandQueue();
     ResizeSwapChainAndCreateViews( width, height );

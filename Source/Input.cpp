@@ -4,11 +4,11 @@
 
 void CInput::Init()
 {
-    m_pCurrKeys = SDL_GetKeyboardState( &m_keyCount );
-    m_lastKeys.resize( m_keyCount );
+    m_pCurrKeys = SDL_GetKeyboardState( &m_numKeys );
+    m_lastKeys.resize( m_numKeys );
 }
 
 void CInput::Update()
 {
-    memcpy( m_lastKeys.data(), m_pCurrKeys, m_keyCount );
+    memcpy( m_lastKeys.data(), m_pCurrKeys, m_numKeys );
 }

@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "ApplicationConstants.h"
 
 #include <SDL3/SDL.h>
 #include <imgui.h>

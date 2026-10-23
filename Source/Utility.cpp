@@ -1,19 +1,29 @@
 ﻿#include "Utility.h"
+#include "ApplicationConstants.h"
 
 #include <filesystem>
 #include <cassert>
 #include <wrl/client.h>
 #include <string>
+#include <Windows.h>
 
 namespace Utility
 {
-IDxcBlob* CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileArgs, const wchar_t** ppCompileArgs )
+IDxcBlob* CompileShaderFromFile( const wchar_t* pFilePath, uint32_t numCompileArgs, const wchar_t** ppCompileArgs )
 {
-    static Microsoft::WRL::ComPtr<IDxcUtils>          s_pUtils;
-    static Microsoft::WRL::ComPtr<IDxcCompiler3>      s_pCompiler;
+    static Microsoft::WRL::ComPtr<IDxcUtils> s_pUtils;
+    static Microsoft::WRL::ComPtr<IDxcCompiler3> s_pCompiler;
     static Microsoft::WRL::ComPtr<IDxcIncludeHandler> s_pIncludeHandler;
 
-    assert( std::filesystem::exists( pFileName ) );
+    if ( !std::filesystem::exists( pFilePath ) )
+    {
+        const std::wstring errorMessage = std::wstring( L"Failed to compile the shader! Path: " ) + pFilePath;
+
+        MessageBox( nullptr, errorMessage.c_str(), kWindowTitleWide, MB_ICONERROR );
+        assert( false );
+
+        return nullptr;
+    }
 
     if ( !s_pCompiler )
     {
@@ -25,9 +35,9 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileAr
         ASSERT_SUCCEEDED( s_pUtils->CreateDefaultIncludeHandler( s_pIncludeHandler.GetAddressOf() ) );
     }
 
-    uint32_t                                 codePage = CP_UTF8;
+    uint32_t codePage = CP_UTF8;
     Microsoft::WRL::ComPtr<IDxcBlobEncoding> pSourceBlob;
-    ASSERT_SUCCEEDED( s_pUtils->LoadFile( pFileName, &codePage, pSourceBlob.GetAddressOf() ) );
+    ASSERT_SUCCEEDED( s_pUtils->LoadFile( pFilePath, &codePage, pSourceBlob.GetAddressOf() ) );
 
     const DxcBuffer sourceBuffer = {
         .Ptr = pSourceBlob->GetBufferPointer(),
@@ -35,49 +45,27 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileAr
         .Encoding = codePage
     };
 
-    // TODO: Do a proper separation in the logic between debug and release builds.
-
     Microsoft::WRL::ComPtr<IDxcResult> pResult;
-
-#ifdef _DEBUG
-    HRESULT hr = s_pCompiler->Compile(
-        &sourceBuffer,           // pSource
-        ppCompileArgs,           // pArguments
-        numCompileArgs,          // argCount
-        s_pIncludeHandler.Get(), // pIncludeHandler
-        IID_PPV_ARGS( pResult.GetAddressOf() ) );
-
-    if ( SUCCEEDED( hr ) )
-    {
-        ASSERT_SUCCEEDED( pResult->GetStatus( &hr ) );
-    }
+    ASSERT_SUCCEEDED( s_pCompiler->Compile( &sourceBuffer, ppCompileArgs, numCompileArgs, s_pIncludeHandler.Get(), IID_PPV_ARGS( pResult.GetAddressOf() ) ) );
 
     Microsoft::WRL::ComPtr<IDxcBlobWide> pErrorMessages;
     ASSERT_SUCCEEDED( pResult->GetOutput( DXC_OUT_ERRORS, IID_PPV_ARGS( pErrorMessages.GetAddressOf() ), nullptr ) );
 
+#ifdef _DEBUG
     if ( pErrorMessages && pErrorMessages->GetStringLength() > 0 )
     {
-        std::wstring errorText = pErrorMessages->GetStringPointer();
-
         static constexpr wchar_t kPlaceHolderFileName[] = L"hlsl.hlsl";
-        errorText.replace( errorText.find( kPlaceHolderFileName ), std::size( kPlaceHolderFileName ), pFileName );
 
-        std::wprintf( errorText.c_str() );
-        ASSERT_SUCCEEDED( E_FAIL );
+        std::wstring errorMessage = pErrorMessages->GetStringPointer();
+        errorMessage.replace( errorMessage.find( kPlaceHolderFileName ), std::size( kPlaceHolderFileName ), pFilePath );
+
+        std::printf( "%ws\n", errorMessage.c_str());
+        assert( false );
     }
-#else
-    ASSERT_SUCCEEDED( s_pCompiler->Compile(
-        &sourceBuffer,           // pSource
-        ppCompileArgs,           // pArguments
-        numCompileArgs,          // argCount
-        s_pIncludeHandler.Get(), // pIncludeHandler
-        IID_PPV_ARGS( pResult.GetAddressOf() ) ) );
 #endif
 
     IDxcBlob* pDxilBlob = nullptr;
     ASSERT_SUCCEEDED( pResult->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( &pDxilBlob ), nullptr ) );
-
-    // TODO: Create PDB files when _DEBUG is defined
 
     return pDxilBlob;
 }

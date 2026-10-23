@@ -61,14 +61,12 @@ private:
     void OnResize( int32_t newWidth, int32_t newHeight );
 
 private:
-    static constexpr char kWindowTitle[] = "DirectX 12 Engine";
-
     static CApplication* s_pInstance;
 
     std::unique_ptr<CGraphicsDemo> m_pDemo;
 
     SDL_Window* m_pWindow = nullptr;
-    HWND        m_hNativeWindow = nullptr;
+    HWND m_hNativeWindow = nullptr;
 
     bool m_shouldRun = false;
 

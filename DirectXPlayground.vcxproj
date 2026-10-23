@@ -338,6 +338,7 @@
     <ClInclude Include="External\imgui\imstb_textedit.h" />
     <ClInclude Include="External\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\Application.h" />
+    <ClInclude Include="Source\ApplicationConstants.h" />
     <ClInclude Include="Source\CbvSrvUavHeap.h" />
     <ClInclude Include="Source\ResourceViewHeap.h" />
     <ClInclude Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.h" />
