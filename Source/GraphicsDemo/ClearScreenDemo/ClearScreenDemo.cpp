@@ -3,6 +3,7 @@
 
 #include <DirectXColors.h>
 #include <backends/imgui_impl_dx12.h>
+#include <d3dx12/d3dx12_barriers.h>
 
 CClearScreenDemo::CClearScreenDemo( HWND hWindow )
     : CGraphicsDemo( hWindow )

@@ -22,7 +22,7 @@ void CApplication::Run()
 {
     assert( s_pInstance );
     assert( m_pDemo );
-    
+
     SDL_ShowWindow( m_pWindow );
 
     while ( m_shouldRun )

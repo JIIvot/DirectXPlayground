@@ -20,6 +20,7 @@ public:
     template<typename TGraphicsDemo>
     static void Init();
 
+    [[nodiscard]]
     static CApplication& GetInstance();
 
     static void Destroy();
@@ -53,6 +54,7 @@ private:
     CApplication();
     ~CApplication();
 
+    [[nodiscard]]
     bool InitWindow();
 
     void ProcessEvents();

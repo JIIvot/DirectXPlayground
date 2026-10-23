@@ -4,6 +4,7 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_dx12.h>
+#include <d3dx12_core.h>
 
 CGraphicsDemo::CGraphicsDemo( HWND hWindow )
 {
@@ -55,14 +56,14 @@ void CGraphicsDemo::InitAdapterAndDevice()
 
 void CGraphicsDemo::InitCommandObjects()
 {
-    static constexpr D3D12_COMMAND_QUEUE_DESC c_queueDesc = {
+    static constexpr D3D12_COMMAND_QUEUE_DESC kQueueDesc = {
         .Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
         .Priority = 0,
         .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE,
         .NodeMask = 0
     };
 
-    ASSERT_SUCCEEDED( m_pDevice->CreateCommandQueue( &c_queueDesc, IID_PPV_ARGS( m_pCommandQueue.GetAddressOf() ) ) );
+    ASSERT_SUCCEEDED( m_pDevice->CreateCommandQueue( &kQueueDesc, IID_PPV_ARGS( m_pCommandQueue.GetAddressOf() ) ) );
     ASSERT_SUCCEEDED( m_pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( m_pCommandAllocator.GetAddressOf() ) ) );
     ASSERT_SUCCEEDED( m_pDevice->CreateCommandList1( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS( m_pCommandList.GetAddressOf() ) ) );
 }

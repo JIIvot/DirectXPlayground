@@ -6,27 +6,27 @@
 
 namespace Utility
 {
-Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileArgs, const wchar_t** ppCompileArgs )
+IDxcBlob* CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileArgs, const wchar_t** ppCompileArgs )
 {
-    static Microsoft::WRL::ComPtr<IDxcUtils>          pUtils;
-    static Microsoft::WRL::ComPtr<IDxcCompiler3>      pCompiler;
-    static Microsoft::WRL::ComPtr<IDxcIncludeHandler> pIncludeHandler;
+    static Microsoft::WRL::ComPtr<IDxcUtils>          s_pUtils;
+    static Microsoft::WRL::ComPtr<IDxcCompiler3>      s_pCompiler;
+    static Microsoft::WRL::ComPtr<IDxcIncludeHandler> s_pIncludeHandler;
 
     assert( std::filesystem::exists( pFileName ) );
 
-    if ( !pCompiler )
+    if ( !s_pCompiler )
     {
-        assert( !pUtils );
-        assert( !pIncludeHandler );
+        assert( !s_pUtils );
+        assert( !s_pIncludeHandler );
 
-        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcUtils, IID_PPV_ARGS( pUtils.GetAddressOf() ) ) );
-        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcCompiler, IID_PPV_ARGS( pCompiler.GetAddressOf() ) ) );
-        ASSERT_SUCCEEDED( pUtils->CreateDefaultIncludeHandler( pIncludeHandler.GetAddressOf() ) );
+        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcUtils, IID_PPV_ARGS( s_pUtils.GetAddressOf() ) ) );
+        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcCompiler, IID_PPV_ARGS( s_pCompiler.GetAddressOf() ) ) );
+        ASSERT_SUCCEEDED( s_pUtils->CreateDefaultIncludeHandler( s_pIncludeHandler.GetAddressOf() ) );
     }
 
     uint32_t                                 codePage = CP_UTF8;
     Microsoft::WRL::ComPtr<IDxcBlobEncoding> pSourceBlob;
-    ASSERT_SUCCEEDED( pUtils->LoadFile( pFileName, &codePage, pSourceBlob.GetAddressOf() ) );
+    ASSERT_SUCCEEDED( s_pUtils->LoadFile( pFileName, &codePage, pSourceBlob.GetAddressOf() ) );
 
     const DxcBuffer sourceBuffer = {
         .Ptr = pSourceBlob->GetBufferPointer(),
@@ -39,11 +39,11 @@ Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* pFileName
     Microsoft::WRL::ComPtr<IDxcResult> pResult;
 
 #ifdef _DEBUG
-    HRESULT hr = pCompiler->Compile(
-        &sourceBuffer,         // pSource
-        ppCompileArgs,         // pArguments
-        numCompileArgs,        // argCount
-        pIncludeHandler.Get(), // pIncludeHandler
+    HRESULT hr = s_pCompiler->Compile(
+        &sourceBuffer,           // pSource
+        ppCompileArgs,           // pArguments
+        numCompileArgs,          // argCount
+        s_pIncludeHandler.Get(), // pIncludeHandler
         IID_PPV_ARGS( pResult.GetAddressOf() ) );
 
     if ( SUCCEEDED( hr ) )
@@ -65,16 +65,16 @@ Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* pFileName
         ASSERT_SUCCEEDED( E_FAIL );
     }
 #else
-    ASSERT_SUCCEEDED( pCompiler->Compile(
-        &sourceBuffer,         // pSource
-        ppCompileArgs,         // pArguments
-        numCompileArgs,        // argCount
-        pIncludeHandler.Get(), // pIncludeHandler
+    ASSERT_SUCCEEDED( s_pCompiler->Compile(
+        &sourceBuffer,           // pSource
+        ppCompileArgs,           // pArguments
+        numCompileArgs,          // argCount
+        s_pIncludeHandler.Get(), // pIncludeHandler
         IID_PPV_ARGS( pResult.GetAddressOf() ) ) );
 #endif
 
-    Microsoft::WRL::ComPtr<IDxcBlob> pDxilBlob;
-    ASSERT_SUCCEEDED( pResult->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( pDxilBlob.GetAddressOf() ), nullptr ) );
+    IDxcBlob* pDxilBlob = nullptr;
+    ASSERT_SUCCEEDED( pResult->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( &pDxilBlob ), nullptr ) );
 
     // TODO: Create PDB files when _DEBUG is defined
 

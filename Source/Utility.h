@@ -7,6 +7,7 @@
 
 #ifdef _DEBUG
     #include <Windows.h>
+    #include <cstdio>
 
     #define MAKE_STRING_INTERNAL( x ) #x
     #define MAKE_STRING( x ) MAKE_STRING_INTERNAL( x )
@@ -26,7 +27,7 @@
 namespace Utility
 {
 [[nodiscard]]
-Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileArgs, const wchar_t** ppCompileArgs );
+IDxcBlob* CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileArgs, const wchar_t** ppCompileArgs );
 
 [[nodiscard]]
 inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* pBlob )
