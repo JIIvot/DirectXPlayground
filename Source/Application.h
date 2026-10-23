@@ -65,17 +65,17 @@ private:
 
     static CApplication* s_pInstance;
 
-    bool m_shouldRun = false;
-
-    CInput m_input;
-
     std::unique_ptr<CGraphicsDemo> m_pDemo;
 
     SDL_Window* m_pWindow = nullptr;
     HWND        m_hNativeWindow = nullptr;
 
+    bool m_shouldRun = false;
+
     int32_t m_clientWidth = 1280;
     int32_t m_clientHeight = 720;
+
+    CInput m_input;
 };
 
 template<typename TGraphicsDemo>

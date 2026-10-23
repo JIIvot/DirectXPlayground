@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <cassert>
+#include <wrl/client.h>
 #include <string>
 
 namespace Utility

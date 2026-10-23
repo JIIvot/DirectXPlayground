@@ -4,7 +4,6 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_dx12.h>
-#include <d3dx12_core.h>
 
 CGraphicsDemo::CGraphicsDemo( HWND hWindow )
 {

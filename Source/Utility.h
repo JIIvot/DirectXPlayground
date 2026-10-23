@@ -1,9 +1,8 @@
 #pragma once
 
-#include <wrl/client.h>
-#include <dxcapi.h>
 #include <cstdint>
 #include <d3d12.h>
+#include <dxcapi.h>
 
 #ifdef _DEBUG
     #include <Windows.h>

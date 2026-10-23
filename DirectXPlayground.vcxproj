@@ -155,6 +155,7 @@
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="External\DirectXTK12\Src\Shaders\Compiled\AlphaTestEffect_PSAlphaTestEqNe.inc" />
     <None Include="External\DirectXTK12\Src\Shaders\Compiled\AlphaTestEffect_PSAlphaTestEqNeNoFog.inc" />
     <None Include="External\DirectXTK12\Src\Shaders\Compiled\AlphaTestEffect_PSAlphaTestLtGt.inc" />

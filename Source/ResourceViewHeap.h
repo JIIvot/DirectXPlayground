@@ -1,7 +1,7 @@
 #pragma once
 
 #include <wrl/client.h>
-#include <d3dx12_root_signature.h>
+#include <d3dx12.h>
 #include <cstdint>
 
 class CResourceViewHeap
