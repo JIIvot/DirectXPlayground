@@ -147,6 +147,7 @@
     <ClCompile Include="External\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\CbvSrvUavHeap.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.cpp" />
     <ClCompile Include="Source\ResourceViewHeap.cpp" />
     <ClCompile Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\GraphicsDemo.cpp" />
@@ -340,6 +341,7 @@
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\ApplicationConstants.h" />
     <ClInclude Include="Source\CbvSrvUavHeap.h" />
+    <ClInclude Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.h" />
     <ClInclude Include="Source\ResourceViewHeap.h" />
     <ClInclude Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemo.h" />

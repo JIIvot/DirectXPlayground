@@ -33,4 +33,14 @@ inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* pBlob )
 {
     return { .pShaderBytecode = pBlob->GetBufferPointer(), .BytecodeLength = pBlob->GetBufferSize() };
 }
+
+[[nodiscard]]
+D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
+    DXGI_FORMAT rtvFormat,
+    DXGI_FORMAT dsvFormat,
+    size_t numInputElements,
+    const D3D12_INPUT_ELEMENT_DESC* pInputLayout,
+    ID3D12RootSignature* pRootSignature,
+    IDxcBlob* pVertexShaderBlob,
+    IDxcBlob* pPixelShaderBlob );
 } // namespace Utility

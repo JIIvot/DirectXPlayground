@@ -6,6 +6,7 @@
 #include <wrl/client.h>
 #include <string>
 #include <Windows.h>
+#include <d3dx12.h>
 
 namespace Utility
 {
@@ -68,5 +69,31 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* pFilePath, uint32_t numCompileAr
     ASSERT_SUCCEEDED( pResult->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( &pDxilBlob ), nullptr ) );
 
     return pDxilBlob;
+}
+
+D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
+    DXGI_FORMAT rtvFormat,
+    DXGI_FORMAT dsvFormat,
+    size_t numInputElements,
+    const D3D12_INPUT_ELEMENT_DESC* pInputLayout, ID3D12RootSignature* pRootSignature,
+    IDxcBlob* pVertexShaderBlob,
+    IDxcBlob* pPixelShaderBlob )
+{
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
+    desc.pRootSignature = pRootSignature;
+    desc.VS = GetShaderByteCodeFromBlob( pVertexShaderBlob );
+    desc.PS = GetShaderByteCodeFromBlob( pPixelShaderBlob );
+    desc.RasterizerState = CD3DX12_RASTERIZER_DESC( D3D12_DEFAULT );
+    desc.BlendState = CD3DX12_BLEND_DESC( D3D12_DEFAULT );
+    desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC( D3D12_DEFAULT );
+    desc.SampleMask = UINT_MAX;
+    desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    desc.NumRenderTargets = 1;
+    desc.RTVFormats[0] = rtvFormat;
+    desc.DSVFormat = dsvFormat;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+
+    return desc;
 }
 } // namespace Utility

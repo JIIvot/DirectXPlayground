@@ -186,6 +186,9 @@
     <ClCompile Include="Source\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="External\DirectXTK12\Src\TeapotData.inc">
@@ -748,6 +751,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\ApplicationConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
