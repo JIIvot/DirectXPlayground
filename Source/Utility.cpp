@@ -40,19 +40,18 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* pFilePath, uint32_t numCompileAr
     Microsoft::WRL::ComPtr<IDxcBlobEncoding> pSourceBlob;
     ASSERT_SUCCEEDED( s_pUtils->LoadFile( pFilePath, &codePage, pSourceBlob.GetAddressOf() ) );
 
-    const DxcBuffer sourceBuffer = {
-        .Ptr = pSourceBlob->GetBufferPointer(),
-        .Size = pSourceBlob->GetBufferSize(),
-        .Encoding = codePage
-    };
+    DxcBuffer sourceBuffer = {};
+    sourceBuffer.Ptr = pSourceBlob->GetBufferPointer();
+    sourceBuffer.Size = pSourceBlob->GetBufferSize();
+    sourceBuffer.Encoding = codePage;
 
     Microsoft::WRL::ComPtr<IDxcResult> pResult;
     ASSERT_SUCCEEDED( s_pCompiler->Compile( &sourceBuffer, ppCompileArgs, numCompileArgs, s_pIncludeHandler.Get(), IID_PPV_ARGS( pResult.GetAddressOf() ) ) );
 
+#ifdef _DEBUG
     Microsoft::WRL::ComPtr<IDxcBlobWide> pErrorMessages;
     ASSERT_SUCCEEDED( pResult->GetOutput( DXC_OUT_ERRORS, IID_PPV_ARGS( pErrorMessages.GetAddressOf() ), nullptr ) );
 
-#ifdef _DEBUG
     if ( pErrorMessages && pErrorMessages->GetStringLength() > 0 )
     {
         static constexpr wchar_t kPlaceHolderFileName[] = L"hlsl.hlsl";

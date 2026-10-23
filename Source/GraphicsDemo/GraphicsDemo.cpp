@@ -55,14 +55,13 @@ void CGraphicsDemo::InitAdapterAndDevice()
 
 void CGraphicsDemo::InitCommandObjects()
 {
-    static constexpr D3D12_COMMAND_QUEUE_DESC kQueueDesc = {
-        .Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
-        .Priority = 0,
-        .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE,
-        .NodeMask = 0
-    };
+    D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+    queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    queueDesc.Priority = 0;
+    queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    queueDesc.NodeMask = 0;
 
-    ASSERT_SUCCEEDED( m_pDevice->CreateCommandQueue( &kQueueDesc, IID_PPV_ARGS( m_pCommandQueue.GetAddressOf() ) ) );
+    ASSERT_SUCCEEDED( m_pDevice->CreateCommandQueue( &queueDesc, IID_PPV_ARGS( m_pCommandQueue.GetAddressOf() ) ) );
     ASSERT_SUCCEEDED( m_pDevice->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( m_pCommandAllocator.GetAddressOf() ) ) );
     ASSERT_SUCCEEDED( m_pDevice->CreateCommandList1( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS( m_pCommandList.GetAddressOf() ) ) );
 }
@@ -73,19 +72,19 @@ void CGraphicsDemo::InitSwapChain( HWND hWindow )
     const uint32_t width = static_cast<uint32_t>( app.GetWidth() );
     const uint32_t height = static_cast<uint32_t>( app.GetHeight() );
 
-    const DXGI_SWAP_CHAIN_DESC1 desc = {
-        .Width = width,
-        .Height = height,
-        .Format = m_backBufferFormat,
-        .Stereo = false,
-        .SampleDesc = { .Count = 1, .Quality = 0 },
-        .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-        .BufferCount = kNumSwapChainBuffers,
-        .Scaling = DXGI_SCALING_NONE,
-        .SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
-        .AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED,
-        .Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
-    };
+    DXGI_SWAP_CHAIN_DESC1 desc = {};
+    desc.Width = width;
+    desc.Height = height;
+    desc.Format = m_backBufferFormat;
+    desc.Stereo = false;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    desc.BufferCount = kNumSwapChainBuffers;
+    desc.Scaling = DXGI_SCALING_NONE;
+    desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+    desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain1> pSwapChain;
     ASSERT_SUCCEEDED( m_pDxgiFactory->CreateSwapChainForHwnd( m_pCommandQueue.Get(), hWindow, &desc, nullptr, nullptr, pSwapChain.GetAddressOf() ) );
