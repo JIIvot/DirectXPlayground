@@ -58,7 +58,7 @@ private:
     [[nodiscard]]
     bool InitWindow();
 
-    void OnResize( int32_t newWidth, int32_t newHeight );
+    void OnSizeMessage( LPARAM lParam, WPARAM wParam );
 
 private:
     static CApplication* s_pInstance;
@@ -69,6 +69,9 @@ private:
 
     int32_t m_clientWidth = 1280;
     int32_t m_clientHeight = 720;
+
+    bool m_isResizing = false;
+    bool m_isPaused = false;
 };
 
 template<typename TGraphicsDemo>

@@ -38,6 +38,12 @@ void CApplication::Run()
             continue;
         }
 
+        if ( m_isPaused )
+        {
+            Sleep( 100 );
+            continue;
+        }
+
         m_pDemo->Update();
 
         ImGui_ImplWin32_NewFrame();
@@ -75,7 +81,7 @@ LRESULT CApplication::WindowProcedure( HWND hWindow, uint32_t message, WPARAM wP
 
     if ( s_pInstance )
     {
-        s_pInstance->ProcessWindowMessage( hWindow, message, wParam, lParam );
+        return s_pInstance->ProcessWindowMessage( hWindow, message, wParam, lParam );
     }
 
     return DefWindowProc( hWindow, message, wParam, lParam );
@@ -104,6 +110,24 @@ LRESULT CApplication::ProcessWindowMessage( HWND hWindow, uint32_t message, WPAR
     case WM_KEYUP:
         m_input.OnKeyUp( wParam );
         return 0;
+
+    case WM_SIZE:
+        OnSizeMessage( lParam, wParam );
+        return 0;
+
+    case WM_ENTERSIZEMOVE:
+        m_isResizing = true;
+        m_isPaused = true;
+        return 0;
+
+    case WM_EXITSIZEMOVE:
+        m_isResizing = false;
+        m_isPaused = false;
+        m_pDemo->OnResize();
+        return 0;
+
+    default:
+        break;
     }
 
     return DefWindowProc( hWindow, message, wParam, lParam );
@@ -116,7 +140,7 @@ bool CApplication::InitWindow()
 
     SetThreadDpiAwarenessContext( DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 );
 
-    HINSTANCE hInstance = GetModuleHandle( nullptr );
+    const HINSTANCE hInstance = GetModuleHandle( nullptr );
 
     WNDCLASS windowClass = {};
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -168,10 +192,31 @@ bool CApplication::InitWindow()
     return true;
 }
 
-void CApplication::OnResize( int32_t newWidth, int32_t newHeight )
+void CApplication::OnSizeMessage( LPARAM lParam, WPARAM wParam )
 {
-    m_clientWidth = newWidth;
-    m_clientHeight = newHeight;
+    m_clientWidth = LOWORD( lParam );
+    m_clientHeight = HIWORD( lParam );
 
-    m_pDemo->OnResize();
+    switch ( wParam )
+    {
+    case SIZE_MINIMIZED:
+        m_isPaused = true;
+        break;
+
+    case SIZE_MAXIMIZED:
+        m_isPaused = false;
+        m_pDemo->OnResize();
+        break;
+
+    case SIZE_RESTORED:
+        if ( !m_isResizing )
+        {
+            m_isPaused = false;
+            m_pDemo->OnResize();
+        }
+        break;
+
+    default:
+        break;
+    }
 }
