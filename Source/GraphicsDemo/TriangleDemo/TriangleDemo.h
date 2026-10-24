@@ -10,6 +10,10 @@ class CTriangleDemo final : public CGraphicsDemo
 public:
     explicit CTriangleDemo( HWND hWindow );
 
+    void Update() override
+    {
+    }
+
     void Render() override;
 
 private:

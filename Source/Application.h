@@ -5,8 +5,7 @@
 
 #include <cassert>
 #include <memory>
-
-struct SDL_Window;
+#include <cstdio>
 
 class CApplication
 {
@@ -54,26 +53,25 @@ private:
     CApplication();
     ~CApplication();
 
+    static LRESULT CALLBACK WindowProcedure( HWND hWindow, uint32_t message, WPARAM wParam, LPARAM lParam );
+    LRESULT                 ProcessWindowMessage( HWND hWindow, uint32_t message, WPARAM wParam, LPARAM lParam );
+
     [[nodiscard]]
     bool InitWindow();
 
-    void ProcessEvents();
     void OnResize( int32_t newWidth, int32_t newHeight );
 
 private:
     static CApplication* s_pInstance;
 
+    HWND                           m_hWindow = nullptr;
     std::unique_ptr<CGraphicsDemo> m_pDemo;
-
-    SDL_Window* m_pWindow = nullptr;
-    HWND m_hNativeWindow = nullptr;
-
-    bool m_shouldRun = false;
+    CInput                         m_input;
 
     int32_t m_clientWidth = 1280;
     int32_t m_clientHeight = 720;
 
-    CInput m_input;
+    bool m_shouldRun = false;
 };
 
 template<typename TGraphicsDemo>
@@ -84,6 +82,6 @@ void CApplication::Init()
     s_pInstance = new CApplication;
     if ( s_pInstance->m_shouldRun )
     {
-        s_pInstance->m_pDemo = std::make_unique<TGraphicsDemo>( s_pInstance->m_hNativeWindow );
+        s_pInstance->m_pDemo = std::make_unique<TGraphicsDemo>( s_pInstance->m_hWindow );
     }
 }

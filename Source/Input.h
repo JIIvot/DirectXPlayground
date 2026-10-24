@@ -1,28 +1,37 @@
 #pragma once
 
-#include <vector>
-#include <SDL3/SDL_scancode.h>
+#include <bitset>
 
 class CInput
 {
 public:
-    void Init();
+    void OnKeyDown( size_t key )
+    {
+        m_currKeys[key] = true;
+    }
+
+    void OnKeyUp( size_t key )
+    {
+        m_currKeys[key] = false;
+    }
+
     void Update();
 
     [[nodiscard]]
-    bool IsKeyPressed( SDL_Scancode code ) const
+    bool IsKeyPressed( size_t key ) const
     {
-        return m_pCurrKeys[code];
+        return m_currKeys[key];
     }
 
     [[nodiscard]]
-    bool IsKeyJustPressed( SDL_Scancode code ) const
+    bool IsKeyJustPressed( size_t key ) const
     {
-        return m_pCurrKeys[code] && !m_lastKeys[code];
+        return m_currKeys[key] && !m_lastKeys[key];
     }
 
 private:
-    const bool* m_pCurrKeys = nullptr;
-    std::vector<uint8_t> m_lastKeys;
-    int32_t m_numKeys = 0;
+    static constexpr size_t kNumKeys = 256;
+
+    std::bitset<kNumKeys> m_currKeys;
+    std::bitset<kNumKeys> m_lastKeys;
 };

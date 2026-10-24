@@ -12,15 +12,15 @@ namespace Utility
 {
 IDxcBlob* CompileShaderFromFile( const wchar_t* pFilePath, uint32_t numCompileArgs, const wchar_t** ppCompileArgs )
 {
-    static Microsoft::WRL::ComPtr<IDxcUtils> s_pUtils;
-    static Microsoft::WRL::ComPtr<IDxcCompiler3> s_pCompiler;
+    static Microsoft::WRL::ComPtr<IDxcUtils>          s_pUtils;
+    static Microsoft::WRL::ComPtr<IDxcCompiler3>      s_pCompiler;
     static Microsoft::WRL::ComPtr<IDxcIncludeHandler> s_pIncludeHandler;
 
     if ( !std::filesystem::exists( pFilePath ) )
     {
         const std::wstring errorMessage = std::wstring( L"Failed to compile the shader! Path: " ) + pFilePath;
 
-        MessageBox( nullptr, errorMessage.c_str(), kWindowTitleWide, MB_ICONERROR );
+        MessageBox( nullptr, errorMessage.c_str(), kWindowTitle, MB_ICONERROR );
         assert( false );
 
         return nullptr;
@@ -36,7 +36,7 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* pFilePath, uint32_t numCompileAr
         ASSERT_SUCCEEDED( s_pUtils->CreateDefaultIncludeHandler( s_pIncludeHandler.GetAddressOf() ) );
     }
 
-    uint32_t codePage = CP_UTF8;
+    uint32_t                                 codePage = CP_UTF8;
     Microsoft::WRL::ComPtr<IDxcBlobEncoding> pSourceBlob;
     ASSERT_SUCCEEDED( s_pUtils->LoadFile( pFilePath, &codePage, pSourceBlob.GetAddressOf() ) );
 
@@ -59,7 +59,7 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* pFilePath, uint32_t numCompileAr
         std::wstring errorMessage = pErrorMessages->GetStringPointer();
         errorMessage.replace( errorMessage.find( kPlaceHolderFileName ), std::size( kPlaceHolderFileName ), pFilePath );
 
-        std::printf( "%ws\n", errorMessage.c_str());
+        std::printf( "%ws\n", errorMessage.c_str() );
         assert( false );
     }
 #endif
@@ -71,12 +71,13 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* pFilePath, uint32_t numCompileAr
 }
 
 D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
-    DXGI_FORMAT rtvFormat,
-    DXGI_FORMAT dsvFormat,
-    size_t numInputElements,
-    const D3D12_INPUT_ELEMENT_DESC* pInputLayout, ID3D12RootSignature* pRootSignature,
-    IDxcBlob* pVertexShaderBlob,
-    IDxcBlob* pPixelShaderBlob )
+    DXGI_FORMAT                     rtvFormat,
+    DXGI_FORMAT                     dsvFormat,
+    size_t                          numInputElements,
+    const D3D12_INPUT_ELEMENT_DESC* pInputLayout,
+    ID3D12RootSignature*            pRootSignature,
+    IDxcBlob*                       pVertexShaderBlob,
+    IDxcBlob*                       pPixelShaderBlob )
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
     desc.pRootSignature = pRootSignature;

@@ -45,16 +45,16 @@ public:
     [[nodiscard]]
     uint32_t GetIndexFromCpuHandle( D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle ) const
     {
-        return static_cast<uint32_t>( ( cpuHandle.ptr - GetCpuHandle().ptr ) / m_descriptorSize );
+        return static_cast<uint32_t>( ( cpuHandle.ptr - GetCpuHandle().ptr ) ) / m_descriptorSize;
     }
 
     [[nodiscard]]
     uint32_t GetIndexFromGpuHandle( D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle ) const
     {
-        return static_cast<uint32_t>( ( gpuHandle.ptr - GetGpuHandle().ptr ) / m_descriptorSize );
+        return static_cast<uint32_t>( ( gpuHandle.ptr - GetGpuHandle().ptr ) ) / m_descriptorSize;
     }
 
 protected:
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_pHeap;
-    uint32_t m_descriptorSize = 0;
+    uint32_t                                     m_descriptorSize = 0;
 };

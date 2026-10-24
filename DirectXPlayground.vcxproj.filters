@@ -150,9 +150,6 @@
     <ClCompile Include="Source\ResourceViewHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GraphicsDemo\GraphicsDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -174,19 +171,22 @@
     <ClCompile Include="External\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="External\imgui\backends\imgui_impl_dx12.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CbvSrvUavHeap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="External\imgui\backends\imgui_impl_sdl3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui\backends\imgui_impl_dx12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -656,8 +656,8 @@
     <None Include="External\DirectXTK12\Src\Shaders\Compiled\ToneMap_VSQuad.inc">
       <Filter>Header Files</Filter>
     </None>
-    <None Include=".editorconfig" />
     <None Include="packages.config" />
+    <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -714,9 +714,6 @@
     <ClInclude Include="Source\ResourceViewHeap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -741,19 +738,22 @@
     <ClInclude Include="External\imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="External\imgui\backends\imgui_impl_dx12.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\CbvSrvUavHeap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="External\imgui\backends\imgui_impl_sdl3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\ApplicationConstants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\backends\imgui_impl_dx12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui\backends\imgui_impl_win32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
