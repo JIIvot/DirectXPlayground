@@ -25,9 +25,9 @@ public:
 
     void Run();
 
-    void Quit()
+    void Quit() const
     {
-        m_shouldRun = false;
+        PostMessage( m_hWindow, WM_CLOSE, 0, 0 );
     }
 
     [[nodiscard]]
@@ -69,8 +69,6 @@ private:
 
     int32_t m_clientWidth = 1280;
     int32_t m_clientHeight = 720;
-
-    bool m_shouldRun = false;
 };
 
 template<typename TGraphicsDemo>
@@ -79,7 +77,7 @@ void CApplication::Init()
     assert( !s_pInstance );
 
     s_pInstance = new CApplication;
-    if ( s_pInstance->m_shouldRun )
+    if ( s_pInstance->m_hWindow )
     {
         s_pInstance->m_pDemo = std::make_unique<TGraphicsDemo>( s_pInstance->m_hWindow );
     }

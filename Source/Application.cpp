@@ -27,9 +27,10 @@ void CApplication::Run()
 
     ShowWindow( m_hWindow, SW_SHOW );
 
-    while ( m_shouldRun )
+    MSG message = {};
+    while ( message.message != WM_QUIT )
     {
-        if ( MSG message; PeekMessage( &message, nullptr, 0, 0, PM_REMOVE ) )
+        if ( PeekMessage( &message, nullptr, 0, 0, PM_REMOVE ) )
         {
             TranslateMessage( &message );
             DispatchMessage( &message );
@@ -55,8 +56,6 @@ CApplication::CApplication()
 
     ImGui::CreateContext();
     ImGui_ImplWin32_Init( m_hWindow );
-
-    m_shouldRun = true;
 }
 
 CApplication::~CApplication()
@@ -88,10 +87,6 @@ LRESULT CApplication::ProcessWindowMessage( HWND hWindow, uint32_t message, WPAR
 
     switch ( message )
     {
-    case WM_QUIT:
-        m_shouldRun = false;
-        return 0;
-
     case WM_DESTROY:
         PostQuitMessage( 0 );
         return 0;
