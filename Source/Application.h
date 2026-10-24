@@ -5,7 +5,6 @@
 
 #include <cassert>
 #include <memory>
-#include <cstdio>
 
 class CApplication
 {
