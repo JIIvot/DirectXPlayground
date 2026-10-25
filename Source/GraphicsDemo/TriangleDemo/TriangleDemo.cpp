@@ -65,8 +65,8 @@ void CTriangleDemo::InitGeometry()
 void CTriangleDemo::InitPipelineStates()
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = Utility::CreateDefaultPsoDesc(
-        m_backBufferFormat,
-        m_depthStencilFormat,
+        kBackBufferFormat,
+        kDepthStencilFormat,
         std::size( kInputLayout ),
         kInputLayout,
         m_rootSignature.Get(),

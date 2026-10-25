@@ -75,7 +75,7 @@ void CGraphicsDemo::InitSwapChain( HWND hWindow )
     DXGI_SWAP_CHAIN_DESC1 desc = {};
     desc.Width = width;
     desc.Height = height;
-    desc.Format = m_backBufferFormat;
+    desc.Format = kBackBufferFormat;
     desc.Stereo = false;
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
@@ -114,8 +114,8 @@ void CGraphicsDemo::InitImGui()
     initInfo.Device = m_device.Get();
     initInfo.CommandQueue = m_commandQueue.Get();
     initInfo.NumFramesInFlight = 1;
-    initInfo.RTVFormat = m_backBufferFormat;
-    initInfo.DSVFormat = m_depthStencilFormat;
+    initInfo.RTVFormat = kBackBufferFormat;
+    initInfo.DSVFormat = kDepthStencilFormat;
     initInfo.UserData = &m_cbvSrvUavHeap;
     initInfo.SrvDescriptorHeap = m_cbvSrvUavHeap.GetHeap();
 
@@ -158,7 +158,7 @@ void CGraphicsDemo::FlushCommandQueue()
 void CGraphicsDemo::CreateDepthStencilBufferAndView( int32_t width, int32_t height )
 {
     const CD3DX12_RESOURCE_DESC depthStencilBufferDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-        m_depthStencilFormat,                      // format
+        kDepthStencilFormat,                       // format
         width,                                     // width
         height,                                    // height
         1,                                         // arraySize
@@ -168,11 +168,11 @@ void CGraphicsDemo::CreateDepthStencilBufferAndView( int32_t width, int32_t heig
         D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL ); // flags
 
     ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
-        &CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),   // pHeapProperties
-        D3D12_HEAP_FLAG_NONE,                                  // HeapFlags
-        &depthStencilBufferDesc,                               // pDesc
-        D3D12_RESOURCE_STATE_DEPTH_WRITE,                      // InitialResourceState
-        &CD3DX12_CLEAR_VALUE( m_depthStencilFormat, 1.0f, 0 ), // pOptimizedClearValue
+        &CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_DEFAULT ),  // pHeapProperties
+        D3D12_HEAP_FLAG_NONE,                                 // HeapFlags
+        &depthStencilBufferDesc,                              // pDesc
+        D3D12_RESOURCE_STATE_DEPTH_WRITE,                     // InitialResourceState
+        &CD3DX12_CLEAR_VALUE( kDepthStencilFormat, 1.0f, 0 ), // pOptimizedClearValue
         IID_PPV_ARGS( m_depthStencilBuffer.ReleaseAndGetAddressOf() ) ) );
 
     m_device->CreateDepthStencilView( m_depthStencilBuffer.Get(), nullptr, m_dsvHeap.GetCpuHandle() );
@@ -185,7 +185,7 @@ void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height
         buffer.Reset();
     }
 
-    ASSERT_SUCCEEDED( m_dxgiSwapChain->ResizeBuffers( kNumSwapChainBuffers, width, height, m_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
+    ASSERT_SUCCEEDED( m_dxgiSwapChain->ResizeBuffers( kNumSwapChainBuffers, width, height, kBackBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
 
     for ( int32_t i = 0; i < kNumSwapChainBuffers; ++i )
     {
