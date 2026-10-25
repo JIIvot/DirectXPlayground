@@ -27,7 +27,7 @@ public:
 
     void Quit() const
     {
-        PostMessage( m_hWindow, WM_CLOSE, 0, 0 );
+        PostMessage( m_windowHandle, WM_CLOSE, 0, 0 );
     }
 
     [[nodiscard]]
@@ -52,8 +52,8 @@ private:
     CApplication();
     ~CApplication();
 
-    static LRESULT CALLBACK WindowProcedure( HWND hWindow, uint32_t message, WPARAM wParam, LPARAM lParam );
-    LRESULT                 ProcessWindowMessage( HWND hWindow, uint32_t message, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
+    LRESULT                 ProcessWindowMessage( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
 
     [[nodiscard]]
     bool InitWindow();
@@ -61,10 +61,10 @@ private:
     void OnSizeMessage( LPARAM lParam, WPARAM wParam );
 
 private:
-    static CApplication* s_pInstance;
+    static CApplication* s_instance;
 
-    HWND                           m_hWindow = nullptr;
-    std::unique_ptr<CGraphicsDemo> m_pDemo;
+    HWND                           m_windowHandle = nullptr;
+    std::unique_ptr<CGraphicsDemo> m_demo;
     CInput                         m_input;
 
     int32_t m_clientWidth = 1280;
@@ -77,11 +77,11 @@ private:
 template<typename TGraphicsDemo>
 void CApplication::Init()
 {
-    assert( !s_pInstance );
+    assert( !s_instance );
 
-    s_pInstance = new CApplication;
-    if ( s_pInstance->m_hWindow )
+    s_instance = new CApplication;
+    if ( s_instance->m_windowHandle )
     {
-        s_pInstance->m_pDemo = std::make_unique<TGraphicsDemo>( s_pInstance->m_hWindow );
+        s_instance->m_demo = std::make_unique<TGraphicsDemo>( s_instance->m_windowHandle );
     }
 }

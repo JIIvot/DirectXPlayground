@@ -6,26 +6,26 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
-CApplication* CApplication::s_pInstance;
+CApplication* CApplication::s_instance;
 
 CApplication& CApplication::GetInstance()
 {
-    assert( s_pInstance );
-    return *s_pInstance;
+    assert( s_instance );
+    return *s_instance;
 }
 
 void CApplication::Destroy()
 {
-    delete s_pInstance;
-    s_pInstance = nullptr;
+    delete s_instance;
+    s_instance = nullptr;
 }
 
 void CApplication::Run()
 {
-    assert( s_pInstance );
-    assert( m_pDemo );
+    assert( s_instance );
+    assert( m_demo );
 
-    ShowWindow( m_hWindow, SW_SHOW );
+    ShowWindow( m_windowHandle, SW_SHOW );
 
     MSG message = {};
     while ( message.message != WM_QUIT )
@@ -44,10 +44,10 @@ void CApplication::Run()
             continue;
         }
 
-        m_pDemo->Update();
+        m_demo->Update();
 
         ImGui_ImplWin32_NewFrame();
-        m_pDemo->Render();
+        m_demo->Render();
 
         m_input.Update();
     }
@@ -61,33 +61,33 @@ CApplication::CApplication()
     }
 
     ImGui::CreateContext();
-    ImGui_ImplWin32_Init( m_hWindow );
+    ImGui_ImplWin32_Init( m_windowHandle );
 }
 
 CApplication::~CApplication()
 {
-    m_pDemo.reset();
+    m_demo.reset();
 
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
 }
 
-LRESULT CApplication::WindowProcedure( HWND hWindow, uint32_t message, WPARAM wParam, LPARAM lParam )
+LRESULT CApplication::WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
 {
-    if ( ImGui_ImplWin32_WndProcHandler( hWindow, message, wParam, lParam ) )
+    if ( ImGui_ImplWin32_WndProcHandler( windowHandle, message, wParam, lParam ) )
     {
         return 0;
     }
 
-    if ( s_pInstance )
+    if ( s_instance )
     {
-        return s_pInstance->ProcessWindowMessage( hWindow, message, wParam, lParam );
+        return s_instance->ProcessWindowMessage( windowHandle, message, wParam, lParam );
     }
 
-    return DefWindowProc( hWindow, message, wParam, lParam );
+    return DefWindowProc( windowHandle, message, wParam, lParam );
 }
 
-LRESULT CApplication::ProcessWindowMessage( HWND hWindow, uint32_t message, WPARAM wParam, LPARAM lParam )
+LRESULT CApplication::ProcessWindowMessage( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
 {
     // TODO: Add resizing support
 
@@ -123,14 +123,14 @@ LRESULT CApplication::ProcessWindowMessage( HWND hWindow, uint32_t message, WPAR
     case WM_EXITSIZEMOVE:
         m_isResizing = false;
         m_isPaused = false;
-        m_pDemo->OnResize();
+        m_demo->OnResize();
         return 0;
 
     default:
         break;
     }
 
-    return DefWindowProc( hWindow, message, wParam, lParam );
+    return DefWindowProc( windowHandle, message, wParam, lParam );
 }
 
 bool CApplication::InitWindow()
@@ -140,12 +140,12 @@ bool CApplication::InitWindow()
 
     SetThreadDpiAwarenessContext( DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 );
 
-    const HINSTANCE hInstance = GetModuleHandle( nullptr );
+    const HINSTANCE instanceHandle = GetModuleHandle( nullptr );
 
     WNDCLASS windowClass = {};
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
     windowClass.lpfnWndProc = WindowProcedure;
-    windowClass.hInstance = hInstance;
+    windowClass.hInstance = instanceHandle;
     windowClass.hIcon = LoadIcon( nullptr, IDI_APPLICATION );
     windowClass.hCursor = LoadCursor( nullptr, IDC_ARROW );
     windowClass.lpszClassName = kClassName;
@@ -170,7 +170,7 @@ bool CApplication::InitWindow()
     const int32_t windowX = ( screenWidth - windowWidth ) / 2;
     const int32_t windowY = ( screenHeight - windowHeight ) / 2;
 
-    m_hWindow = CreateWindow(
+    m_windowHandle = CreateWindow(
         kClassName,   // lpClassName
         kWindowTitle, // lpWindowName
         kStyle,       // dwStyle
@@ -180,10 +180,10 @@ bool CApplication::InitWindow()
         windowHeight, // nHeight
         nullptr,      // hWndParent
         nullptr,      // hMenu
-        hInstance,    // hInstance
+        instanceHandle,    // hInstance
         nullptr );    // lpParam
 
-    if ( !m_hWindow )
+    if ( !m_windowHandle )
     {
         MessageBox( nullptr, L"Failed to create a window!", kWindowTitle, MB_ICONERROR );
         return false;
@@ -205,14 +205,14 @@ void CApplication::OnSizeMessage( LPARAM lParam, WPARAM wParam )
 
     case SIZE_MAXIMIZED:
         m_isPaused = false;
-        m_pDemo->OnResize();
+        m_demo->OnResize();
         break;
 
     case SIZE_RESTORED:
         if ( !m_isResizing )
         {
             m_isPaused = false;
-            m_pDemo->OnResize();
+            m_demo->OnResize();
         }
         break;
 

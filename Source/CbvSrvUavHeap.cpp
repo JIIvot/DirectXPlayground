@@ -2,9 +2,9 @@
 
 #include <cassert>
 
-void CCbvSrvUavHeap::Init( ID3D12Device* pDevice, uint32_t capacity )
+void CCbvSrvUavHeap::Init( ID3D12Device* device, uint32_t capacity )
 {
-    CResourceViewHeap::Init( pDevice, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, capacity );
+    CResourceViewHeap::Init( device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, capacity );
 
     m_freeIndices.reserve( capacity );
     for ( uint32_t i = 0; i < capacity; ++i )

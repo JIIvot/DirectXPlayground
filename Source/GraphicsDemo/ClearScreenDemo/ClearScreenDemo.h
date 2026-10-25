@@ -7,7 +7,7 @@
 class CClearScreenDemo final : public CGraphicsDemo
 {
 public:
-    explicit CClearScreenDemo( HWND hWindow );
+    explicit CClearScreenDemo( HWND windowHandle );
 
     void Render() override;
 

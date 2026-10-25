@@ -21,7 +21,7 @@ public:
     [[nodiscard]]
     ID3D12DescriptorHeap* GetHeap() const
     {
-        return m_pHeap.Get();
+        return m_heap.Get();
     }
 
     [[nodiscard]]
@@ -33,13 +33,13 @@ public:
     [[nodiscard]]
     CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuHandle( uint32_t index = 0 ) const
     {
-        return CD3DX12_GPU_DESCRIPTOR_HANDLE( m_pHeap->GetGPUDescriptorHandleForHeapStart(), static_cast<int32_t>( index ), m_descriptorSize );
+        return CD3DX12_GPU_DESCRIPTOR_HANDLE( m_heap->GetGPUDescriptorHandleForHeapStart(), static_cast<int32_t>( index ), m_descriptorSize );
     }
 
     [[nodiscard]]
     CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuHandle( uint32_t index = 0 ) const
     {
-        return CD3DX12_CPU_DESCRIPTOR_HANDLE( m_pHeap->GetCPUDescriptorHandleForHeapStart(), static_cast<int32_t>( index ), m_descriptorSize );
+        return CD3DX12_CPU_DESCRIPTOR_HANDLE( m_heap->GetCPUDescriptorHandleForHeapStart(), static_cast<int32_t>( index ), m_descriptorSize );
     }
 
     [[nodiscard]]
@@ -55,6 +55,6 @@ public:
     }
 
 protected:
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_pHeap;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_heap;
     uint32_t                                     m_descriptorSize = 0;
 };

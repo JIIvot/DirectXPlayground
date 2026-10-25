@@ -7,7 +7,7 @@
 class CCbvSrvUavHeap final : public CResourceViewHeap
 {
 public:
-    void Init( ID3D12Device* pDevice, uint32_t capacity );
+    void Init( ID3D12Device* device, uint32_t capacity );
 
     [[nodiscard]]
     uint32_t GetNextIndex();

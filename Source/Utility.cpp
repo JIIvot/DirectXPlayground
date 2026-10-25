@@ -10,79 +10,76 @@
 
 namespace Utility
 {
-IDxcBlob* CompileShaderFromFile( const wchar_t* pFilePath, uint32_t numCompileArgs, const wchar_t** ppCompileArgs )
+IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs )
 {
-    static Microsoft::WRL::ComPtr<IDxcUtils>          s_pUtils;
-    static Microsoft::WRL::ComPtr<IDxcCompiler3>      s_pCompiler;
-    static Microsoft::WRL::ComPtr<IDxcIncludeHandler> s_pIncludeHandler;
+    static Microsoft::WRL::ComPtr<IDxcUtils>          s_utils;
+    static Microsoft::WRL::ComPtr<IDxcCompiler3>      s_compiler;
+    static Microsoft::WRL::ComPtr<IDxcIncludeHandler> s_includeHandler;
 
-    if ( !std::filesystem::exists( pFilePath ) )
+    if ( !std::filesystem::exists( filePath ) )
     {
-        const std::wstring errorMessage = std::wstring( L"Failed to compile the shader! Path: " ) + pFilePath;
-
+        const std::wstring errorMessage = std::wstring( L"Failed to compile the shader! Path: " ) + filePath;
         MessageBox( nullptr, errorMessage.c_str(), kWindowTitle, MB_ICONERROR );
-        assert( false );
 
         return nullptr;
     }
 
-    if ( !s_pCompiler )
+    if ( !s_compiler )
     {
-        assert( !s_pUtils );
-        assert( !s_pIncludeHandler );
+        assert( !s_utils );
+        assert( !s_includeHandler );
 
-        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcUtils, IID_PPV_ARGS( s_pUtils.GetAddressOf() ) ) );
-        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcCompiler, IID_PPV_ARGS( s_pCompiler.GetAddressOf() ) ) );
-        ASSERT_SUCCEEDED( s_pUtils->CreateDefaultIncludeHandler( s_pIncludeHandler.GetAddressOf() ) );
+        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcUtils, IID_PPV_ARGS( s_utils.GetAddressOf() ) ) );
+        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcCompiler, IID_PPV_ARGS( s_compiler.GetAddressOf() ) ) );
+        ASSERT_SUCCEEDED( s_utils->CreateDefaultIncludeHandler( s_includeHandler.GetAddressOf() ) );
     }
 
     uint32_t                                 codePage = CP_UTF8;
-    Microsoft::WRL::ComPtr<IDxcBlobEncoding> pSourceBlob;
-    ASSERT_SUCCEEDED( s_pUtils->LoadFile( pFilePath, &codePage, pSourceBlob.GetAddressOf() ) );
+    Microsoft::WRL::ComPtr<IDxcBlobEncoding> sourceBlob;
+    ASSERT_SUCCEEDED( s_utils->LoadFile( filePath, &codePage, sourceBlob.GetAddressOf() ) );
 
     DxcBuffer sourceBuffer = {};
-    sourceBuffer.Ptr = pSourceBlob->GetBufferPointer();
-    sourceBuffer.Size = pSourceBlob->GetBufferSize();
+    sourceBuffer.Ptr = sourceBlob->GetBufferPointer();
+    sourceBuffer.Size = sourceBlob->GetBufferSize();
     sourceBuffer.Encoding = codePage;
 
-    Microsoft::WRL::ComPtr<IDxcResult> pResult;
-    ASSERT_SUCCEEDED( s_pCompiler->Compile( &sourceBuffer, ppCompileArgs, numCompileArgs, s_pIncludeHandler.Get(), IID_PPV_ARGS( pResult.GetAddressOf() ) ) );
+    Microsoft::WRL::ComPtr<IDxcResult> result;
+    ASSERT_SUCCEEDED( s_compiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, s_includeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) ) );
 
 #ifdef _DEBUG
-    Microsoft::WRL::ComPtr<IDxcBlobWide> pErrorMessages;
-    ASSERT_SUCCEEDED( pResult->GetOutput( DXC_OUT_ERRORS, IID_PPV_ARGS( pErrorMessages.GetAddressOf() ), nullptr ) );
+    Microsoft::WRL::ComPtr<IDxcBlobWide> errorMessages;
+    ASSERT_SUCCEEDED( result->GetOutput( DXC_OUT_ERRORS, IID_PPV_ARGS( errorMessages.GetAddressOf() ), nullptr ) );
 
-    if ( pErrorMessages && pErrorMessages->GetStringLength() > 0 )
+    if ( errorMessages && errorMessages->GetStringLength() > 0 )
     {
         static constexpr wchar_t kPlaceHolderFileName[] = L"hlsl.hlsl";
 
-        std::wstring errorMessage = pErrorMessages->GetStringPointer();
-        errorMessage.replace( errorMessage.find( kPlaceHolderFileName ), std::size( kPlaceHolderFileName ), pFilePath );
+        std::wstring errorMessage = errorMessages->GetStringPointer();
+        errorMessage.replace( errorMessage.find( kPlaceHolderFileName ), std::size( kPlaceHolderFileName ), filePath );
 
         std::printf( "%ws\n", errorMessage.c_str() );
-        assert( false );
     }
 #endif
 
-    IDxcBlob* pDxilBlob = nullptr;
-    ASSERT_SUCCEEDED( pResult->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( &pDxilBlob ), nullptr ) );
+    IDxcBlob* dxilBlob = nullptr;
+    ASSERT_SUCCEEDED( result->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( &dxilBlob ), nullptr ) );
 
-    return pDxilBlob;
+    return dxilBlob;
 }
 
 D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     DXGI_FORMAT                     rtvFormat,
     DXGI_FORMAT                     dsvFormat,
     size_t                          numInputElements,
-    const D3D12_INPUT_ELEMENT_DESC* pInputLayout,
-    ID3D12RootSignature*            pRootSignature,
-    IDxcBlob*                       pVertexShaderBlob,
-    IDxcBlob*                       pPixelShaderBlob )
+    const D3D12_INPUT_ELEMENT_DESC* inputLayout,
+    ID3D12RootSignature*            rootSignature,
+    IDxcBlob*                       vertexShaderBlob,
+    IDxcBlob*                       pixelShaderBlob )
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-    desc.pRootSignature = pRootSignature;
-    desc.VS = GetShaderByteCodeFromBlob( pVertexShaderBlob );
-    desc.PS = GetShaderByteCodeFromBlob( pPixelShaderBlob );
+    desc.pRootSignature = rootSignature;
+    desc.VS = GetShaderByteCodeFromBlob( vertexShaderBlob );
+    desc.PS = GetShaderByteCodeFromBlob( pixelShaderBlob );
     desc.RasterizerState = CD3DX12_RASTERIZER_DESC( D3D12_DEFAULT );
     desc.BlendState = CD3DX12_BLEND_DESC( D3D12_DEFAULT );
     desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC( D3D12_DEFAULT );

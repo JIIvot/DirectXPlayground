@@ -26,12 +26,12 @@
 namespace Utility
 {
 [[nodiscard]]
-IDxcBlob* CompileShaderFromFile( const wchar_t* pFileName, uint32_t numCompileArgs, const wchar_t** ppCompileArgs );
+IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs );
 
 [[nodiscard]]
-inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* pBlob )
+inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* blob )
 {
-    return { .pShaderBytecode = pBlob->GetBufferPointer(), .BytecodeLength = pBlob->GetBufferSize() };
+    return { .pShaderBytecode = blob->GetBufferPointer(), .BytecodeLength = blob->GetBufferSize() };
 }
 
 [[nodiscard]]
@@ -39,8 +39,8 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     DXGI_FORMAT                     rtvFormat,
     DXGI_FORMAT                     dsvFormat,
     size_t                          numInputElements,
-    const D3D12_INPUT_ELEMENT_DESC* pInputLayout,
-    ID3D12RootSignature*            pRootSignature,
-    IDxcBlob*                       pVertexShaderBlob,
-    IDxcBlob*                       pPixelShaderBlob );
+    const D3D12_INPUT_ELEMENT_DESC* inputLayout,
+    ID3D12RootSignature*            rootSignature,
+    IDxcBlob*                       vertexShaderBlob,
+    IDxcBlob*                       pixelShaderBlob );
 } // namespace Utility
