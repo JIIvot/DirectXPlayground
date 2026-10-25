@@ -12,7 +12,7 @@ public:
     void Render() override;
 
 private:
-    void BuildImmediateUi() const;
+    void RenderImGui() const;
 
 private:
     std::wstring m_adapterName;

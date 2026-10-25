@@ -3,6 +3,8 @@
 #include "CbvSrvUavHeap.h"
 
 #include <dxgi1_6.h>
+#include <ResourceUploadBatch.h>
+#include <optional>
 
 class CGraphicsDemo
 {
@@ -70,6 +72,8 @@ protected:
     int32_t                                m_currBackBufferIndex = 0;
     Microsoft::WRL::ComPtr<ID3D12Resource> m_swapChainBuffers[kNumSwapChainBuffers];
     Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencilBuffer;
+
+    std::optional<DirectX::ResourceUploadBatch> m_uploadBatch;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT     m_scissorRect = {};

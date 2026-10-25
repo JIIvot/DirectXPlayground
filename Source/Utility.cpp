@@ -46,7 +46,7 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArg
     Microsoft::WRL::ComPtr<IDxcResult> result;
     ASSERT_SUCCEEDED( s_compiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, s_includeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) ) );
 
-#ifdef _DEBUG
+#if 0
     Microsoft::WRL::ComPtr<IDxcBlobWide> errorMessages;
     ASSERT_SUCCEEDED( result->GetOutput( DXC_OUT_ERRORS, IID_PPV_ARGS( errorMessages.GetAddressOf() ), nullptr ) );
 
@@ -70,7 +70,7 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArg
 D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     DXGI_FORMAT                     rtvFormat,
     DXGI_FORMAT                     dsvFormat,
-    size_t                          numInputElements,
+    uint32_t                        numInputElements,
     const D3D12_INPUT_ELEMENT_DESC* inputLayout,
     ID3D12RootSignature*            rootSignature,
     IDxcBlob*                       vertexShaderBlob,
@@ -84,6 +84,8 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     desc.BlendState = CD3DX12_BLEND_DESC( D3D12_DEFAULT );
     desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC( D3D12_DEFAULT );
     desc.SampleMask = UINT_MAX;
+    desc.InputLayout.NumElements = numInputElements;
+    desc.InputLayout.pInputElementDescs = inputLayout;
     desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     desc.NumRenderTargets = 1;
     desc.RTVFormats[0] = rtvFormat;

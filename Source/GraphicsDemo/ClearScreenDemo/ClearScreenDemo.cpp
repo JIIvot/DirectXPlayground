@@ -19,7 +19,7 @@ void CClearScreenDemo::Render()
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), nullptr ) );
 
-    BuildImmediateUi();
+    RenderImGui();
 
     ID3D12DescriptorHeap* const cbvSrvUavHeap = m_cbvSrvUavHeap.GetHeap();
     m_commandList->SetDescriptorHeaps( 1, &cbvSrvUavHeap );
@@ -49,7 +49,7 @@ void CClearScreenDemo::Render()
     FlushCommandQueue();
 }
 
-void CClearScreenDemo::BuildImmediateUi() const
+void CClearScreenDemo::RenderImGui() const
 {
     ImGui_ImplDX12_NewFrame();
     ImGui::NewFrame();

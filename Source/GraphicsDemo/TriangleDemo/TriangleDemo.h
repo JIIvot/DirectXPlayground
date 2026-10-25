@@ -10,10 +10,7 @@ class CTriangleDemo final : public CGraphicsDemo
 public:
     explicit CTriangleDemo( HWND windowHandle );
 
-    void Update() override
-    {
-    }
-
+    void Update() override;
     void Render() override;
 
 private:
@@ -21,6 +18,8 @@ private:
     void InitShaders();
     void InitGeometry();
     void InitPipelineStates();
+
+    void RenderImGui();
 
 private:
     static constexpr D3D12_INPUT_ELEMENT_DESC kInputLayout[2] = {
@@ -35,6 +34,12 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_psoSolid;
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_psoWireframe;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
+    Microsoft::WRL::ComPtr<ID3D12Resource> m_indexBuffer;
+
+    D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+    D3D12_INDEX_BUFFER_VIEW  m_indexBufferView;
 
     bool m_isWireframeEnabled = false;
 };

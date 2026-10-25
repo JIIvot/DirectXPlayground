@@ -16,6 +16,8 @@ CGraphicsDemo::CGraphicsDemo( HWND windowHandle )
     InitImGui();
 
     OnResize();
+
+    m_uploadBatch = std::make_optional<DirectX::ResourceUploadBatch>( m_device.Get() );
 }
 
 void CGraphicsDemo::InitDebugAndDxgiFactory()

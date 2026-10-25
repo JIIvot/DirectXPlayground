@@ -38,7 +38,7 @@ inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* blob )
 D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     DXGI_FORMAT                     rtvFormat,
     DXGI_FORMAT                     dsvFormat,
-    size_t                          numInputElements,
+    uint32_t                        numInputElements,
     const D3D12_INPUT_ELEMENT_DESC* inputLayout,
     ID3D12RootSignature*            rootSignature,
     IDxcBlob*                       vertexShaderBlob,
