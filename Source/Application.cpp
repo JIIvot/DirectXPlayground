@@ -171,17 +171,17 @@ bool CApplication::InitWindow()
     const int32_t windowY = ( screenHeight - windowHeight ) / 2;
 
     m_windowHandle = CreateWindow(
-        kClassName,   // lpClassName
-        kWindowTitle, // lpWindowName
-        kStyle,       // dwStyle
-        windowX,      // x
-        windowY,      // y
-        windowWidth,  // nWidth
-        windowHeight, // nHeight
-        nullptr,      // hWndParent
-        nullptr,      // hMenu
-        instanceHandle,    // hInstance
-        nullptr );    // lpParam
+        kClassName,     // lpClassName
+        kWindowTitle,   // lpWindowName
+        kStyle,         // dwStyle
+        windowX,        // x
+        windowY,        // y
+        windowWidth,    // nWidth
+        windowHeight,   // nHeight
+        nullptr,        // hWndParent
+        nullptr,        // hMenu
+        instanceHandle, // hInstance
+        nullptr );      // lpParam
 
     if ( !m_windowHandle )
     {
