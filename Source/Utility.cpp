@@ -48,9 +48,9 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArg
 
 #if 0
     Microsoft::WRL::ComPtr<IDxcBlobWide> errorMessages;
-    ASSERT_SUCCEEDED( result->GetOutput( DXC_OUT_ERRORS, IID_PPV_ARGS( errorMessages.GetAddressOf() ), nullptr ) );
 
-    if ( errorMessages && errorMessages->GetStringLength() > 0 )
+    HRESULT hr = result->GetOutput( DXC_OUT_ERRORS, IID_PPV_ARGS( errorMessages.GetAddressOf() ), nullptr );
+    if ( SUCCEEDED( hr ) && errorMessages && errorMessages->GetStringLength() > 0 )
     {
         static constexpr wchar_t kPlaceHolderFileName[] = L"hlsl.hlsl";
 

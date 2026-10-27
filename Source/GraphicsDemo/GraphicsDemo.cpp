@@ -15,9 +15,12 @@ CGraphicsDemo::CGraphicsDemo( HWND windowHandle )
     InitFenceObjects();
     InitImGui();
 
+    LOG_TRACE( "Initial resize.\n" );
     OnResize();
 
     m_uploadBatch = std::make_optional<DirectX::ResourceUploadBatch>( m_device.Get() );
+
+    LOG_INFO( "Demo initialized.\n" );
 }
 
 void CGraphicsDemo::InitDebugAndDxgiFactory()
@@ -132,12 +135,12 @@ void CGraphicsDemo::InitImGui()
     };
 
     // ReSharper disable once CppParameterMayBeConstPtrOrRef
-    initInfo.SrvDescriptorFreeFn = []( ImGui_ImplDX12_InitInfo* pInfo, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle )
+    initInfo.SrvDescriptorFreeFn = []( ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle )
     {
-        CCbvSrvUavHeap* const pHeap = static_cast<CCbvSrvUavHeap*>( pInfo->UserData );
-        pHeap->ReleaseIndex( pHeap->GetIndexFromCpuHandle( cpuHandle ) );
+        CCbvSrvUavHeap* const heap = static_cast<CCbvSrvUavHeap*>( info->UserData );
+        heap->ReleaseIndex( heap->GetIndexFromCpuHandle( cpuHandle ) );
 
-        assert( pHeap->GetIndexFromCpuHandle( cpuHandle ) == pHeap->GetIndexFromGpuHandle( gpuHandle ) );
+        assert( heap->GetIndexFromCpuHandle( cpuHandle ) == heap->GetIndexFromGpuHandle( gpuHandle ) );
     };
 
     ImGui_ImplDX12_Init( &initInfo );
@@ -203,6 +206,8 @@ CGraphicsDemo::~CGraphicsDemo()
     ImGui_ImplDX12_Shutdown();
     FlushCommandQueue();
     CloseHandle( m_fenceEventHandle );
+
+    LOG_INFO( "Demo destroyed.\n" );
 }
 
 void CGraphicsDemo::Update()
@@ -237,4 +242,6 @@ void CGraphicsDemo::OnResize()
     m_scissorRect.top = 0;
     m_scissorRect.right = width;
     m_scissorRect.bottom = height;
+
+    LOG_INFO( "Demo was resized. Width: %d, Height: %d\n", width, height );
 }

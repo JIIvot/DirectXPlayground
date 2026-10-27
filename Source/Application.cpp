@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "ApplicationConstants.h"
+#include "Utility.h"
 
 #include <imgui.h>
 #include <backends/imgui_impl_win32.h>
@@ -62,6 +63,8 @@ CApplication::CApplication()
 
     ImGui::CreateContext();
     ImGui_ImplWin32_Init( m_windowHandle );
+
+    LOG_INFO( "Application initialzied.\n" );
 }
 
 CApplication::~CApplication()
@@ -70,6 +73,8 @@ CApplication::~CApplication()
 
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
+
+    LOG_INFO( "Application destroyed.\n" );
 }
 
 LRESULT CApplication::WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
@@ -111,20 +116,36 @@ LRESULT CApplication::ProcessWindowMessage( HWND windowHandle, uint32_t message,
         m_input.OnKeyUp( wParam );
         return 0;
 
+    case WM_ACTIVATE:
+        m_isPaused = LOWORD( wParam ) == WA_INACTIVE;
+        return 0;
+
     case WM_SIZE:
         OnSizeMessage( lParam, wParam );
         return 0;
 
     case WM_ENTERSIZEMOVE:
+    {
         m_isResizing = true;
         m_isPaused = true;
         return 0;
+    }
 
     case WM_EXITSIZEMOVE:
+    {
         m_isResizing = false;
         m_isPaused = false;
         m_demo->OnResize();
         return 0;
+    }
+
+    case WM_GETMINMAXINFO:
+    {
+        MINMAXINFO* const info = reinterpret_cast<MINMAXINFO*>( lParam );
+        info->ptMinTrackSize.x = 200;
+        info->ptMinTrackSize.y = 200;
+        return 0;
+    }
 
     default:
         break;
@@ -194,8 +215,12 @@ bool CApplication::InitWindow()
 
 void CApplication::OnSizeMessage( LPARAM lParam, WPARAM wParam )
 {
-    m_clientWidth = LOWORD( lParam );
-    m_clientHeight = HIWORD( lParam );
+    const int32_t newWidth = LOWORD( lParam );
+    const int32_t newHeight = HIWORD( lParam );
+    const bool    shouldResize = newWidth != m_clientWidth || newHeight != m_clientHeight;
+
+    m_clientWidth = newWidth;
+    m_clientHeight = newHeight;
 
     switch ( wParam )
     {
@@ -204,17 +229,25 @@ void CApplication::OnSizeMessage( LPARAM lParam, WPARAM wParam )
         break;
 
     case SIZE_MAXIMIZED:
+    {
         m_isPaused = false;
         m_demo->OnResize();
         break;
+    }
 
     case SIZE_RESTORED:
-        if ( !m_isResizing )
+    {
+        if ( m_isResizing )
         {
-            m_isPaused = false;
+            break;
+        }
+
+        if ( shouldResize )
+        {
             m_demo->OnResize();
         }
         break;
+    }
 
     default:
         break;
