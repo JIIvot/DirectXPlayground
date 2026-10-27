@@ -45,12 +45,18 @@ void CApplication::Run()
             continue;
         }
 
+        if ( m_shouldResize )
+        {
+            m_demo->OnResize();
+            m_shouldResize = false;
+        }
+
         m_demo->Update();
 
         ImGui_ImplWin32_NewFrame();
         m_demo->Render();
 
-        m_input.Update();
+        m_input.OnFrameFinished();
     }
 }
 
@@ -79,6 +85,7 @@ CApplication::~CApplication()
 
 LRESULT CApplication::WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
 {
+
     if ( ImGui_ImplWin32_WndProcHandler( windowHandle, message, wParam, lParam ) )
     {
         return 0;
@@ -121,21 +128,18 @@ LRESULT CApplication::ProcessWindowMessage( HWND windowHandle, uint32_t message,
         return 0;
 
     case WM_SIZE:
-        OnSizeMessage( lParam, wParam );
-        return 0;
-
-    case WM_ENTERSIZEMOVE:
     {
-        m_isResizing = true;
-        m_isPaused = true;
-        return 0;
-    }
+        if ( wParam == SIZE_MINIMIZED )
+        {
+            return 0;
+        }
 
-    case WM_EXITSIZEMOVE:
-    {
-        m_isResizing = false;
-        m_isPaused = false;
-        m_demo->OnResize();
+        const int32_t newWidth = LOWORD( lParam );
+        const int32_t newHeight = HIWORD( lParam );
+
+        m_shouldResize = newWidth != m_clientWidth || newHeight != m_clientHeight;
+        m_clientWidth = newWidth;
+        m_clientHeight = newHeight;
         return 0;
     }
 
@@ -211,45 +215,4 @@ bool CApplication::InitWindow()
     }
 
     return true;
-}
-
-void CApplication::OnSizeMessage( LPARAM lParam, WPARAM wParam )
-{
-    const int32_t newWidth = LOWORD( lParam );
-    const int32_t newHeight = HIWORD( lParam );
-    const bool    shouldResize = newWidth != m_clientWidth || newHeight != m_clientHeight;
-
-    m_clientWidth = newWidth;
-    m_clientHeight = newHeight;
-
-    switch ( wParam )
-    {
-    case SIZE_MINIMIZED:
-        m_isPaused = true;
-        break;
-
-    case SIZE_MAXIMIZED:
-    {
-        m_isPaused = false;
-        m_demo->OnResize();
-        break;
-    }
-
-    case SIZE_RESTORED:
-    {
-        if ( m_isResizing )
-        {
-            break;
-        }
-
-        if ( shouldResize )
-        {
-            m_demo->OnResize();
-        }
-        break;
-    }
-
-    default:
-        break;
-    }
 }
