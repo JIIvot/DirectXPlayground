@@ -8,7 +8,7 @@ public:
     void OnKeyDown( size_t key );
     void OnKeyUp( size_t key );
 
-    void OnFrameFinished();
+    void OnUpdateFinished();
 
     [[nodiscard]] bool IsKeyPressed( size_t key ) const;
 

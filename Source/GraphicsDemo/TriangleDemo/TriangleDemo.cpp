@@ -32,9 +32,9 @@ CTriangleDemo::CTriangleDemo( HWND windowHandle )
     uploadResult.wait();
 }
 
-void CTriangleDemo::Update()
+void CTriangleDemo::OnUpdate()
 {
-    CGraphicsDemo::Update();
+    CGraphicsDemo::OnUpdate();
 
     if ( CApplication::GetInstance().GetInput().IsKeyJustPressed( 'F' ) )
     {
@@ -42,7 +42,7 @@ void CTriangleDemo::Update()
     }
 }
 
-void CTriangleDemo::Render()
+void CTriangleDemo::OnRender()
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );

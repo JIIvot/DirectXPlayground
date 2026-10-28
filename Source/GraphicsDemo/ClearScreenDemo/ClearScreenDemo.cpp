@@ -14,7 +14,7 @@ CClearScreenDemo::CClearScreenDemo( HWND windowHandle )
     m_adapterName = desc.Description;
 }
 
-void CClearScreenDemo::Render()
+void CClearScreenDemo::OnRender()
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), nullptr ) );

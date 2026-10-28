@@ -58,8 +58,6 @@ CBoxDemo::CBoxDemo( HWND windowHandle )
 
 CBoxDemo::~CBoxDemo()
 {
-    FlushCommandQueue();
-
     m_cbufferObject->Unmap( 0, nullptr );
     m_cbufferObjectData = nullptr;
 
@@ -67,9 +65,9 @@ CBoxDemo::~CBoxDemo()
     m_cbufferPassData = nullptr;
 }
 
-void CBoxDemo::Update()
+void CBoxDemo::OnUpdate()
 {
-    CGraphicsDemo::Update();
+    CGraphicsDemo::OnUpdate();
 
     if ( CApplication::GetInstance().GetInput().IsKeyJustPressed( 'F' ) )
     {
@@ -94,7 +92,7 @@ void CBoxDemo::Update()
     memcpy( m_cbufferPassData, &passConstants, sizeof( passConstants ) );
 }
 
-void CBoxDemo::Render()
+void CBoxDemo::OnRender()
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );

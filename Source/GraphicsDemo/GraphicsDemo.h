@@ -17,10 +17,12 @@ public:
     CGraphicsDemo( CGraphicsDemo&& ) = delete;
     CGraphicsDemo& operator=( CGraphicsDemo&& ) = delete;
 
-    virtual void Update();
-    virtual void Render() = 0;
+    virtual void OnUpdate();
+    virtual void OnRender() = 0;
 
     virtual void OnResize();
+
+    void OnQuit();
 
 protected:
     explicit CGraphicsDemo( HWND windowHandle );

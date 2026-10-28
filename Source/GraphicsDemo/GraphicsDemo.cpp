@@ -203,14 +203,13 @@ void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height
 
 CGraphicsDemo::~CGraphicsDemo()
 {
-    FlushCommandQueue();
     ImGui_ImplDX12_Shutdown();
     CloseHandle( m_fenceEventHandle );
 
     LOG_INFO( "Demo destroyed.\n" );
 }
 
-void CGraphicsDemo::Update()
+void CGraphicsDemo::OnUpdate()
 {
     CApplication& app = CApplication::GetInstance();
     const CInput& input = app.GetInput();
@@ -246,4 +245,9 @@ void CGraphicsDemo::OnResize()
     m_scissorRect.bottom = height;
 
     LOG_INFO( "Demo was resized. Width: %d, Height: %d\n", width, height );
+}
+
+void CGraphicsDemo::OnQuit()
+{
+    FlushCommandQueue();
 }

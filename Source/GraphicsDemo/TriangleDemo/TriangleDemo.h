@@ -10,8 +10,8 @@ class CTriangleDemo final : public CGraphicsDemo
 public:
     explicit CTriangleDemo( HWND windowHandle );
 
-    void Update() override;
-    void Render() override;
+    void OnUpdate() override;
+    void OnRender() override;
 
 private:
     void InitRootSignature();

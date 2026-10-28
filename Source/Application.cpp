@@ -51,13 +51,15 @@ void CApplication::Run()
             m_shouldResize = false;
         }
 
-        m_demo->Update();
+        m_demo->OnUpdate();
 
         ImGui_ImplWin32_NewFrame();
-        m_demo->Render();
+        m_demo->OnRender();
 
-        m_input.OnFrameFinished();
+        m_input.OnUpdateFinished();
     }
+
+    m_demo->OnQuit();
 }
 
 CApplication::CApplication()

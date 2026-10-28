@@ -14,7 +14,7 @@ void CInput::OnKeyUp( size_t key )
     m_currKeys[key] = false;
 }
 
-void CInput::OnFrameFinished()
+void CInput::OnUpdateFinished()
 {
     m_lastKeys = m_currKeys;
 }

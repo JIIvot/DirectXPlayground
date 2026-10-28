@@ -11,8 +11,8 @@ public:
     explicit CBoxDemo( HWND windowHandle );
     ~CBoxDemo();
 
-    void Update() override;
-    void Render() override;
+    void OnUpdate() override;
+    void OnRender() override;
 
     void OnResize() override;
 

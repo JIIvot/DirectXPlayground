@@ -9,7 +9,7 @@ class CClearScreenDemo final : public CGraphicsDemo
 public:
     explicit CClearScreenDemo( HWND windowHandle );
 
-    void Render() override;
+    void OnRender() override;
 
 private:
     void RenderImGui() const;
