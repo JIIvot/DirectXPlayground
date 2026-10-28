@@ -38,14 +38,12 @@ protected:
     void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
     void ResizeSwapChainAndCreateViews( int32_t width, int32_t height );
 
-    [[nodiscard]]
-    ID3D12Resource* GetCurrBackBufferResource() const
+    [[nodiscard]] ID3D12Resource* GetCurrBackBufferResource() const
     {
         return m_swapChainBuffers[m_currBackBufferIndex].Get();
     }
 
-    [[nodiscard]]
-    CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrBackBufferViewHandle() const
+    [[nodiscard]] CD3DX12_CPU_DESCRIPTOR_HANDLE GetCurrBackBufferViewHandle() const
     {
         return m_rtvHeap.GetCpuHandle( m_currBackBufferIndex );
     }

@@ -762,8 +762,5 @@
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\UploadBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

@@ -348,7 +348,6 @@
     <ClInclude Include="Source\ResourceViewHeap.h" />
     <ClInclude Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemo.h" />
-    <ClInclude Include="Source\UploadBuffer.h" />
     <ClInclude Include="Source\Utility.h" />
   </ItemGroup>
   <ItemGroup>

@@ -10,11 +10,9 @@ public:
 
     void OnFrameFinished();
 
-    [[nodiscard]]
-    bool IsKeyPressed( size_t key ) const;
+    [[nodiscard]] bool IsKeyPressed( size_t key ) const;
 
-    [[nodiscard]]
-    bool IsKeyJustPressed( size_t key ) const;
+    [[nodiscard]] bool IsKeyJustPressed( size_t key ) const;
 
 private:
     static constexpr size_t kNumKeys = 256;

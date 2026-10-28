@@ -40,17 +40,14 @@
 
 namespace Utility
 {
-[[nodiscard]]
-IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs );
+[[nodiscard]] IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs );
 
-[[nodiscard]]
-inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* blob )
+[[nodiscard]] inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* blob )
 {
     return { .pShaderBytecode = blob->GetBufferPointer(), .BytecodeLength = blob->GetBufferSize() };
 }
 
-[[nodiscard]]
-D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
+[[nodiscard]] D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     DXGI_FORMAT                     rtvFormat,
     DXGI_FORMAT                     dsvFormat,
     uint32_t                        numInputElements,
@@ -59,14 +56,12 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     IDxcBlob*                       vertexShaderBlob,
     IDxcBlob*                       pixelShaderBlob );
 
-[[nodiscard]]
-inline constexpr uint32_t AlignSize( uint32_t size, uint32_t alignment )
+[[nodiscard]] inline constexpr uint32_t AlignSize( uint32_t size, uint32_t alignment )
 {
     return ( size + alignment - 1 ) & ~( alignment - 1 );
 }
 
-[[nodiscard]]
-inline constexpr uint32_t GetCBufferAlignedSizeBytes( uint32_t sizeBytes )
+[[nodiscard]] inline constexpr uint32_t GetCBufferAlignedSizeBytes( uint32_t sizeBytes )
 {
     return AlignSize( sizeBytes, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT );
 }

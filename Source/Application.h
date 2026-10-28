@@ -18,10 +18,8 @@ public:
     template<typename TGraphicsDemo>
     static void Init();
 
-    [[nodiscard]]
-    static CApplication& GetInstance();
-
-    static void Destroy();
+    [[nodiscard]] static CApplication& GetInstance();
+    static void                        Destroy();
 
     void Run();
 
@@ -30,20 +28,17 @@ public:
         PostMessage( m_windowHandle, WM_CLOSE, 0, 0 );
     }
 
-    [[nodiscard]]
-    int32_t GetWidth() const
+    [[nodiscard]] int32_t GetWidth() const
     {
         return m_clientWidth;
     }
 
-    [[nodiscard]]
-    int32_t GetHeight() const
+    [[nodiscard]] int32_t GetHeight() const
     {
         return m_clientHeight;
     }
 
-    [[nodiscard]]
-    const CInput& GetInput() const
+    [[nodiscard]] const CInput& GetInput() const
     {
         return m_input;
     }
@@ -55,8 +50,7 @@ private:
     static LRESULT CALLBACK WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
     LRESULT                 ProcessWindowMessage( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
 
-    [[nodiscard]]
-    bool InitWindow();
+    [[nodiscard]] bool InitWindow();
 
 private:
     static CApplication* s_instance;
