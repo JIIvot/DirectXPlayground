@@ -54,8 +54,20 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     DXGI_FORMAT                     rtvFormat,
     DXGI_FORMAT                     dsvFormat,
     uint32_t                        numInputElements,
-    const D3D12_INPUT_ELEMENT_DESC* inputLayout,
+    const D3D12_INPUT_ELEMENT_DESC* inputElementDescs,
     ID3D12RootSignature*            rootSignature,
     IDxcBlob*                       vertexShaderBlob,
     IDxcBlob*                       pixelShaderBlob );
+
+[[nodiscard]]
+inline constexpr uint32_t AlignSize( uint32_t size, uint32_t alignment )
+{
+    return ( size + alignment - 1 ) & ~( alignment - 1 );
+}
+
+[[nodiscard]]
+inline constexpr uint32_t GetCBufferAlignedSizeBytes( uint32_t sizeBytes )
+{
+    return AlignSize( sizeBytes, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT );
+}
 } // namespace Utility

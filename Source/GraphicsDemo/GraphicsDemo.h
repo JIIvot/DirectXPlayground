@@ -20,7 +20,7 @@ public:
     virtual void Update();
     virtual void Render() = 0;
 
-    void OnResize();
+    virtual void OnResize();
 
 protected:
     explicit CGraphicsDemo( HWND windowHandle );
@@ -81,4 +81,6 @@ protected:
     CResourceViewHeap m_rtvHeap;
     CResourceViewHeap m_dsvHeap;
     CCbvSrvUavHeap    m_cbvSrvUavHeap;
+
+    float m_aspectRatio = 0.0f;
 };

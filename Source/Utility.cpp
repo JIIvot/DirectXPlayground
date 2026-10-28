@@ -71,7 +71,7 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     DXGI_FORMAT                     rtvFormat,
     DXGI_FORMAT                     dsvFormat,
     uint32_t                        numInputElements,
-    const D3D12_INPUT_ELEMENT_DESC* inputLayout,
+    const D3D12_INPUT_ELEMENT_DESC* inputElementDescs,
     ID3D12RootSignature*            rootSignature,
     IDxcBlob*                       vertexShaderBlob,
     IDxcBlob*                       pixelShaderBlob )
@@ -85,7 +85,7 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC( D3D12_DEFAULT );
     desc.SampleMask = UINT_MAX;
     desc.InputLayout.NumElements = numInputElements;
-    desc.InputLayout.pInputElementDescs = inputLayout;
+    desc.InputLayout.pInputElementDescs = inputElementDescs;
     desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     desc.NumRenderTargets = 1;
     desc.RTVFormats[0] = rtvFormat;

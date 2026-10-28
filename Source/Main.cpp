@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "GraphicsDemo/TriangleDemo/TriangleDemo.h"
+#include "GraphicsDemo/BoxDemo/BoxDemo.h"
 
 extern "C"
 {
@@ -9,7 +9,7 @@ extern "C"
 
 int main()
 {
-    CApplication::Init<CTriangleDemo>();
+    CApplication::Init<CBoxDemo>();
     CApplication::GetInstance().Run();
     CApplication::Destroy();
 }

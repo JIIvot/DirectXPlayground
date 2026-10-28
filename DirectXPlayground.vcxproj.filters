@@ -189,6 +189,9 @@
     <ClCompile Include="Source\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="External\DirectXTK12\Src\TeapotData.inc">
@@ -656,8 +659,8 @@
     <None Include="External\DirectXTK12\Src\Shaders\Compiled\ToneMap_VSQuad.inc">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include=".clang-format" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -754,6 +757,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UploadBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

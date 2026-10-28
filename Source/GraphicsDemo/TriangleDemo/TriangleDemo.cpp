@@ -13,6 +13,11 @@ struct SColorVertex
     DirectX::XMFLOAT4 Color;
 };
 
+static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
+    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+};
+
 CTriangleDemo::CTriangleDemo( HWND windowHandle )
     : CGraphicsDemo( windowHandle )
 {
@@ -162,8 +167,8 @@ void CTriangleDemo::InitPipelineStates()
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = Utility::CreateDefaultPsoDesc(
         kBackBufferFormat,
         kDepthStencilFormat,
-        std::size( kInputLayout ),
-        kInputLayout,
+        std::size( kInputElementDescs ),
+        kInputElementDescs,
         m_rootSignature.Get(),
         m_vertexShaderBlob.Get(),
         m_pixelShaderBlob.Get() );

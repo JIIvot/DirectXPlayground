@@ -203,8 +203,8 @@ void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height
 
 CGraphicsDemo::~CGraphicsDemo()
 {
-    ImGui_ImplDX12_Shutdown();
     FlushCommandQueue();
+    ImGui_ImplDX12_Shutdown();
     CloseHandle( m_fenceEventHandle );
 
     LOG_INFO( "Demo destroyed.\n" );
@@ -230,6 +230,8 @@ void CGraphicsDemo::OnResize()
     FlushCommandQueue();
     ResizeSwapChainAndCreateViews( width, height );
     CreateDepthStencilBufferAndView( width, height );
+
+    m_aspectRatio = static_cast<float>( width ) / height;
 
     m_viewport.TopLeftX = 0.0f;
     m_viewport.TopLeftY = 0.0f;

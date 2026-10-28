@@ -68,6 +68,7 @@ CApplication::CApplication()
     }
 
     ImGui::CreateContext();
+    ImGui::StyleColorsClassic();
     ImGui_ImplWin32_Init( m_windowHandle );
 
     LOG_INFO( "Application initialzied.\n" );
