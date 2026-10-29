@@ -30,7 +30,7 @@ protected:
     void InitDebugAndDxgiFactory();
     void InitAdapterAndDevice();
     void InitCommandObjects();
-    void InitSwapChain( HWND windowHandle );
+    void InitSwapChainAndDepthStencilBuffer( HWND windowHandle );
     void InitResourceViewHeaps();
     void InitFenceObjects();
     void InitImGui();
@@ -38,7 +38,9 @@ protected:
     void FlushCommandQueue();
 
     void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
-    void ResizeSwapChainAndCreateViews( int32_t width, int32_t height );
+    void ResizeSwapChain( int32_t width, int32_t height );
+    void CreateSwapChainBufferViews( int32_t width, int32_t height );
+    void UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height );
 
     [[nodiscard]] ID3D12Resource* GetCurrBackBufferResource() const
     {

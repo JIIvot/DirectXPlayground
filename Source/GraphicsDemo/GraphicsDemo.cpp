@@ -10,13 +10,15 @@ CGraphicsDemo::CGraphicsDemo( HWND windowHandle )
     InitDebugAndDxgiFactory();
     InitAdapterAndDevice();
     InitCommandObjects();
-    InitSwapChain( windowHandle );
     InitResourceViewHeaps();
+    InitSwapChainAndDepthStencilBuffer( windowHandle );
     InitFenceObjects();
     InitImGui();
 
-    LOG_TRACE( "Initial resize.\n" );
-    OnResize();
+    const CApplication& app = CApplication::GetInstance();
+    const int32_t       width = app.GetWidth();
+    const int32_t       height = app.GetHeight();
+    UpdateViewportScissorsAndAspectRatio( width, height );
 
     m_uploadBatch = std::make_optional<DirectX::ResourceUploadBatch>( m_device.Get() );
 
@@ -71,7 +73,7 @@ void CGraphicsDemo::InitCommandObjects()
     ASSERT_SUCCEEDED( m_device->CreateCommandList1( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS( m_commandList.GetAddressOf() ) ) );
 }
 
-void CGraphicsDemo::InitSwapChain( HWND windowHandle )
+void CGraphicsDemo::InitSwapChainAndDepthStencilBuffer( HWND windowHandle )
 {
     const CApplication& app = CApplication::GetInstance();
     const uint32_t      width = static_cast<uint32_t>( app.GetWidth() );
@@ -96,6 +98,9 @@ void CGraphicsDemo::InitSwapChain( HWND windowHandle )
     ASSERT_SUCCEEDED( swapChain.As( &m_dxgiSwapChain ) );
 
     ASSERT_SUCCEEDED( m_dxgiFactory->MakeWindowAssociation( windowHandle, DXGI_MWA_NO_ALT_ENTER ) );
+
+    CreateSwapChainBufferViews( width, height );
+    CreateDepthStencilBufferAndView( width, height );
 }
 
 void CGraphicsDemo::InitResourceViewHeaps()
@@ -183,7 +188,7 @@ void CGraphicsDemo::CreateDepthStencilBufferAndView( int32_t width, int32_t heig
     m_device->CreateDepthStencilView( m_depthStencilBuffer.Get(), nullptr, m_dsvHeap.GetCpuHandle() );
 }
 
-void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height )
+void CGraphicsDemo::ResizeSwapChain( int32_t width, int32_t height )
 {
     for ( Microsoft::WRL::ComPtr<ID3D12Resource>& buffer : m_swapChainBuffers )
     {
@@ -191,14 +196,33 @@ void CGraphicsDemo::ResizeSwapChainAndCreateViews( int32_t width, int32_t height
     }
 
     ASSERT_SUCCEEDED( m_dxgiSwapChain->ResizeBuffers( kNumSwapChainBuffers, width, height, kBackBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ) );
+    m_currBackBufferIndex = 0;
+}
 
+void CGraphicsDemo::CreateSwapChainBufferViews( int32_t width, int32_t height )
+{
     for ( int32_t i = 0; i < kNumSwapChainBuffers; ++i )
     {
         ASSERT_SUCCEEDED( m_dxgiSwapChain->GetBuffer( i, IID_PPV_ARGS( m_swapChainBuffers[i].GetAddressOf() ) ) );
         m_device->CreateRenderTargetView( m_swapChainBuffers[i].Get(), nullptr, m_rtvHeap.GetCpuHandle( i ) );
     }
+}
 
-    m_currBackBufferIndex = 0;
+void CGraphicsDemo::UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height )
+{
+    m_aspectRatio = static_cast<float>( width ) / height;
+
+    m_viewport.TopLeftX = 0.0f;
+    m_viewport.TopLeftY = 0.0f;
+    m_viewport.Width = static_cast<float>( width );
+    m_viewport.Height = static_cast<float>( height );
+    m_viewport.MaxDepth = 1.0f;
+    m_viewport.MinDepth = 0.0f;
+
+    m_scissorRect.left = 0;
+    m_scissorRect.top = 0;
+    m_scissorRect.right = width;
+    m_scissorRect.bottom = height;
 }
 
 CGraphicsDemo::~CGraphicsDemo()
@@ -227,22 +251,10 @@ void CGraphicsDemo::OnResize()
     const int32_t       height = app.GetHeight();
 
     FlushCommandQueue();
-    ResizeSwapChainAndCreateViews( width, height );
+    ResizeSwapChain( width, height );
+    CreateSwapChainBufferViews( width, height );
     CreateDepthStencilBufferAndView( width, height );
-
-    m_aspectRatio = static_cast<float>( width ) / height;
-
-    m_viewport.TopLeftX = 0.0f;
-    m_viewport.TopLeftY = 0.0f;
-    m_viewport.Width = static_cast<float>( width );
-    m_viewport.Height = static_cast<float>( height );
-    m_viewport.MaxDepth = 1.0f;
-    m_viewport.MinDepth = 0.0f;
-
-    m_scissorRect.left = 0;
-    m_scissorRect.top = 0;
-    m_scissorRect.right = width;
-    m_scissorRect.bottom = height;
+    UpdateViewportScissorsAndAspectRatio( width, height );
 
     LOG_INFO( "Demo was resized. Width: %d, Height: %d\n", width, height );
 }
