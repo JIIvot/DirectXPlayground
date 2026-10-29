@@ -10,6 +10,6 @@ extern "C"
 int main()
 {
     CApplication::Init<CBoxDemo>();
-    CApplication::GetInstance().Run();
+    CApplication::Get().Run();
     CApplication::Destroy();
 }

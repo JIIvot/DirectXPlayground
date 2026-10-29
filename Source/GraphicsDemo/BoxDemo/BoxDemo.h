@@ -8,13 +8,13 @@
 class CBoxDemo final : public CGraphicsDemo
 {
 public:
-    explicit CBoxDemo( HWND windowHandle );
+    CBoxDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device );
     ~CBoxDemo();
 
     void OnUpdate() override;
     void OnRender() override;
 
-    void OnResize() override;
+    void OnResize( int32_t width, int32_t height ) override;
 
 private:
     void InitGeometry();

@@ -18,7 +18,7 @@ public:
     template<typename TGraphicsDemo>
     static void Init();
 
-    [[nodiscard]] static CApplication& GetInstance();
+    [[nodiscard]] static CApplication& Get();
     static void                        Destroy();
 
     void Run();
@@ -45,19 +45,24 @@ public:
 
 private:
     CApplication();
-    ~CApplication();
 
     static LRESULT CALLBACK WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
     LRESULT                 ProcessWindowMessage( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
 
     [[nodiscard]] bool InitWindow();
+    void               CreateGraphicsContext();
 
 private:
     static CApplication* s_instance;
 
     HWND                           m_windowHandle = nullptr;
     std::unique_ptr<CGraphicsDemo> m_demo;
-    CInput                         m_input;
+
+    Microsoft::WRL::ComPtr<IDXGIFactory6> m_dxgiFactory;
+    Microsoft::WRL::ComPtr<IDXGIAdapter4> m_dxgiAdapter;
+    Microsoft::WRL::ComPtr<ID3D12Device5> m_device;
+
+    CInput m_input;
 
     int32_t m_clientWidth = 1280;
     int32_t m_clientHeight = 720;
@@ -74,6 +79,6 @@ void CApplication::Init()
     s_instance = new CApplication;
     if ( s_instance->m_windowHandle )
     {
-        s_instance->m_demo = std::make_unique<TGraphicsDemo>( s_instance->m_windowHandle );
+        s_instance->m_demo = std::make_unique<TGraphicsDemo>( s_instance->m_windowHandle, s_instance->m_dxgiFactory.Get(), s_instance->m_device.Get() );
     }
 }

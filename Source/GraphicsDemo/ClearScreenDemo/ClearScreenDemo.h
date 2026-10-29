@@ -7,13 +7,13 @@
 class CClearScreenDemo final : public CGraphicsDemo
 {
 public:
-    explicit CClearScreenDemo( HWND windowHandle );
+    CClearScreenDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device )
+        : CGraphicsDemo( windowHandle, dxgiFactory, device )
+    {
+    }
 
     void OnRender() override;
 
 private:
     void RenderImGui() const;
-
-private:
-    std::wstring m_adapterName;
 };

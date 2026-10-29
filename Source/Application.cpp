@@ -9,7 +9,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler( HWND hWnd, UINT ms
 
 CApplication* CApplication::s_instance;
 
-CApplication& CApplication::GetInstance()
+CApplication& CApplication::Get()
 {
     assert( s_instance );
     return *s_instance;
@@ -47,13 +47,11 @@ void CApplication::Run()
 
         if ( m_shouldResize )
         {
-            m_demo->OnResize();
+            m_demo->OnResize( m_clientWidth, m_clientHeight );
             m_shouldResize = false;
         }
 
         m_demo->OnUpdate();
-
-        ImGui_ImplWin32_NewFrame();
         m_demo->OnRender();
 
         m_input.OnUpdateFinished();
@@ -69,26 +67,13 @@ CApplication::CApplication()
         return;
     }
 
-    ImGui::CreateContext();
-    ImGui::StyleColorsClassic();
-    ImGui_ImplWin32_Init( m_windowHandle );
+    CreateGraphicsContext();
 
     LOG_INFO( "Application initialized.\n" );
 }
 
-CApplication::~CApplication()
-{
-    m_demo.reset();
-
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
-
-    LOG_INFO( "Application destroyed.\n" );
-}
-
 LRESULT CApplication::WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
 {
-
     if ( ImGui_ImplWin32_WndProcHandler( windowHandle, message, wParam, lParam ) )
     {
         return 0;
@@ -217,5 +202,41 @@ bool CApplication::InitWindow()
         return false;
     }
 
+    LOG_TRACE( "Window created. Client width: %d, Client height: %d\n", m_clientWidth, m_clientHeight );
     return true;
+}
+
+void CApplication::CreateGraphicsContext()
+{
+#ifdef _DEBUG
+    static constexpr uint32_t kFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
+
+    _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+
+    Microsoft::WRL::ComPtr<ID3D12Debug1> debugController;
+    ASSERT_SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( debugController.GetAddressOf() ) ) );
+
+    debugController->EnableDebugLayer();
+#else
+    static constexpr uint32_t kFactoryFlags = 0;
+#endif
+
+    ASSERT_SUCCEEDED( CreateDXGIFactory2( kFactoryFlags, IID_PPV_ARGS( m_dxgiFactory.GetAddressOf() ) ) );
+
+    HRESULT deviceCreationResult = E_FAIL;
+    for ( uint32_t i = 0; m_dxgiFactory->EnumAdapterByGpuPreference( i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS( m_dxgiAdapter.ReleaseAndGetAddressOf() ) ) != DXGI_ERROR_NOT_FOUND; ++i )
+    {
+        deviceCreationResult = D3D12CreateDevice( m_dxgiAdapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS( m_device.ReleaseAndGetAddressOf() ) );
+        if ( SUCCEEDED( deviceCreationResult ) )
+        {
+            break;
+        }
+    }
+
+    ASSERT_SUCCEEDED( deviceCreationResult );
+
+    DXGI_ADAPTER_DESC adapterDesc;
+    m_dxgiAdapter->GetDesc( &adapterDesc );
+
+    LOG_TRACE( "Graphics context created. Adapter name: %ws\n", adapterDesc.Description );
 }

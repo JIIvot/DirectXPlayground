@@ -4,60 +4,29 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_dx12.h>
+#include <backends/imgui_impl_win32.h>
 
-CGraphicsDemo::CGraphicsDemo( HWND windowHandle )
+static constexpr uint32_t kCbvSrvUavHeapCapacity = 16384;
+
+CGraphicsDemo::CGraphicsDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device )
+    : m_dxgiFactory( dxgiFactory )
+    , m_device( device )
+    , m_uploadBatch( device )
+    , m_rtvHeap( device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, kNumSwapChainBuffers )
+    , m_dsvHeap( device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 )
+    , m_cbvSrvUavHeap( device, kCbvSrvUavHeapCapacity )
 {
-    InitDebugAndDxgiFactory();
-    InitAdapterAndDevice();
-    InitCommandObjects();
-    InitResourceViewHeaps();
-    InitSwapChainAndDepthStencilBuffer( windowHandle );
-    InitFenceObjects();
-    InitImGui();
-
-    const CApplication& app = CApplication::GetInstance();
+    const CApplication& app = CApplication::Get();
     const int32_t       width = app.GetWidth();
     const int32_t       height = app.GetHeight();
+
+    InitCommandObjects();
+    InitSwapChainAndDepthStencilBuffer( windowHandle, width, height );
+    InitFenceObjects();
+    InitImGui( windowHandle );
     UpdateViewportScissorsAndAspectRatio( width, height );
 
-    m_uploadBatch = std::make_optional<DirectX::ResourceUploadBatch>( m_device.Get() );
-
     LOG_INFO( "Demo initialized.\n" );
-}
-
-void CGraphicsDemo::InitDebugAndDxgiFactory()
-{
-#ifdef _DEBUG
-    static constexpr uint32_t kFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
-
-    _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-
-    Microsoft::WRL::ComPtr<ID3D12Debug1> debugController;
-    ASSERT_SUCCEEDED( D3D12GetDebugInterface( IID_PPV_ARGS( debugController.GetAddressOf() ) ) );
-
-    debugController->EnableDebugLayer();
-#else
-    static constexpr uint32_t kFactoryFlags = 0;
-#endif
-
-    ASSERT_SUCCEEDED( CreateDXGIFactory2( kFactoryFlags, IID_PPV_ARGS( m_dxgiFactory.GetAddressOf() ) ) );
-}
-
-void CGraphicsDemo::InitAdapterAndDevice()
-{
-    HRESULT deviceCreationResult = E_FAIL;
-
-    for ( int32_t i = 0; m_dxgiFactory->EnumAdapterByGpuPreference( i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS( m_dxgiAdapter.ReleaseAndGetAddressOf() ) ) != DXGI_ERROR_NOT_FOUND; ++i )
-    {
-        deviceCreationResult = D3D12CreateDevice( m_dxgiAdapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS( m_device.ReleaseAndGetAddressOf() ) );
-
-        if ( SUCCEEDED( deviceCreationResult ) )
-        {
-            break;
-        }
-    }
-
-    ASSERT_SUCCEEDED( deviceCreationResult );
 }
 
 void CGraphicsDemo::InitCommandObjects()
@@ -73,12 +42,8 @@ void CGraphicsDemo::InitCommandObjects()
     ASSERT_SUCCEEDED( m_device->CreateCommandList1( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS( m_commandList.GetAddressOf() ) ) );
 }
 
-void CGraphicsDemo::InitSwapChainAndDepthStencilBuffer( HWND windowHandle )
+void CGraphicsDemo::InitSwapChainAndDepthStencilBuffer( HWND windowHandle, int32_t width, int32_t height )
 {
-    const CApplication& app = CApplication::GetInstance();
-    const uint32_t      width = static_cast<uint32_t>( app.GetWidth() );
-    const uint32_t      height = static_cast<uint32_t>( app.GetHeight() );
-
     DXGI_SWAP_CHAIN_DESC1 desc = {};
     desc.Width = width;
     desc.Height = height;
@@ -103,25 +68,19 @@ void CGraphicsDemo::InitSwapChainAndDepthStencilBuffer( HWND windowHandle )
     CreateDepthStencilBufferAndView( width, height );
 }
 
-void CGraphicsDemo::InitResourceViewHeaps()
-{
-    static constexpr uint32_t kCbvSrvUavHeapCapacity = 16384;
-
-    m_rtvHeap.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, kNumSwapChainBuffers );
-    m_dsvHeap.Init( m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 );
-    m_cbvSrvUavHeap.Init( m_device.Get(), kCbvSrvUavHeapCapacity );
-}
-
 void CGraphicsDemo::InitFenceObjects()
 {
     ASSERT_SUCCEEDED( m_device->CreateFence( m_currFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS( m_fence.GetAddressOf() ) ) );
     m_fenceEventHandle = CreateEventEx( nullptr, nullptr, 0, EVENT_ALL_ACCESS );
 }
 
-void CGraphicsDemo::InitImGui()
+void CGraphicsDemo::InitImGui( HWND windowHandle )
 {
+    ImGui::CreateContext();
+    ImGui_ImplWin32_Init( windowHandle );
+
     ImGui_ImplDX12_InitInfo initInfo = {};
-    initInfo.Device = m_device.Get();
+    initInfo.Device = m_device;
     initInfo.CommandQueue = m_commandQueue.Get();
     initInfo.NumFramesInFlight = 1;
     initInfo.RTVFormat = kBackBufferFormat;
@@ -129,7 +88,6 @@ void CGraphicsDemo::InitImGui()
     initInfo.UserData = &m_cbvSrvUavHeap;
     initInfo.SrvDescriptorHeap = m_cbvSrvUavHeap.GetHeap();
 
-    // ReSharper disable once CppParameterMayBeConstPtrOrRef
     initInfo.SrvDescriptorAllocFn = []( ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE* cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* gpuHandle )
     {
         CCbvSrvUavHeap* const heap = static_cast<CCbvSrvUavHeap*>( info->UserData );
@@ -139,7 +97,6 @@ void CGraphicsDemo::InitImGui()
         *gpuHandle = heap->GetGpuHandle( index );
     };
 
-    // ReSharper disable once CppParameterMayBeConstPtrOrRef
     initInfo.SrvDescriptorFreeFn = []( ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle )
     {
         CCbvSrvUavHeap* const heap = static_cast<CCbvSrvUavHeap*>( info->UserData );
@@ -210,8 +167,6 @@ void CGraphicsDemo::CreateSwapChainBufferViews( int32_t width, int32_t height )
 
 void CGraphicsDemo::UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height )
 {
-    m_aspectRatio = static_cast<float>( width ) / height;
-
     m_viewport.TopLeftX = 0.0f;
     m_viewport.TopLeftY = 0.0f;
     m_viewport.Width = static_cast<float>( width );
@@ -223,11 +178,15 @@ void CGraphicsDemo::UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t
     m_scissorRect.top = 0;
     m_scissorRect.right = width;
     m_scissorRect.bottom = height;
+
+    m_aspectRatio = m_viewport.Width / m_viewport.Height;
 }
 
 CGraphicsDemo::~CGraphicsDemo()
 {
+    ImGui_ImplWin32_Shutdown();
     ImGui_ImplDX12_Shutdown();
+    ImGui::DestroyContext();
     CloseHandle( m_fenceEventHandle );
 
     LOG_INFO( "Demo destroyed.\n" );
@@ -235,7 +194,7 @@ CGraphicsDemo::~CGraphicsDemo()
 
 void CGraphicsDemo::OnUpdate()
 {
-    CApplication& app = CApplication::GetInstance();
+    CApplication& app = CApplication::Get();
     const CInput& input = app.GetInput();
 
     if ( input.IsKeyJustPressed( VK_ESCAPE ) )
@@ -244,12 +203,8 @@ void CGraphicsDemo::OnUpdate()
     }
 }
 
-void CGraphicsDemo::OnResize()
+void CGraphicsDemo::OnResize( int32_t width, int32_t height )
 {
-    const CApplication& app = CApplication::GetInstance();
-    const int32_t       width = app.GetWidth();
-    const int32_t       height = app.GetHeight();
-
     FlushCommandQueue();
     ResizeSwapChain( width, height );
     CreateSwapChainBufferViews( width, height );

@@ -6,6 +6,7 @@
 #include <DirectXColors.h>
 #include <BufferHelpers.h>
 #include <backends/imgui_impl_dx12.h>
+#include <backends/imgui_impl_win32.h>
 
 struct SColorVertex
 {
@@ -38,12 +39,12 @@ static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
     { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 };
 
-CBoxDemo::CBoxDemo( HWND windowHandle )
-    : CGraphicsDemo( windowHandle )
+CBoxDemo::CBoxDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device )
+    : CGraphicsDemo( windowHandle, dxgiFactory, device )
 {
-    m_uploadBatch->Begin();
+    m_uploadBatch.Begin();
     InitGeometry();
-    std::future<void> uploadResult = m_uploadBatch->End( m_commandQueue.Get() );
+    std::future<void> uploadResult = m_uploadBatch.End( m_commandQueue.Get() );
 
     DirectX::XMStoreFloat4x4( &m_world, DirectX::XMMatrixIdentity() );
     UpdateProjectionMatrix();
@@ -69,7 +70,7 @@ void CBoxDemo::OnUpdate()
 {
     CGraphicsDemo::OnUpdate();
 
-    if ( CApplication::GetInstance().GetInput().IsKeyJustPressed( 'F' ) )
+    if ( CApplication::Get().GetInput().IsKeyJustPressed( 'F' ) )
     {
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
@@ -137,9 +138,9 @@ void CBoxDemo::OnRender()
     FlushCommandQueue();
 }
 
-void CBoxDemo::OnResize()
+void CBoxDemo::OnResize( int32_t width, int32_t height )
 {
-    CGraphicsDemo::OnResize();
+    CGraphicsDemo::OnResize( width, height );
     UpdateProjectionMatrix();
 }
 
@@ -207,8 +208,8 @@ void CBoxDemo::InitGeometry()
     };
 
     ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
-        m_device.Get(),                                  // device
-        *m_uploadBatch,                                  // resourceUpload
+        m_device,                                        // device
+        m_uploadBatch,                                   // resourceUpload
         vertices,                                        // data
         std::size( vertices ),                           // count
         sizeof( vertices[0] ),                           // stride
@@ -216,8 +217,8 @@ void CBoxDemo::InitGeometry()
         m_vertexBuffer.GetAddressOf() ) );               // pBuffer
 
     ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
-        m_device.Get(),                    // device
-        *m_uploadBatch,                    // resourceUpload
+        m_device,                          // device
+        m_uploadBatch,                     // resourceUpload
         kIndices,                          // data
         std::size( kIndices ),             // count
         sizeof( kIndices[0] ),             // stride
@@ -313,6 +314,7 @@ void CBoxDemo::InitPipelineStates()
 
 void CBoxDemo::RenderImGui()
 {
+    ImGui_ImplWin32_NewFrame();
     ImGui_ImplDX12_NewFrame();
     ImGui::NewFrame();
 

@@ -6,6 +6,7 @@
 #include <DirectXColors.h>
 #include <BufferHelpers.h>
 #include <backends/imgui_impl_dx12.h>
+#include <backends/imgui_impl_win32.h>
 
 struct SColorVertex
 {
@@ -18,12 +19,12 @@ static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
     { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 };
 
-CTriangleDemo::CTriangleDemo( HWND windowHandle )
-    : CGraphicsDemo( windowHandle )
+CTriangleDemo::CTriangleDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device )
+    : CGraphicsDemo( windowHandle, dxgiFactory, device )
 {
-    m_uploadBatch->Begin();
+    m_uploadBatch.Begin();
     InitGeometry();
-    std::future<void> uploadResult = m_uploadBatch->End( m_commandQueue.Get() );
+    std::future<void> uploadResult = m_uploadBatch.End( m_commandQueue.Get() );
 
     InitRootSignature();
     InitShaders();
@@ -36,7 +37,7 @@ void CTriangleDemo::OnUpdate()
 {
     CGraphicsDemo::OnUpdate();
 
-    if ( CApplication::GetInstance().GetInput().IsKeyJustPressed( 'F' ) )
+    if ( CApplication::Get().GetInput().IsKeyJustPressed( 'F' ) )
     {
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
@@ -136,8 +137,8 @@ void CTriangleDemo::InitGeometry()
     static constexpr uint16_t kIndices[] = { 0, 1, 2 };
 
     ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
-        m_device.Get(),                                  // device
-        m_uploadBatch.value(),                           // resourceUpload
+        m_device,                                        // device
+        m_uploadBatch,                                   // resourceUpload
         kVertices,                                       // ptr
         std::size( kVertices ),                          // count
         sizeof( SColorVertex ),                          // stride
@@ -145,8 +146,8 @@ void CTriangleDemo::InitGeometry()
         m_vertexBuffer.GetAddressOf() ) );               // pBuffer
 
     ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
-        m_device.Get(),                    // device
-        m_uploadBatch.value(),             // resourceUpload
+        m_device,                          // device
+        m_uploadBatch,                     // resourceUpload
         kIndices,                          // ptr
         std::size( kIndices ),             // count
         sizeof( kIndices[0] ),             // stride
@@ -182,6 +183,7 @@ void CTriangleDemo::InitPipelineStates()
 
 void CTriangleDemo::RenderImGui()
 {
+    ImGui_ImplWin32_NewFrame();
     ImGui_ImplDX12_NewFrame();
     ImGui::NewFrame();
 

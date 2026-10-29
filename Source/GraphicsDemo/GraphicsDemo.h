@@ -4,7 +4,6 @@
 
 #include <dxgi1_6.h>
 #include <ResourceUploadBatch.h>
-#include <optional>
 
 class CGraphicsDemo
 {
@@ -20,20 +19,17 @@ public:
     virtual void OnUpdate();
     virtual void OnRender() = 0;
 
-    virtual void OnResize();
+    virtual void OnResize( int32_t width, int32_t height );
 
     void OnQuit();
 
 protected:
-    explicit CGraphicsDemo( HWND windowHandle );
+    CGraphicsDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device );
 
-    void InitDebugAndDxgiFactory();
-    void InitAdapterAndDevice();
     void InitCommandObjects();
-    void InitSwapChainAndDepthStencilBuffer( HWND windowHandle );
-    void InitResourceViewHeaps();
+    void InitSwapChainAndDepthStencilBuffer( HWND windowHandle, int32_t width, int32_t height );
     void InitFenceObjects();
-    void InitImGui();
+    void InitImGui( HWND windowHandle );
 
     void FlushCommandQueue();
 
@@ -57,11 +53,11 @@ protected:
     static constexpr DXGI_FORMAT kBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     static constexpr DXGI_FORMAT kDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-    Microsoft::WRL::ComPtr<IDXGIFactory6>   m_dxgiFactory;
+    IDXGIFactory6* m_dxgiFactory = nullptr;
+    ID3D12Device5* m_device = nullptr;
+
     Microsoft::WRL::ComPtr<IDXGISwapChain4> m_dxgiSwapChain;
     Microsoft::WRL::ComPtr<IDXGIAdapter4>   m_dxgiAdapter;
-
-    Microsoft::WRL::ComPtr<ID3D12Device5> m_device;
 
     Microsoft::WRL::ComPtr<ID3D12CommandQueue>        m_commandQueue;
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
@@ -75,7 +71,7 @@ protected:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_swapChainBuffers[kNumSwapChainBuffers];
     Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencilBuffer;
 
-    std::optional<DirectX::ResourceUploadBatch> m_uploadBatch;
+    DirectX::ResourceUploadBatch m_uploadBatch;
 
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT     m_scissorRect = {};

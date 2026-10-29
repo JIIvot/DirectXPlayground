@@ -8,7 +8,7 @@
 class CTriangleDemo final : public CGraphicsDemo
 {
 public:
-    explicit CTriangleDemo( HWND windowHandle );
+    CTriangleDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device );
 
     void OnUpdate() override;
     void OnRender() override;
