@@ -33,11 +33,11 @@ TriangleDemo::TriangleDemo( const GraphicsDemoCreateInfo& info )
     uploadResult.wait();
 }
 
-void TriangleDemo::OnUpdate()
+void TriangleDemo::OnUpdate( const Input& input )
 {
-    GraphicsDemo::OnUpdate();
+    GraphicsDemo::OnUpdate( input );
 
-    if ( Application::Get().GetInput().IsKeyJustPressed( 'F' ) )
+    if ( input.IsKeyJustPressed( 'F' ) )
     {
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }

@@ -45,7 +45,7 @@ AllowShortLoopsOnASingleLine: false
 AlwaysBreakBeforeMultilineStrings: true
 BreakTemplateDeclarations: Yes
 BreakBeforeBraces: Custom
-BinPackArguments: false
+BinPackArguments: true
 BinPackParameters: OnePerLine
 PackConstructorInitializers: Never
 BitFieldColonSpacing: Both

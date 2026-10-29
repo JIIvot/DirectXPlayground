@@ -29,21 +29,6 @@ public:
         PostMessage( m_windowHandle, WM_CLOSE, 0, 0 );
     }
 
-    [[nodiscard]] int32_t GetWidth() const
-    {
-        return m_clientWidth;
-    }
-
-    [[nodiscard]] int32_t GetHeight() const
-    {
-        return m_clientHeight;
-    }
-
-    [[nodiscard]] const Input& GetInput() const
-    {
-        return m_input;
-    }
-
 private:
     Application();
 

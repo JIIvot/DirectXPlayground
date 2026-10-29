@@ -2,6 +2,7 @@
 
 #include "CbvSrvUavHeap.h"
 #include "GraphicsDemoCreateInfo.h"
+#include "Input.h"
 
 #include <dxgi1_6.h>
 #include <ResourceUploadBatch.h>
@@ -17,7 +18,7 @@ public:
     GraphicsDemo( GraphicsDemo&& ) = delete;
     GraphicsDemo& operator=( GraphicsDemo&& ) = delete;
 
-    virtual void OnUpdate();
+    virtual void OnUpdate( const Input& input );
     virtual void OnRender() = 0;
 
     virtual void OnResize( int32_t width, int32_t height );
@@ -27,17 +28,7 @@ public:
 protected:
     explicit GraphicsDemo( const GraphicsDemoCreateInfo& info );
 
-    void InitCommandObjects();
-    void InitSwapChainAndDepthStencilBuffer( HWND windowHandle, int32_t width, int32_t height );
-    void InitFenceObjects();
-    void InitImGui( HWND windowHandle );
-
     void FlushCommandQueue();
-
-    void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
-    void ResizeSwapChain( int32_t width, int32_t height );
-    void CreateSwapChainBufferViews( int32_t width, int32_t height );
-    void UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height );
 
     [[nodiscard]] ID3D12Resource* GetCurrBackBufferResource() const
     {
@@ -48,6 +39,17 @@ protected:
     {
         return m_rtvHeap.GetCpuHandle( m_currBackBufferIndex );
     }
+
+private:
+    void InitCommandObjects();
+    void InitSwapChainAndDepthStencilBuffer( HWND windowHandle, int32_t width, int32_t height );
+    void InitFenceObjects();
+    void InitImGui( HWND windowHandle );
+
+    void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
+    void ResizeSwapChain( int32_t width, int32_t height );
+    void CreateSwapChainBufferViews( int32_t width, int32_t height );
+    void UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height );
 
 protected:
     static constexpr int32_t     kNumSwapChainBuffers = 2;

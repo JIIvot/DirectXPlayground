@@ -10,7 +10,7 @@ class TriangleDemo final : public GraphicsDemo
 public:
     explicit TriangleDemo( const GraphicsDemoCreateInfo& info );
 
-    void OnUpdate() override;
+    void OnUpdate( const Input& input ) override;
     void OnRender() override;
 
 private:

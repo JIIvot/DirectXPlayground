@@ -188,14 +188,11 @@ GraphicsDemo::~GraphicsDemo()
     LOG_INFO( "Demo destroyed.\n" );
 }
 
-void GraphicsDemo::OnUpdate()
+void GraphicsDemo::OnUpdate( const Input& input )
 {
-    Application& app = Application::Get();
-    const Input& input = app.GetInput();
-
     if ( input.IsKeyJustPressed( VK_ESCAPE ) )
     {
-        app.Quit();
+        Application::Get().Quit();
     }
 }
 

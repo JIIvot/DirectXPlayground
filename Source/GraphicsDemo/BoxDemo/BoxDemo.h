@@ -11,7 +11,7 @@ public:
     explicit BoxDemo( const GraphicsDemoCreateInfo& info );
     ~BoxDemo();
 
-    void OnUpdate() override;
+    void OnUpdate( const Input& input ) override;
     void OnRender() override;
 
     void OnResize( int32_t width, int32_t height ) override;
@@ -39,11 +39,11 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
     Microsoft::WRL::ComPtr<ID3D12Resource> m_indexBuffer;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_cbufferObject;
-    void*                                  m_cbufferObjectData;
+    Microsoft::WRL::ComPtr<ID3D12Resource> m_objectConstBuffer;
+    void*                                  m_objectConstBufferData;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_cbufferPass;
-    void*                                  m_cbufferPassData;
+    Microsoft::WRL::ComPtr<ID3D12Resource> m_passConstBuffer;
+    void*                                  m_passConstBufferData;
 
     DirectX::XMFLOAT4X4 m_world;
     DirectX::XMFLOAT4X4 m_projection;

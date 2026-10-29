@@ -51,7 +51,7 @@ void Application::Run()
             m_shouldResize = false;
         }
 
-        m_demo->OnUpdate();
+        m_demo->OnUpdate( m_input );
         m_demo->OnRender();
 
         m_input.OnUpdateFinished();
