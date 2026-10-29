@@ -51,5 +51,9 @@ private:
     D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
     D3D12_INDEX_BUFFER_VIEW  m_indexBufferView;
 
+    float m_viewPolarAngle = DirectX::XM_PI * 1.25f;
+    float m_viewAzimuthalAngle = DirectX::XM_PIDIV4;
+    float m_viewRadius = 10.0f;
+
     bool m_isWireframeEnabled = false;
 };

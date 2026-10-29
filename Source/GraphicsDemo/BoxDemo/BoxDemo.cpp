@@ -75,7 +75,14 @@ void BoxDemo::OnUpdate( const Input& input )
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
 
-    const DirectX::XMVECTOR position = DirectX::XMVectorSet( 10.0f, 10.0f, 10.0f, 1.0f );
+    m_viewPolarAngle += 0.01f;
+
+    const DirectX::XMVECTOR position = DirectX::XMVectorSet(
+        m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::cos( m_viewPolarAngle ),
+        m_viewRadius * std::cos( m_viewAzimuthalAngle ),
+        m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::sin( m_viewPolarAngle ),
+        1.0f );
+
     const DirectX::XMVECTOR target = DirectX::XMVectorZero();
     const DirectX::XMVECTOR up = DirectX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 
@@ -147,14 +154,14 @@ void BoxDemo::OnResize( int32_t width, int32_t height )
 void BoxDemo::InitGeometry()
 {
     static const Vertex kVertices[8] = {
-        Vertex( DirectX::XMFLOAT3( -1.0f, -1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Lavender ) ),
-        Vertex( DirectX::XMFLOAT3( -1.0f, +1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Coral ) ),
-        Vertex( DirectX::XMFLOAT3( +1.0f, +1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Red ) ),
-        Vertex( DirectX::XMFLOAT3( +1.0f, -1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Green ) ),
-        Vertex( DirectX::XMFLOAT3( -1.0f, -1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Blue ) ),
-        Vertex( DirectX::XMFLOAT3( -1.0f, +1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Orange ) ),
-        Vertex( DirectX::XMFLOAT3( +1.0f, +1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Purple ) ),
-        Vertex( DirectX::XMFLOAT3( +1.0f, -1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Honeydew ) )
+        { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Wheat ) },
+        { .position = DirectX::XMFLOAT3( -1.0f, +1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Coral ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, +1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Red ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::LightSeaGreen ) },
+        { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Blue ) },
+        { .position = DirectX::XMFLOAT3( -1.0f, +1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Orange ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, +1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Purple ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, -1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::DeepSkyBlue ) }
     };
 
     static constexpr uint16_t kIndices[36] = {
