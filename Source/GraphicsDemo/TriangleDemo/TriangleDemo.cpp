@@ -122,8 +122,8 @@ void TriangleDemo::InitShaders()
     const wchar_t* vertexShaderArgs[] = { L"-E", L"VS", L"-T", L"vs_6_6" COMMA_DEBUG_ARGS };
     const wchar_t* pixelShaderArgs[] = { L"-E", L"PS", L"-T", L"ps_6_6" COMMA_DEBUG_ARGS };
 
-    m_vertexShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColorTriangle.hlsl", std::size( vertexShaderArgs ), vertexShaderArgs );
-    m_pixelShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColorTriangle.hlsl", std::size( pixelShaderArgs ), pixelShaderArgs );
+    Utility::CompileShaderFromFile( L"Shaders/BasicColorTriangle.hlsl", std::size( vertexShaderArgs ), vertexShaderArgs, m_vertexShaderBlob.GetAddressOf() );
+    Utility::CompileShaderFromFile( L"Shaders/BasicColorTriangle.hlsl", std::size( pixelShaderArgs ), pixelShaderArgs, m_pixelShaderBlob.GetAddressOf() );
 }
 
 void TriangleDemo::InitGeometry()

@@ -24,7 +24,7 @@ VertexOut VS( VertexIn input )
 {
     VertexOut output;
     
-    float4 posW = mul( float4( input.PosL, 1.0f ), g_world );
+    const float4 posW = mul( float4( input.PosL, 1.0f ), g_world );
     
     output.PosH = mul( posW, g_viewProjection );
     output.Color = input.Color;

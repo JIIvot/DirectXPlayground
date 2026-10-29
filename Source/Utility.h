@@ -40,7 +40,7 @@
 
 namespace Utility
 {
-[[nodiscard]] IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs );
+void CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs, IDxcBlob** shaderBlob );
 
 [[nodiscard]] inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* blob )
 {

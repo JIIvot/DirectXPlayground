@@ -10,7 +10,7 @@
 
 namespace Utility
 {
-IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs )
+void CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs, IDxcBlob** shaderBlob )
 {
     static Microsoft::WRL::ComPtr<IDxcUtils>          s_utils;
     static Microsoft::WRL::ComPtr<IDxcCompiler3>      s_compiler;
@@ -18,10 +18,8 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArg
 
     if ( !std::filesystem::exists( filePath ) )
     {
-        const std::wstring errorMessage = std::wstring( L"Failed to compile the shader! Path: " ) + filePath;
-        MessageBox( nullptr, errorMessage.c_str(), kWindowTitle, MB_ICONERROR );
-
-        return nullptr;
+        LOG_ERROR( "The shader is not found! Path: %ws\n", filePath );
+        return;
     }
 
     if ( !s_compiler )
@@ -44,27 +42,25 @@ IDxcBlob* CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArg
     sourceBuffer.Encoding = codePage;
 
     Microsoft::WRL::ComPtr<IDxcResult> result;
-    ASSERT_SUCCEEDED( s_compiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, s_includeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) ) );
 
-#if 0
-    Microsoft::WRL::ComPtr<IDxcBlobWide> errorMessages;
+#ifdef _DEBUG
+    Microsoft::WRL::ComPtr<IDxcBlobEncoding> errorMessages;
 
-    HRESULT hr = result->GetOutput( DXC_OUT_ERRORS, IID_PPV_ARGS( errorMessages.GetAddressOf() ), nullptr );
-    if ( SUCCEEDED( hr ) && errorMessages && errorMessages->GetStringLength() > 0 )
+    const HRESULT hr = s_compiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, s_includeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) );
+    result->GetErrorBuffer( errorMessages.GetAddressOf() );
+
+    if ( errorMessages->GetBufferSize() > 0 )
     {
-        static constexpr wchar_t kPlaceHolderFileName[] = L"hlsl.hlsl";
-
-        std::wstring errorMessage = errorMessages->GetStringPointer();
-        errorMessage.replace( errorMessage.find( kPlaceHolderFileName ), std::size( kPlaceHolderFileName ), filePath );
-
-        std::printf( "%ws\n", errorMessage.c_str() );
+        LOG_ERROR( "Shader compilation failed! Path: %ws Error:\n%s\n", filePath, static_cast<char*>( errorMessages->GetBufferPointer() ) );
+        return;
     }
+
+    ASSERT_SUCCEEDED( hr );
+#else
+    s_compiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, s_includeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) );
 #endif
 
-    IDxcBlob* dxilBlob = nullptr;
-    ASSERT_SUCCEEDED( result->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( &dxilBlob ), nullptr ) );
-
-    return dxilBlob;
+    ASSERT_SUCCEEDED( result->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( shaderBlob ), nullptr ) );
 }
 
 D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
