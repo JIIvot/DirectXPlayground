@@ -89,8 +89,6 @@ LRESULT CApplication::WindowProcedure( HWND windowHandle, uint32_t message, WPAR
 
 LRESULT CApplication::ProcessWindowMessage( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
 {
-    // TODO: Add resizing support
-
     switch ( message )
     {
     case WM_DESTROY:
