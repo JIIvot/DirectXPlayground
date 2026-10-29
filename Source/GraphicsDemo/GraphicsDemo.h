@@ -1,20 +1,21 @@
 #pragma once
 
 #include "CbvSrvUavHeap.h"
+#include "GraphicsDemoCreateInfo.h"
 
 #include <dxgi1_6.h>
 #include <ResourceUploadBatch.h>
 
-class CGraphicsDemo
+class GraphicsDemo
 {
 public:
-    virtual ~CGraphicsDemo();
+    virtual ~GraphicsDemo();
 
-    CGraphicsDemo( const CGraphicsDemo& ) = delete;
-    CGraphicsDemo& operator=( const CGraphicsDemo& ) = delete;
+    GraphicsDemo( const GraphicsDemo& ) = delete;
+    GraphicsDemo& operator=( const GraphicsDemo& ) = delete;
 
-    CGraphicsDemo( CGraphicsDemo&& ) = delete;
-    CGraphicsDemo& operator=( CGraphicsDemo&& ) = delete;
+    GraphicsDemo( GraphicsDemo&& ) = delete;
+    GraphicsDemo& operator=( GraphicsDemo&& ) = delete;
 
     virtual void OnUpdate();
     virtual void OnRender() = 0;
@@ -24,7 +25,7 @@ public:
     void OnQuit();
 
 protected:
-    CGraphicsDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device );
+    explicit GraphicsDemo( const GraphicsDemoCreateInfo& info );
 
     void InitCommandObjects();
     void InitSwapChainAndDepthStencilBuffer( HWND windowHandle, int32_t width, int32_t height );
@@ -76,9 +77,9 @@ protected:
     D3D12_VIEWPORT m_viewport = {};
     D3D12_RECT     m_scissorRect = {};
 
-    CResourceViewHeap m_rtvHeap;
-    CResourceViewHeap m_dsvHeap;
-    CCbvSrvUavHeap    m_cbvSrvUavHeap;
+    ResourceViewHeap m_rtvHeap;
+    ResourceViewHeap m_dsvHeap;
+    CbvSrvUavHeap    m_cbvSrvUavHeap;
 
     float m_aspectRatio = 0.0f;
 };

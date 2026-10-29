@@ -4,16 +4,16 @@
 #include <d3dx12.h>
 #include <cstdint>
 
-class CResourceViewHeap
+class ResourceViewHeap
 {
 public:
-    CResourceViewHeap( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity );
+    ResourceViewHeap( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity );
 
-    CResourceViewHeap( const CResourceViewHeap& ) = delete;
-    CResourceViewHeap& operator=( const CResourceViewHeap& ) = delete;
+    ResourceViewHeap( const ResourceViewHeap& ) = delete;
+    ResourceViewHeap& operator=( const ResourceViewHeap& ) = delete;
 
-    CResourceViewHeap( CResourceViewHeap&& ) noexcept = delete;
-    CResourceViewHeap& operator=( CResourceViewHeap&& ) noexcept = delete;
+    ResourceViewHeap( ResourceViewHeap&& ) noexcept = delete;
+    ResourceViewHeap& operator=( ResourceViewHeap&& ) noexcept = delete;
 
     [[nodiscard]] ID3D12DescriptorHeap* GetHeap() const
     {

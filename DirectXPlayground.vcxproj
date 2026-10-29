@@ -343,6 +343,7 @@
     <ClInclude Include="Source\ApplicationConstants.h" />
     <ClInclude Include="Source\CbvSrvUavHeap.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h" />
+    <ClInclude Include="Source\GraphicsDemo\GraphicsDemoCreateInfo.h" />
     <ClInclude Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.h" />
     <ClInclude Include="Source\Input.h" />
     <ClInclude Include="Source\ResourceViewHeap.h" />

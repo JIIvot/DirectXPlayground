@@ -2,30 +2,30 @@
 
 #include <cassert>
 
-void CInput::OnKeyDown( size_t key )
+void Input::OnKeyDown( size_t key )
 {
     assert( key < kNumKeys );
     m_currKeys[key] = true;
 }
 
-void CInput::OnKeyUp( size_t key )
+void Input::OnKeyUp( size_t key )
 {
     assert( key < kNumKeys );
     m_currKeys[key] = false;
 }
 
-void CInput::OnUpdateFinished()
+void Input::OnUpdateFinished()
 {
     m_lastKeys = m_currKeys;
 }
 
-bool CInput::IsKeyPressed( size_t key ) const
+bool Input::IsKeyPressed( size_t key ) const
 {
     assert( key < kNumKeys );
     return m_currKeys[key];
 }
 
-bool CInput::IsKeyJustPressed( size_t key ) const
+bool Input::IsKeyJustPressed( size_t key ) const
 {
     assert( key < kNumKeys );
     return m_currKeys[key] && !m_lastKeys[key];

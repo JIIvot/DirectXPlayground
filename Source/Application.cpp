@@ -7,21 +7,21 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
-CApplication* CApplication::s_instance;
+Application* Application::s_instance;
 
-CApplication& CApplication::Get()
+Application& Application::Get()
 {
     assert( s_instance );
     return *s_instance;
 }
 
-void CApplication::Destroy()
+void Application::Destroy()
 {
     delete s_instance;
     s_instance = nullptr;
 }
 
-void CApplication::Run()
+void Application::Run()
 {
     assert( s_instance );
     assert( m_demo );
@@ -60,7 +60,7 @@ void CApplication::Run()
     m_demo->OnQuit();
 }
 
-CApplication::CApplication()
+Application::Application()
 {
     if ( !InitWindow() )
     {
@@ -72,7 +72,7 @@ CApplication::CApplication()
     LOG_INFO( "Application initialized.\n" );
 }
 
-LRESULT CApplication::WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
+LRESULT Application::WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
 {
     if ( ImGui_ImplWin32_WndProcHandler( windowHandle, message, wParam, lParam ) )
     {
@@ -87,7 +87,7 @@ LRESULT CApplication::WindowProcedure( HWND windowHandle, uint32_t message, WPAR
     return DefWindowProc( windowHandle, message, wParam, lParam );
 }
 
-LRESULT CApplication::ProcessWindowMessage( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
+LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam )
 {
     switch ( message )
     {
@@ -144,7 +144,7 @@ LRESULT CApplication::ProcessWindowMessage( HWND windowHandle, uint32_t message,
     return DefWindowProc( windowHandle, message, wParam, lParam );
 }
 
-bool CApplication::InitWindow()
+bool Application::InitWindow()
 {
     static constexpr wchar_t kClassName[] = L"App";
     static constexpr DWORD   kStyle = WS_OVERLAPPEDWINDOW;
@@ -204,7 +204,7 @@ bool CApplication::InitWindow()
     return true;
 }
 
-void CApplication::CreateGraphicsContext()
+void Application::CreateGraphicsContext()
 {
 #ifdef _DEBUG
     static constexpr uint32_t kFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;

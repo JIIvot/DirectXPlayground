@@ -6,7 +6,7 @@
 #include <backends/imgui_impl_win32.h>
 #include <d3dx12/d3dx12_barriers.h>
 
-void CClearScreenDemo::OnRender()
+void ClearScreenDemo::OnRender()
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), nullptr ) );
@@ -41,7 +41,7 @@ void CClearScreenDemo::OnRender()
     FlushCommandQueue();
 }
 
-void CClearScreenDemo::RenderImGui() const
+void ClearScreenDemo::RenderImGui() const
 {
     ImGui_ImplWin32_NewFrame();
     ImGui_ImplDX12_NewFrame();

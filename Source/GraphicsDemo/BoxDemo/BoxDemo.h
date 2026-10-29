@@ -5,11 +5,11 @@
 #include <dxcapi.h>
 #include <DirectXMath.h>
 
-class CBoxDemo final : public CGraphicsDemo
+class BoxDemo final : public GraphicsDemo
 {
 public:
-    CBoxDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device );
-    ~CBoxDemo();
+    explicit BoxDemo( const GraphicsDemoCreateInfo& info );
+    ~BoxDemo();
 
     void OnUpdate() override;
     void OnRender() override;

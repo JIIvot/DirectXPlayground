@@ -4,10 +4,10 @@
 
 #include <vector>
 
-class CCbvSrvUavHeap final : public CResourceViewHeap
+class CbvSrvUavHeap final : public ResourceViewHeap
 {
 public:
-    CCbvSrvUavHeap( ID3D12Device* device, uint32_t capacity );
+    CbvSrvUavHeap( ID3D12Device* device, uint32_t capacity );
 
     [[nodiscard]] uint32_t GetNextIndex();
 

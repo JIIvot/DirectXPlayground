@@ -4,11 +4,11 @@
 
 #include <string>
 
-class CClearScreenDemo final : public CGraphicsDemo
+class ClearScreenDemo final : public GraphicsDemo
 {
 public:
-    CClearScreenDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device )
-        : CGraphicsDemo( windowHandle, dxgiFactory, device )
+    explicit ClearScreenDemo( const GraphicsDemoCreateInfo& info )
+        : GraphicsDemo( info )
     {
     }
 

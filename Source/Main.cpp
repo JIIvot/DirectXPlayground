@@ -9,7 +9,7 @@ extern "C"
 
 int main()
 {
-    CApplication::Init<CBoxDemo>();
-    CApplication::Get().Run();
-    CApplication::Destroy();
+    Application::Init<BoxDemo>();
+    Application::Get().Run();
+    Application::Destroy();
 }

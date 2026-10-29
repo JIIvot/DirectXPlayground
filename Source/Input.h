@@ -2,7 +2,7 @@
 
 #include <bitset>
 
-class CInput
+class Input
 {
 public:
     void OnKeyDown( size_t key );

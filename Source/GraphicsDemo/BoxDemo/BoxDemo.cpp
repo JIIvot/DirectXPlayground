@@ -8,20 +8,20 @@
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
 
-struct SColorVertex
+struct Vertex
 {
-    DirectX::XMFLOAT3 Position;
-    DirectX::XMFLOAT4 Color;
+    DirectX::XMFLOAT3 position;
+    DirectX::XMFLOAT4 color;
 };
 
-struct SObjectConstants
+struct ObjectConstants
 {
-    DirectX::XMFLOAT4X4 World;
+    DirectX::XMFLOAT4X4 world;
 };
 
-struct SPassConstants
+struct PassConstants
 {
-    DirectX::XMFLOAT4X4 ViewProjection;
+    DirectX::XMFLOAT4X4 viewProjection;
 };
 
 enum ERootArgument : uint8_t
@@ -31,16 +31,16 @@ enum ERootArgument : uint8_t
     eRootArgument_Count
 };
 
-static constexpr uint32_t kObjectConstantsAlignedSize = Utility::GetCBufferAlignedSizeBytes( sizeof( SObjectConstants ) );
-static constexpr uint32_t kPassConstantsAlignedSize = Utility::GetCBufferAlignedSizeBytes( sizeof( SPassConstants ) );
+static constexpr uint32_t kObjectConstantsAlignedSize = Utility::GetCBufferAlignedSizeBytes( sizeof( ObjectConstants ) );
+static constexpr uint32_t kPassConstantsAlignedSize = Utility::GetCBufferAlignedSizeBytes( sizeof( PassConstants ) );
 
 static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
     { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
     { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 };
 
-CBoxDemo::CBoxDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device )
-    : CGraphicsDemo( windowHandle, dxgiFactory, device )
+BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
+    : GraphicsDemo( info )
 {
     m_uploadBatch.Begin();
     InitGeometry();
@@ -57,7 +57,7 @@ CBoxDemo::CBoxDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5
     uploadResult.wait();
 }
 
-CBoxDemo::~CBoxDemo()
+BoxDemo::~BoxDemo()
 {
     m_cbufferObject->Unmap( 0, nullptr );
     m_cbufferObjectData = nullptr;
@@ -66,11 +66,11 @@ CBoxDemo::~CBoxDemo()
     m_cbufferPassData = nullptr;
 }
 
-void CBoxDemo::OnUpdate()
+void BoxDemo::OnUpdate()
 {
-    CGraphicsDemo::OnUpdate();
+    GraphicsDemo::OnUpdate();
 
-    if ( CApplication::Get().GetInput().IsKeyJustPressed( 'F' ) )
+    if ( Application::Get().GetInput().IsKeyJustPressed( 'F' ) )
     {
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
@@ -84,16 +84,16 @@ void CBoxDemo::OnUpdate()
     const DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4( &m_projection );
     const DirectX::XMMATRIX viewProjection = view * projection;
 
-    SObjectConstants objectConstants = {};
-    DirectX::XMStoreFloat4x4( &objectConstants.World, DirectX::XMMatrixTranspose( world ) );
+    ObjectConstants objectConstants = {};
+    DirectX::XMStoreFloat4x4( &objectConstants.world, DirectX::XMMatrixTranspose( world ) );
     memcpy( m_cbufferObjectData, &objectConstants, sizeof( objectConstants ) );
 
-    SPassConstants passConstants = {};
-    DirectX::XMStoreFloat4x4( &passConstants.ViewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
+    PassConstants passConstants = {};
+    DirectX::XMStoreFloat4x4( &passConstants.viewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
     memcpy( m_cbufferPassData, &passConstants, sizeof( passConstants ) );
 }
 
-void CBoxDemo::OnRender()
+void BoxDemo::OnRender()
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );
@@ -138,23 +138,23 @@ void CBoxDemo::OnRender()
     FlushCommandQueue();
 }
 
-void CBoxDemo::OnResize( int32_t width, int32_t height )
+void BoxDemo::OnResize( int32_t width, int32_t height )
 {
-    CGraphicsDemo::OnResize( width, height );
+    GraphicsDemo::OnResize( width, height );
     UpdateProjectionMatrix();
 }
 
-void CBoxDemo::InitGeometry()
+void BoxDemo::InitGeometry()
 {
-    static const SColorVertex vertices[8] = {
-        SColorVertex( DirectX::XMFLOAT3( -1.0f, -1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Lavender ) ),
-        SColorVertex( DirectX::XMFLOAT3( -1.0f, +1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Coral ) ),
-        SColorVertex( DirectX::XMFLOAT3( +1.0f, +1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Red ) ),
-        SColorVertex( DirectX::XMFLOAT3( +1.0f, -1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Green ) ),
-        SColorVertex( DirectX::XMFLOAT3( -1.0f, -1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Blue ) ),
-        SColorVertex( DirectX::XMFLOAT3( -1.0f, +1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Orange ) ),
-        SColorVertex( DirectX::XMFLOAT3( +1.0f, +1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Purple ) ),
-        SColorVertex( DirectX::XMFLOAT3( +1.0f, -1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Honeydew ) )
+    static const Vertex vertices[8] = {
+        Vertex( DirectX::XMFLOAT3( -1.0f, -1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Lavender ) ),
+        Vertex( DirectX::XMFLOAT3( -1.0f, +1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Coral ) ),
+        Vertex( DirectX::XMFLOAT3( +1.0f, +1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Red ) ),
+        Vertex( DirectX::XMFLOAT3( +1.0f, -1.0f, -1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Green ) ),
+        Vertex( DirectX::XMFLOAT3( -1.0f, -1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Blue ) ),
+        Vertex( DirectX::XMFLOAT3( -1.0f, +1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Orange ) ),
+        Vertex( DirectX::XMFLOAT3( +1.0f, +1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Purple ) ),
+        Vertex( DirectX::XMFLOAT3( +1.0f, -1.0f, +1.0f ), DirectX::XMFLOAT4( DirectX::Colors::Honeydew ) )
     };
 
     static constexpr uint16_t kIndices[36] = {
@@ -234,7 +234,7 @@ void CBoxDemo::InitGeometry()
     m_indexBufferView.SizeInBytes = std::size( kIndices ) * sizeof( kIndices[0] );
 }
 
-void CBoxDemo::InitRootSignature()
+void BoxDemo::InitRootSignature()
 {
     CD3DX12_ROOT_PARAMETER rootParameters[eRootArgument_Count] = {};
     rootParameters[eRootArgument_CBufferObject].InitAsConstantBufferView( 0 );
@@ -254,7 +254,7 @@ void CBoxDemo::InitRootSignature()
     ASSERT_SUCCEEDED( m_device->CreateRootSignature( 0, serializedBlob->GetBufferPointer(), serializedBlob->GetBufferSize(), IID_PPV_ARGS( m_rootSignature.GetAddressOf() ) ) );
 }
 
-void CBoxDemo::InitConstantBuffers()
+void BoxDemo::InitConstantBuffers()
 {
     const CD3DX12_RESOURCE_DESC cbufferObjectDesc = CD3DX12_RESOURCE_DESC::Buffer( kObjectConstantsAlignedSize );
     const CD3DX12_RESOURCE_DESC cbufferPassDesc = CD3DX12_RESOURCE_DESC::Buffer( kPassConstantsAlignedSize );
@@ -279,7 +279,7 @@ void CBoxDemo::InitConstantBuffers()
     ASSERT_SUCCEEDED( m_cbufferPass->Map( 0, nullptr, &m_cbufferPassData ) );
 }
 
-void CBoxDemo::InitShaders()
+void BoxDemo::InitShaders()
 {
 #ifdef _DEBUG
     #define COMMA_DEBUG_ARGS , DXC_ARG_DEBUG, DXC_ARG_SKIP_OPTIMIZATIONS
@@ -294,7 +294,7 @@ void CBoxDemo::InitShaders()
     m_pixelShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColor.hlsl", std::size( pixelShaderArgs ), pixelShaderArgs );
 }
 
-void CBoxDemo::InitPipelineStates()
+void BoxDemo::InitPipelineStates()
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = Utility::CreateDefaultPsoDesc(
         kBackBufferFormat,
@@ -312,7 +312,7 @@ void CBoxDemo::InitPipelineStates()
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoWireframe.GetAddressOf() ) ) );
 }
 
-void CBoxDemo::RenderImGui()
+void BoxDemo::RenderImGui()
 {
     ImGui_ImplWin32_NewFrame();
     ImGui_ImplDX12_NewFrame();
@@ -329,7 +329,7 @@ void CBoxDemo::RenderImGui()
     ImGui::Render();
 }
 
-void CBoxDemo::UpdateProjectionMatrix()
+void BoxDemo::UpdateProjectionMatrix()
 {
     const DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH( DirectX::XM_PIDIV4, m_aspectRatio, 1.0f, 1000.0f );
     DirectX::XMStoreFloat4x4( &m_projection, projection );

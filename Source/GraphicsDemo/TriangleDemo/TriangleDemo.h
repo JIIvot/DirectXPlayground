@@ -5,10 +5,10 @@
 #include <dxcapi.h>
 #include <vector>
 
-class CTriangleDemo final : public CGraphicsDemo
+class TriangleDemo final : public GraphicsDemo
 {
 public:
-    CTriangleDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device );
+    explicit TriangleDemo( const GraphicsDemoCreateInfo& info );
 
     void OnUpdate() override;
     void OnRender() override;

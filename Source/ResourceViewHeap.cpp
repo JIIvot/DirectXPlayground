@@ -1,7 +1,7 @@
 #include "ResourceViewHeap.h"
 #include "Utility.h"
 
-CResourceViewHeap::CResourceViewHeap( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity )
+ResourceViewHeap::ResourceViewHeap( ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t capacity )
     : m_descriptorSize( device->GetDescriptorHandleIncrementSize( type ) )
 {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};

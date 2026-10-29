@@ -8,10 +8,10 @@
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
 
-struct SColorVertex
+struct Vertex
 {
-    DirectX::XMFLOAT3 Position;
-    DirectX::XMFLOAT4 Color;
+    DirectX::XMFLOAT3 position;
+    DirectX::XMFLOAT4 color;
 };
 
 static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
@@ -19,8 +19,8 @@ static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
     { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 };
 
-CTriangleDemo::CTriangleDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3D12Device5* device )
-    : CGraphicsDemo( windowHandle, dxgiFactory, device )
+TriangleDemo::TriangleDemo( const GraphicsDemoCreateInfo& info )
+    : GraphicsDemo( info )
 {
     m_uploadBatch.Begin();
     InitGeometry();
@@ -33,17 +33,17 @@ CTriangleDemo::CTriangleDemo( HWND windowHandle, IDXGIFactory6* dxgiFactory, ID3
     uploadResult.wait();
 }
 
-void CTriangleDemo::OnUpdate()
+void TriangleDemo::OnUpdate()
 {
-    CGraphicsDemo::OnUpdate();
+    GraphicsDemo::OnUpdate();
 
-    if ( CApplication::Get().GetInput().IsKeyJustPressed( 'F' ) )
+    if ( Application::Get().GetInput().IsKeyJustPressed( 'F' ) )
     {
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
 }
 
-void CTriangleDemo::OnRender()
+void TriangleDemo::OnRender()
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );
@@ -86,7 +86,7 @@ void CTriangleDemo::OnRender()
     FlushCommandQueue();
 }
 
-void CTriangleDemo::InitRootSignature()
+void TriangleDemo::InitRootSignature()
 {
     const CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(
         0,                                                              // numParameters
@@ -111,7 +111,7 @@ void CTriangleDemo::InitRootSignature()
         IID_PPV_ARGS( m_rootSignature.GetAddressOf() ) ) );
 }
 
-void CTriangleDemo::InitShaders()
+void TriangleDemo::InitShaders()
 {
 #ifdef _DEBUG
     #define COMMA_DEBUG_ARGS , DXC_ARG_DEBUG, DXC_ARG_SKIP_OPTIMIZATIONS
@@ -126,9 +126,9 @@ void CTriangleDemo::InitShaders()
     m_pixelShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColorTriangle.hlsl", std::size( pixelShaderArgs ), pixelShaderArgs );
 }
 
-void CTriangleDemo::InitGeometry()
+void TriangleDemo::InitGeometry()
 {
-    static constexpr SColorVertex kVertices[] = {
+    static constexpr Vertex kVertices[] = {
         { DirectX::XMFLOAT3( -0.5f, -0.5f, 0.0f ), DirectX::XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
         { DirectX::XMFLOAT3( 0.0f, 0.5f, 0.0f ), DirectX::XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) },
         { DirectX::XMFLOAT3( 0.5f, -0.5f, 0.0f ), DirectX::XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) }
@@ -141,7 +141,7 @@ void CTriangleDemo::InitGeometry()
         m_uploadBatch,                                   // resourceUpload
         kVertices,                                       // ptr
         std::size( kVertices ),                          // count
-        sizeof( SColorVertex ),                          // stride
+        sizeof( Vertex ),                                // stride
         D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, // afterState
         m_vertexBuffer.GetAddressOf() ) );               // pBuffer
 
@@ -155,15 +155,15 @@ void CTriangleDemo::InitGeometry()
         m_indexBuffer.GetAddressOf() ) );  // pBuffer
 
     m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-    m_vertexBufferView.SizeInBytes = std::size( kVertices ) * sizeof( SColorVertex );
-    m_vertexBufferView.StrideInBytes = sizeof( SColorVertex );
+    m_vertexBufferView.SizeInBytes = std::size( kVertices ) * sizeof( Vertex );
+    m_vertexBufferView.StrideInBytes = sizeof( Vertex );
 
     m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
     m_indexBufferView.SizeInBytes = std::size( kIndices ) * sizeof( kIndices[0] );
     m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
 }
 
-void CTriangleDemo::InitPipelineStates()
+void TriangleDemo::InitPipelineStates()
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = Utility::CreateDefaultPsoDesc(
         kBackBufferFormat,
@@ -181,7 +181,7 @@ void CTriangleDemo::InitPipelineStates()
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoWireframe.GetAddressOf() ) ) );
 }
 
-void CTriangleDemo::RenderImGui()
+void TriangleDemo::RenderImGui()
 {
     ImGui_ImplWin32_NewFrame();
     ImGui_ImplDX12_NewFrame();
