@@ -71,7 +71,7 @@ void CGraphicsDemo::InitCommandObjects()
     ASSERT_SUCCEEDED( m_device->CreateCommandList1( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS( m_commandList.GetAddressOf() ) ) );
 }
 
-void CGraphicsDemo::InitSwapChain( HWND hWindow )
+void CGraphicsDemo::InitSwapChain( HWND windowHandle )
 {
     const CApplication& app = CApplication::GetInstance();
     const uint32_t      width = static_cast<uint32_t>( app.GetWidth() );
@@ -92,10 +92,10 @@ void CGraphicsDemo::InitSwapChain( HWND hWindow )
     desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain;
-    ASSERT_SUCCEEDED( m_dxgiFactory->CreateSwapChainForHwnd( m_commandQueue.Get(), hWindow, &desc, nullptr, nullptr, swapChain.GetAddressOf() ) );
+    ASSERT_SUCCEEDED( m_dxgiFactory->CreateSwapChainForHwnd( m_commandQueue.Get(), windowHandle, &desc, nullptr, nullptr, swapChain.GetAddressOf() ) );
     ASSERT_SUCCEEDED( swapChain.As( &m_dxgiSwapChain ) );
 
-    ASSERT_SUCCEEDED( m_dxgiFactory->MakeWindowAssociation( hWindow, DXGI_MWA_NO_ALT_ENTER ) );
+    ASSERT_SUCCEEDED( m_dxgiFactory->MakeWindowAssociation( windowHandle, DXGI_MWA_NO_ALT_ENTER ) );
 }
 
 void CGraphicsDemo::InitResourceViewHeaps()
