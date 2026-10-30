@@ -12,8 +12,8 @@ public:
     ResourceViewHeap( const ResourceViewHeap& ) = delete;
     ResourceViewHeap& operator=( const ResourceViewHeap& ) = delete;
 
-    ResourceViewHeap( ResourceViewHeap&& ) noexcept = delete;
-    ResourceViewHeap& operator=( ResourceViewHeap&& ) noexcept = delete;
+    ResourceViewHeap( ResourceViewHeap&& ) = delete;
+    ResourceViewHeap& operator=( ResourceViewHeap&& ) = delete;
 
     [[nodiscard]] ID3D12DescriptorHeap* GetHeap() const
     {
