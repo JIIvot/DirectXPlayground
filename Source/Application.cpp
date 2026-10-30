@@ -4,6 +4,7 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_win32.h>
+#include <windowsx.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
@@ -51,10 +52,12 @@ void Application::Run()
             m_shouldResize = false;
         }
 
-        m_demo->OnUpdate( m_input );
+        m_input->OnUpdateStarted();
+
+        m_demo->OnUpdate( *m_input );
         m_demo->OnRender();
 
-        m_input.OnUpdateFinished();
+        m_input->OnUpdateFinished();
     }
 
     m_demo->OnQuit();
@@ -62,12 +65,14 @@ void Application::Run()
 
 Application::Application()
 {
-    if ( !InitWindow() )
-    {
-        return;
-    }
+    InitWindow();
+    InitGraphics();
 
-    CreateGraphicsContext();
+    POINT cursorPosition;
+    GetCursorPos( &cursorPosition );
+    ScreenToClient( m_windowHandle, &cursorPosition );
+
+    m_input = std::make_optional<Input>( cursorPosition.x, cursorPosition.y );
 
     LOG_INFO( "Application initialized.\n" );
 }
@@ -99,14 +104,42 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
         [[fallthrough]];
 
     case WM_KEYDOWN:
-        m_input.OnKeyDown( wParam );
+        m_input->OnKeyDown( static_cast<int32_t>( wParam ) );
         return 0;
 
     case WM_SYSKEYUP:
         [[fallthrough]];
 
     case WM_KEYUP:
-        m_input.OnKeyUp( wParam );
+        m_input->OnKeyUp( static_cast<int32_t>( wParam ) );
+        return 0;
+
+    case WM_LBUTTONDOWN:
+        m_input->OnButtonDown( Input::eMouseButton_Left );
+        return 0;
+
+    case WM_LBUTTONUP:
+        m_input->OnButtonUp( Input::eMouseButton_Left );
+        return 0;
+
+    case WM_MBUTTONDOWN:
+        m_input->OnButtonDown( Input::eMouseButton_Middle );
+        return 0;
+
+    case WM_MBUTTONUP:
+        m_input->OnButtonUp( Input::eMouseButton_Middle );
+        return 0;
+
+    case WM_RBUTTONDOWN:
+        m_input->OnButtonDown( Input::eMouseButton_Right );
+        return 0;
+
+    case WM_RBUTTONUP:
+        m_input->OnButtonUp( Input::eMouseButton_Right );
+        return 0;
+
+    case WM_MOUSEMOVE:
+        m_input->OnMouseMove( GET_X_LPARAM( lParam ), GET_Y_LPARAM( wParam ) );
         return 0;
 
     case WM_ACTIVATE:
@@ -144,7 +177,7 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
     return DefWindowProc( windowHandle, message, wParam, lParam );
 }
 
-bool Application::InitWindow()
+void Application::InitWindow()
 {
     static constexpr wchar_t kClassName[] = L"App";
     static constexpr DWORD   kStyle = WS_OVERLAPPEDWINDOW;
@@ -161,11 +194,7 @@ bool Application::InitWindow()
     windowClass.hCursor = LoadCursor( nullptr, IDC_ARROW );
     windowClass.lpszClassName = kClassName;
 
-    if ( !RegisterClass( &windowClass ) )
-    {
-        MessageBox( nullptr, L"Failed to register a window class!", kWindowTitle, MB_ICONERROR );
-        return false;
-    }
+    ASSERT( RegisterClass( &windowClass ) );
 
     const int32_t screenWidth = GetSystemMetrics( SM_CXSCREEN );
     const int32_t screenHeight = GetSystemMetrics( SM_CYSCREEN );
@@ -194,17 +223,11 @@ bool Application::InitWindow()
         instanceHandle, // hInstance
         nullptr );      // lpParam
 
-    if ( !m_windowHandle )
-    {
-        MessageBox( nullptr, L"Failed to create a window!", kWindowTitle, MB_ICONERROR );
-        return false;
-    }
-
+    assert( m_windowHandle );
     LOG_TRACE( "Window created. Client width: %d, Client height: %d\n", m_clientWidth, m_clientHeight );
-    return true;
 }
 
-void Application::CreateGraphicsContext()
+void Application::InitGraphics()
 {
 #ifdef _DEBUG
     static constexpr uint32_t kFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
@@ -221,17 +244,17 @@ void Application::CreateGraphicsContext()
 
     ASSERT_SUCCEEDED( CreateDXGIFactory2( kFactoryFlags, IID_PPV_ARGS( m_dxgiFactory.GetAddressOf() ) ) );
 
-    HRESULT deviceCreationResult = E_FAIL;
+    HRESULT hr = E_FAIL;
     for ( uint32_t i = 0; m_dxgiFactory->EnumAdapterByGpuPreference( i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS( m_dxgiAdapter.ReleaseAndGetAddressOf() ) ) != DXGI_ERROR_NOT_FOUND; ++i )
     {
-        deviceCreationResult = D3D12CreateDevice( m_dxgiAdapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS( m_device.ReleaseAndGetAddressOf() ) );
-        if ( SUCCEEDED( deviceCreationResult ) )
+        hr = D3D12CreateDevice( m_dxgiAdapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS( m_device.ReleaseAndGetAddressOf() ) );
+        if ( SUCCEEDED( hr ) )
         {
             break;
         }
     }
 
-    ASSERT_SUCCEEDED( deviceCreationResult );
+    ASSERT_SUCCEEDED( hr );
 
     DXGI_ADAPTER_DESC adapterDesc;
     m_dxgiAdapter->GetDesc( &adapterDesc );

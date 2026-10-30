@@ -24,15 +24,15 @@ struct PassConstants
     DirectX::XMFLOAT4X4 viewProjection;
 };
 
-enum ERootArgument : uint8_t
+enum RootArgument : uint8_t
 {
     eRootArgument_ObjectConstBuffer = 0,
     eRootArgument_PassConstBuffer,
     eRootArgument_Count
 };
 
-static constexpr uint32_t kObjectConstantsAlignedSize = Utility::GetCBufferAlignedSizeBytes( sizeof( ObjectConstants ) );
-static constexpr uint32_t kPassConstantsAlignedSize = Utility::GetCBufferAlignedSizeBytes( sizeof( PassConstants ) );
+static constexpr uint32_t kObjectConstantsAlignedSize = Utility::GetConstBufferAlignedSize<ObjectConstants>();
+static constexpr uint32_t kPassConstantsAlignedSize = Utility::GetConstBufferAlignedSize<PassConstants>();
 
 static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
     { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -75,8 +75,7 @@ void BoxDemo::OnUpdate( const Input& input )
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
 
-    m_viewPolarAngle += 0.01f;
-
+    // Convert from spherical coordinates to cartesian
     const DirectX::XMVECTOR position = DirectX::XMVectorSet(
         m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::cos( m_viewPolarAngle ),
         m_viewRadius * std::cos( m_viewAzimuthalAngle ),
@@ -253,8 +252,8 @@ void BoxDemo::InitShaders()
     const wchar_t* vertexShaderArgs[] = { L"-E", L"VS", L"-T", L"vs_6_6" COMMA_DEBUG_ARGS };
     const wchar_t* pixelShaderArgs[] = { L"-E", L"PS", L"-T", L"ps_6_6" COMMA_DEBUG_ARGS };
 
-    Utility::CompileShaderFromFile( L"Shaders/BasicColor.hlsl", std::size( vertexShaderArgs ), vertexShaderArgs, m_vertexShaderBlob.GetAddressOf() );
-    Utility::CompileShaderFromFile( L"Shaders/BasicColor.hlsl", std::size( pixelShaderArgs ), pixelShaderArgs, m_pixelShaderBlob.GetAddressOf() );
+    m_vertexShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColor.hlsl", std::size( vertexShaderArgs ), vertexShaderArgs );
+    m_pixelShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColor.hlsl", std::size( pixelShaderArgs ), pixelShaderArgs );
 }
 
 void BoxDemo::InitPipelineStates()

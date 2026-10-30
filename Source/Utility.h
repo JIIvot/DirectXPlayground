@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <d3d12.h>
 #include <dxcapi.h>
+#include <wrl/client.h>
 
 #ifdef _DEBUG
     #include <Windows.h>
@@ -22,6 +23,13 @@
     #define MAKE_STRING_INTERNAL( x ) #x
     #define MAKE_STRING( x ) MAKE_STRING_INTERNAL( x )
 
+    #define ASSERT( x )                                                                                           \
+        if ( !x )                                                                                                 \
+        {                                                                                                         \
+            LOG_ERROR( "ASSERTION failed in " MAKE_STRING( __FILE__ ) " at line " MAKE_STRING( __LINE__ ) "\n" ); \
+            __debugbreak();                                                                                       \
+        }
+
     #define ASSERT_SUCCEEDED( hr )                                                                              \
         if ( FAILED( hr ) )                                                                                     \
         {                                                                                                       \
@@ -35,12 +43,13 @@
     #define LOG_WARN( x, ... )
     #define LOG_ERROR( x, ... )
 
+    #define ASSERT( x ) ( void )( x )
     #define ASSERT_SUCCEEDED( hr, ... ) ( void )( hr )
 #endif
 
 namespace Utility
 {
-void CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs, IDxcBlob** shaderBlob );
+Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs );
 
 [[nodiscard]] inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* blob )
 {
@@ -61,8 +70,9 @@ void CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, co
     return ( size + alignment - 1 ) & ~( alignment - 1 );
 }
 
-[[nodiscard]] inline constexpr uint32_t GetCBufferAlignedSizeBytes( uint32_t sizeBytes )
+template<typename T>
+[[nodiscard]] inline constexpr uint32_t GetConstBufferAlignedSize()
 {
-    return AlignSize( sizeBytes, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT );
+    return AlignSize( sizeof( T ), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT );
 }
 } // namespace Utility

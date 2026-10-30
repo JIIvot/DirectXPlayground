@@ -3,14 +3,13 @@
 
 #include <filesystem>
 #include <cassert>
-#include <wrl/client.h>
 #include <string>
 #include <Windows.h>
 #include <d3dx12.h>
 
 namespace Utility
 {
-void CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs, IDxcBlob** shaderBlob )
+Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs )
 {
     static Microsoft::WRL::ComPtr<IDxcUtils>          s_utils;
     static Microsoft::WRL::ComPtr<IDxcCompiler3>      s_compiler;
@@ -19,7 +18,7 @@ void CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, co
     if ( !std::filesystem::exists( filePath ) )
     {
         LOG_ERROR( "The shader is not found! Path: %ws\n", filePath );
-        return;
+        return nullptr;
     }
 
     if ( !s_compiler )
@@ -52,7 +51,7 @@ void CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, co
     if ( errorMessages->GetBufferSize() > 0 )
     {
         LOG_ERROR( "Shader compilation failed! Path: %ws Error:\n%s\n", filePath, static_cast<char*>( errorMessages->GetBufferPointer() ) );
-        return;
+        return nullptr;
     }
 
     ASSERT_SUCCEEDED( hr );
@@ -60,7 +59,10 @@ void CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, co
     s_compiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, s_includeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) );
 #endif
 
-    ASSERT_SUCCEEDED( result->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( shaderBlob ), nullptr ) );
+    Microsoft::WRL::ComPtr<IDxcBlob> shaderBlob;
+    ASSERT_SUCCEEDED( result->GetOutput( DXC_OUT_OBJECT, IID_PPV_ARGS( shaderBlob.GetAddressOf() ), nullptr ) );
+
+    return shaderBlob;
 }
 
 D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(

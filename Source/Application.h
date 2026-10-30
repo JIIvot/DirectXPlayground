@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <memory>
+#include <optional>
 
 class Application
 {
@@ -35,8 +36,8 @@ private:
     static LRESULT CALLBACK WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
     LRESULT                 ProcessWindowMessage( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
 
-    [[nodiscard]] bool InitWindow();
-    void               CreateGraphicsContext();
+    void InitWindow();
+    void InitGraphics();
 
 private:
     static Application* s_instance;
@@ -48,7 +49,7 @@ private:
     Microsoft::WRL::ComPtr<IDXGIAdapter4> m_dxgiAdapter;
     Microsoft::WRL::ComPtr<ID3D12Device5> m_device;
 
-    Input m_input;
+    std::optional<Input> m_input;
 
     int32_t m_clientWidth = 1280;
     int32_t m_clientHeight = 720;
