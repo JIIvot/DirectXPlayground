@@ -139,7 +139,7 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
         return 0;
 
     case WM_MOUSEMOVE:
-        m_input->OnMouseMove( GET_X_LPARAM( lParam ), GET_Y_LPARAM( wParam ) );
+        m_input->OnMouseMove( GET_X_LPARAM( lParam ), GET_Y_LPARAM( lParam ) );
         return 0;
 
     case WM_ACTIVATE:

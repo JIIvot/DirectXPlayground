@@ -8,6 +8,11 @@
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
 
+static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
+    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+};
+
 struct Vertex
 {
     DirectX::XMFLOAT3 position;
@@ -31,14 +36,6 @@ enum RootArgument : uint8_t
     eRootArgument_Count
 };
 
-static constexpr uint32_t kObjectConstantsAlignedSize = Utility::GetConstBufferAlignedSize<ObjectConstants>();
-static constexpr uint32_t kPassConstantsAlignedSize = Utility::GetConstBufferAlignedSize<PassConstants>();
-
-static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-};
-
 BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
     : GraphicsDemo( info )
 {
@@ -47,7 +44,7 @@ BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
     std::future<void> uploadResult = m_uploadBatch.End( m_commandQueue.Get() );
 
     DirectX::XMStoreFloat4x4( &m_world, DirectX::XMMatrixIdentity() );
-    UpdateProjectionMatrix();
+    AdjustProjection();
 
     InitRootSignature();
     InitShaders();
@@ -68,35 +65,8 @@ BoxDemo::~BoxDemo()
 
 void BoxDemo::OnUpdate( const Input& input )
 {
-    GraphicsDemo::OnUpdate( input );
-
-    if ( input.IsKeyJustPressed( 'F' ) )
-    {
-        m_isWireframeEnabled = !m_isWireframeEnabled;
-    }
-
-    // Convert from spherical coordinates to cartesian
-    const DirectX::XMVECTOR position = DirectX::XMVectorSet(
-        m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::cos( m_viewPolarAngle ),
-        m_viewRadius * std::cos( m_viewAzimuthalAngle ),
-        m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::sin( m_viewPolarAngle ),
-        1.0f );
-
-    const DirectX::XMVECTOR target = DirectX::XMVectorZero();
-    const DirectX::XMVECTOR up = DirectX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-
-    const DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH( position, target, up );
-    const DirectX::XMMATRIX world = DirectX::XMLoadFloat4x4( &m_world );
-    const DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4( &m_projection );
-    const DirectX::XMMATRIX viewProjection = view * projection;
-
-    ObjectConstants objectConstants = {};
-    DirectX::XMStoreFloat4x4( &objectConstants.world, DirectX::XMMatrixTranspose( world ) );
-    memcpy( m_objectConstBufferData, &objectConstants, sizeof( objectConstants ) );
-
-    PassConstants passConstants = {};
-    DirectX::XMStoreFloat4x4( &passConstants.viewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
-    memcpy( m_passConstBufferData, &passConstants, sizeof( passConstants ) );
+    ProcessInput( input );
+    UpdateConstBuffers();
 }
 
 void BoxDemo::OnRender()
@@ -123,7 +93,7 @@ void BoxDemo::OnRender()
     m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_ObjectConstBuffer, m_objectConstBuffer->GetGPUVirtualAddress() );
     m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_PassConstBuffer, m_passConstBuffer->GetGPUVirtualAddress() );
 
-    m_commandList->IASetPrimitiveTopology( D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+    m_commandList->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
     m_commandList->IASetVertexBuffers( 0, 1, &m_vertexBufferView );
     m_commandList->IASetIndexBuffer( &m_indexBufferView );
 
@@ -147,7 +117,7 @@ void BoxDemo::OnRender()
 void BoxDemo::OnResize( int32_t width, int32_t height )
 {
     GraphicsDemo::OnResize( width, height );
-    UpdateProjectionMatrix();
+    AdjustProjection();
 }
 
 void BoxDemo::InitGeometry()
@@ -221,6 +191,9 @@ void BoxDemo::InitRootSignature()
 
 void BoxDemo::InitConstantBuffers()
 {
+    static constexpr uint32_t kObjectConstantsAlignedSize = Utility::GetConstBufferAlignedSize<ObjectConstants>();
+    static constexpr uint32_t kPassConstantsAlignedSize = Utility::GetConstBufferAlignedSize<PassConstants>();
+
     ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
         &CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
         D3D12_HEAP_FLAG_NONE,
@@ -270,6 +243,7 @@ void BoxDemo::InitPipelineStates()
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoSolid.GetAddressOf() ) ) );
 
     desc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+    desc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoWireframe.GetAddressOf() ) ) );
 }
@@ -291,8 +265,57 @@ void BoxDemo::RenderImGui()
     ImGui::Render();
 }
 
-void BoxDemo::UpdateProjectionMatrix()
+void BoxDemo::AdjustProjection()
 {
     const DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH( DirectX::XM_PIDIV4, m_aspectRatio, 1.0f, 1000.0f );
     DirectX::XMStoreFloat4x4( &m_projection, projection );
+}
+
+void BoxDemo::ProcessInput( const Input& input )
+{
+    GraphicsDemo::OnUpdate( input );
+
+    if ( input.IsKeyJustPressed( 'F' ) )
+    {
+        m_isWireframeEnabled = !m_isWireframeEnabled;
+    }
+
+    if ( input.IsButtonPressed( Input::eMouseButton_Left ) )
+    {
+        const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
+        m_viewPolarAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.x );
+        m_viewAzimuthalAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.y );
+    }
+
+    if ( input.IsButtonPressed( Input::eMouseButton_Right ) )
+    {
+        const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
+        m_viewRadius += 0.01f * static_cast<float>( mouseDelta.x - mouseDelta.y );
+    }
+}
+
+void BoxDemo::UpdateConstBuffers()
+{
+    // Convert from spherical coordinates to cartesian
+    const DirectX::XMVECTOR position = DirectX::XMVectorSet(
+        m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::cos( m_viewPolarAngle ),
+        m_viewRadius * std::cos( m_viewAzimuthalAngle ),
+        m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::sin( m_viewPolarAngle ),
+        1.0f );
+
+    const DirectX::XMVECTOR target = DirectX::XMVectorZero();
+    const DirectX::XMVECTOR up = DirectX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+
+    const DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH( position, target, up );
+    const DirectX::XMMATRIX world = DirectX::XMLoadFloat4x4( &m_world );
+    const DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4( &m_projection );
+    const DirectX::XMMATRIX viewProjection = view * projection;
+
+    ObjectConstants objectConstants = {};
+    DirectX::XMStoreFloat4x4( &objectConstants.world, DirectX::XMMatrixTranspose( world ) );
+    memcpy( m_objectConstBufferData, &objectConstants, sizeof( objectConstants ) );
+
+    PassConstants passConstants = {};
+    DirectX::XMStoreFloat4x4( &passConstants.viewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
+    memcpy( m_passConstBufferData, &passConstants, sizeof( passConstants ) );
 }

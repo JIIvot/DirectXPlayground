@@ -25,7 +25,10 @@ private:
 
     void RenderImGui();
 
-    void UpdateProjectionMatrix();
+    void AdjustProjection();
+
+    void ProcessInput( const Input& input );
+    void UpdateConstBuffers();
 
 private:
     Microsoft::WRL::ComPtr<IDxcBlob> m_vertexShaderBlob;
