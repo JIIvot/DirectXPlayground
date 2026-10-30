@@ -56,8 +56,8 @@ protected:
     static constexpr DXGI_FORMAT kBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     static constexpr DXGI_FORMAT kDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-    IDXGIFactory6* m_dxgiFactory = nullptr;
-    ID3D12Device5* m_device = nullptr;
+    Microsoft::WRL::ComPtr<IDXGIFactory6> m_dxgiFactory;
+    Microsoft::WRL::ComPtr<ID3D12Device5> m_device;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain4> m_dxgiSwapChain;
     Microsoft::WRL::ComPtr<IDXGIAdapter4>   m_dxgiAdapter;

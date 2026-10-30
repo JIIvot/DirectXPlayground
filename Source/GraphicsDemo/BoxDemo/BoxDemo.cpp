@@ -19,16 +19,6 @@ struct Vertex
     DirectX::XMFLOAT4 color;
 };
 
-struct ObjectConstants
-{
-    DirectX::XMFLOAT4X4 world;
-};
-
-struct PassConstants
-{
-    DirectX::XMFLOAT4X4 viewProjection;
-};
-
 enum RootArgument : uint8_t
 {
     eRootArgument_ObjectConstBuffer = 0,
@@ -38,6 +28,8 @@ enum RootArgument : uint8_t
 
 BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
     : GraphicsDemo( info )
+    , m_objectConstBuffer( info.device, 1 )
+    , m_passConstBuffer( info.device, 1 )
 {
     m_uploadBatch.Begin();
     InitGeometry();
@@ -48,19 +40,9 @@ BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
 
     InitRootSignature();
     InitShaders();
-    InitConstantBuffers();
     InitPipelineStates();
 
     uploadResult.wait();
-}
-
-BoxDemo::~BoxDemo()
-{
-    m_objectConstBuffer->Unmap( 0, nullptr );
-    m_objectConstBufferData = nullptr;
-
-    m_passConstBuffer->Unmap( 0, nullptr );
-    m_passConstBufferData = nullptr;
 }
 
 void BoxDemo::OnUpdate( const Input& input )
@@ -90,8 +72,8 @@ void BoxDemo::OnRender()
     m_commandList->OMSetRenderTargets( 1, &GetCurrBackBufferViewHandle(), true, &m_dsvHeap.GetCpuHandle() );
 
     m_commandList->SetGraphicsRootSignature( m_rootSignature.Get() );
-    m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_ObjectConstBuffer, m_objectConstBuffer->GetGPUVirtualAddress() );
-    m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_PassConstBuffer, m_passConstBuffer->GetGPUVirtualAddress() );
+    m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_ObjectConstBuffer, m_objectConstBuffer.GetResource()->GetGPUVirtualAddress() );
+    m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_PassConstBuffer, m_passConstBuffer.GetResource()->GetGPUVirtualAddress() );
 
     m_commandList->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
     m_commandList->IASetVertexBuffers( 0, 1, &m_vertexBufferView );
@@ -143,7 +125,7 @@ void BoxDemo::InitGeometry()
     };
 
     ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
-        m_device,                                        // device
+        m_device.Get(),                                  // device
         m_uploadBatch,                                   // resourceUpload
         kVertices,                                       // data
         std::size( kVertices ),                          // count
@@ -152,7 +134,7 @@ void BoxDemo::InitGeometry()
         m_vertexBuffer.GetAddressOf() ) );               // pBuffer
 
     ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
-        m_device,                          // device
+        m_device.Get(),                    // device
         m_uploadBatch,                     // resourceUpload
         kIndices,                          // data
         std::size( kIndices ),             // count
@@ -187,31 +169,6 @@ void BoxDemo::InitRootSignature()
 
     ASSERT_SUCCEEDED( D3D12SerializeRootSignature( &desc, D3D_ROOT_SIGNATURE_VERSION_1, serializedBlob.GetAddressOf(), errorBlob.GetAddressOf() ) );
     ASSERT_SUCCEEDED( m_device->CreateRootSignature( 0, serializedBlob->GetBufferPointer(), serializedBlob->GetBufferSize(), IID_PPV_ARGS( m_rootSignature.GetAddressOf() ) ) );
-}
-
-void BoxDemo::InitConstantBuffers()
-{
-    static constexpr uint32_t kObjectConstantsAlignedSize = Utility::GetConstBufferAlignedSize<ObjectConstants>();
-    static constexpr uint32_t kPassConstantsAlignedSize = Utility::GetConstBufferAlignedSize<PassConstants>();
-
-    ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
-        &CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
-        D3D12_HEAP_FLAG_NONE,
-        &CD3DX12_RESOURCE_DESC::Buffer( kObjectConstantsAlignedSize ),
-        D3D12_RESOURCE_STATE_GENERIC_READ,
-        nullptr,
-        IID_PPV_ARGS( m_objectConstBuffer.GetAddressOf() ) ) );
-
-    ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
-        &CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
-        D3D12_HEAP_FLAG_NONE,
-        &CD3DX12_RESOURCE_DESC::Buffer( kPassConstantsAlignedSize ),
-        D3D12_RESOURCE_STATE_GENERIC_READ,
-        nullptr,
-        IID_PPV_ARGS( m_passConstBuffer.GetAddressOf() ) ) );
-
-    ASSERT_SUCCEEDED( m_objectConstBuffer->Map( 0, nullptr, &m_objectConstBufferData ) );
-    ASSERT_SUCCEEDED( m_passConstBuffer->Map( 0, nullptr, &m_passConstBufferData ) );
 }
 
 void BoxDemo::InitShaders()
@@ -313,9 +270,9 @@ void BoxDemo::UpdateConstBuffers()
 
     ObjectConstants objectConstants = {};
     DirectX::XMStoreFloat4x4( &objectConstants.world, DirectX::XMMatrixTranspose( world ) );
-    memcpy( m_objectConstBufferData, &objectConstants, sizeof( objectConstants ) );
+    m_objectConstBuffer.SetElement( 0, objectConstants );
 
     PassConstants passConstants = {};
     DirectX::XMStoreFloat4x4( &passConstants.viewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
-    memcpy( m_passConstBufferData, &passConstants, sizeof( passConstants ) );
+    m_passConstBuffer.SetElement( 0, passConstants );
 }

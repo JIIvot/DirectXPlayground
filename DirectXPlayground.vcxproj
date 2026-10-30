@@ -148,6 +148,7 @@
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\CbvSrvUavHeap.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxRawDemo\BoxRawDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.cpp" />
     <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\ResourceViewHeap.cpp" />
@@ -343,12 +344,14 @@
     <ClInclude Include="Source\ApplicationConstants.h" />
     <ClInclude Include="Source\CbvSrvUavHeap.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxRawDemo\BoxRawDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemoCreateInfo.h" />
     <ClInclude Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.h" />
     <ClInclude Include="Source\Input.h" />
     <ClInclude Include="Source\ResourceViewHeap.h" />
     <ClInclude Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemo.h" />
+    <ClInclude Include="Source\UploadBuffer.h" />
     <ClInclude Include="Source\Utility.h" />
   </ItemGroup>
   <ItemGroup>

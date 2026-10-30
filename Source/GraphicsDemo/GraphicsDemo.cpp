@@ -76,7 +76,7 @@ void GraphicsDemo::InitImGui( HWND windowHandle )
     ImGui_ImplWin32_Init( windowHandle );
 
     ImGui_ImplDX12_InitInfo initInfo = {};
-    initInfo.Device = m_device;
+    initInfo.Device = m_device.Get();
     initInfo.CommandQueue = m_commandQueue.Get();
     initInfo.NumFramesInFlight = 1;
     initInfo.RTVFormat = kBackBufferFormat;

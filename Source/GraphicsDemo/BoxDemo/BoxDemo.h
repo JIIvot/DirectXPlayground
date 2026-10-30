@@ -1,15 +1,26 @@
 #pragma once
 
 #include "GraphicsDemo/GraphicsDemo.h"
+#include "UploadBuffer.h"
 
 #include <dxcapi.h>
 #include <DirectXMath.h>
 
 class BoxDemo final : public GraphicsDemo
 {
+private:
+    struct ObjectConstants
+    {
+        DirectX::XMFLOAT4X4 world;
+    };
+
+    struct PassConstants
+    {
+        DirectX::XMFLOAT4X4 viewProjection;
+    };
+
 public:
     explicit BoxDemo( const GraphicsDemoCreateInfo& info );
-    ~BoxDemo();
 
     void OnUpdate( const Input& input ) override;
     void OnRender() override;
@@ -19,7 +30,6 @@ public:
 private:
     void InitGeometry();
     void InitRootSignature();
-    void InitConstantBuffers();
     void InitShaders();
     void InitPipelineStates();
 
@@ -42,11 +52,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
     Microsoft::WRL::ComPtr<ID3D12Resource> m_indexBuffer;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_objectConstBuffer;
-    void*                                  m_objectConstBufferData;
-
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_passConstBuffer;
-    void*                                  m_passConstBufferData;
+    UploadBuffer<ObjectConstants, true> m_objectConstBuffer;
+    UploadBuffer<PassConstants, true>   m_passConstBuffer;
 
     DirectX::XMFLOAT4X4 m_world;
     DirectX::XMFLOAT4X4 m_projection;

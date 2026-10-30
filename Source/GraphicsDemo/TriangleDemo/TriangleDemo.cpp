@@ -137,7 +137,7 @@ void TriangleDemo::InitGeometry()
     static constexpr uint16_t kIndices[] = { 0, 1, 2 };
 
     ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
-        m_device,                                        // device
+        m_device.Get(),                                  // device
         m_uploadBatch,                                   // resourceUpload
         kVertices,                                       // ptr
         std::size( kVertices ),                          // count
@@ -146,7 +146,7 @@ void TriangleDemo::InitGeometry()
         m_vertexBuffer.GetAddressOf() ) );               // pBuffer
 
     ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
-        m_device,                          // device
+        m_device.Get(),                    // device
         m_uploadBatch,                     // resourceUpload
         kIndices,                          // ptr
         std::size( kIndices ),             // count
