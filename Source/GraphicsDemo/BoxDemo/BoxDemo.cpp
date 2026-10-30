@@ -254,11 +254,11 @@ void BoxDemo::RenderImGui()
     ImGui_ImplDX12_NewFrame();
     ImGui::NewFrame();
 
-    const ImGuiIO& io = ImGui::GetIO();
+    const float framerate = ImGui::GetIO().Framerate;
 
     ImGui::Begin( "Options" );
-    ImGui::Text( "FPS:       %d", static_cast<int32_t>( io.Framerate ) );
-    ImGui::Text( "FrameTime: %.3f", 1000.0f / io.Framerate );
+    ImGui::Text( "FPS:       %.0f", framerate );
+    ImGui::Text( "FrameTime: %.3f", 1000.0f / framerate );
     ImGui::Checkbox( "Wireframe", &m_isWireframeEnabled );
     ImGui::End();
 
@@ -280,14 +280,14 @@ void BoxDemo::ProcessInput( const Input& input )
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
 
-    if ( input.IsButtonPressed( Input::eMouseButton_Left ) )
+    if ( input.IsButtonPressed( Input::eMouseButton_Left ) && !ImGui::GetIO().WantCaptureMouse )
     {
         const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
         m_viewPolarAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.x );
         m_viewAzimuthalAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.y );
     }
 
-    if ( input.IsButtonPressed( Input::eMouseButton_Right ) )
+    if ( input.IsButtonPressed( Input::eMouseButton_Right ) && !ImGui::GetIO().WantCaptureMouse )
     {
         const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
         m_viewRadius += 0.01f * static_cast<float>( mouseDelta.x - mouseDelta.y );
