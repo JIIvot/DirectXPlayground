@@ -49,7 +49,7 @@
 
 namespace Utility
 {
-Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs );
+[[nodiscard]] Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs );
 
 [[nodiscard]] inline D3D12_SHADER_BYTECODE GetShaderByteCodeFromBlob( IDxcBlob* blob )
 {
