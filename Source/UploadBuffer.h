@@ -6,7 +6,7 @@
 #include <wrl/client.h>
 #include <cstdint>
 
-template<typename T, bool isConstBuffer = false>
+template<typename T, bool kIsConstBuffer = false>
 class UploadBuffer
 {
 public:
@@ -28,19 +28,19 @@ public:
         return m_bufferResource.Get();
     }
 
-    void SetElement( uint32_t index, const T& data )
+    void SetElement( uint32_t index, const T& element )
     {
-        memcpy( m_data + index * kElementSize, &data, sizeof( T ) );
+        memcpy( m_data + index * kElementSize, &element, sizeof( T ) );
     }
 
     void CopyData( uint32_t numElements, const T* elements )
-        requires !isConstBuffer
+        requires !kIsConstBuffer
     {
         memcpy( m_data, elements, numElements * sizeof( T ) );
     }
 
 private:
-    static constexpr uint32_t kElementSize = isConstBuffer ? Utility::GetConstBufferAlignedSize<T>() : sizeof( T );
+    static constexpr uint32_t kElementSize = kIsConstBuffer ? Utility::GetConstBufferAlignedSize<T>() : sizeof( T );
 
     Microsoft::WRL::ComPtr<ID3D12Resource> m_bufferResource;
     std::byte*                             m_data;
