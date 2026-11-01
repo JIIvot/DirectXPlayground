@@ -187,7 +187,6 @@ void Application::InitWindow()
     const HINSTANCE instanceHandle = GetModuleHandle( nullptr );
 
     WNDCLASS windowClass = {};
-    windowClass.style = CS_HREDRAW | CS_VREDRAW;
     windowClass.lpfnWndProc = WindowProcedure;
     windowClass.hInstance = instanceHandle;
     windowClass.hIcon = LoadIcon( nullptr, IDI_APPLICATION );
