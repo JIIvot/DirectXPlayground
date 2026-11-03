@@ -348,9 +348,11 @@
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemoCreateInfo.h" />
     <ClInclude Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.h" />
     <ClInclude Include="Source\Input.h" />
+    <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\ResourceViewHeap.h" />
     <ClInclude Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemo.h" />
+    <ClInclude Include="Source\Submesh.h" />
     <ClInclude Include="Source\UploadBuffer.h" />
     <ClInclude Include="Source\Utility.h" />
   </ItemGroup>

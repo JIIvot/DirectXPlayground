@@ -76,10 +76,11 @@ void BoxDemo::OnRender()
     m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_PassConstBuffer, m_passConstBuffer.GetResource()->GetGPUVirtualAddress() );
 
     m_commandList->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-    m_commandList->IASetVertexBuffers( 0, 1, &m_vertexBufferView );
-    m_commandList->IASetIndexBuffer( &m_indexBufferView );
+    m_commandList->IASetVertexBuffers( 0, 1, &m_mesh.GetVertexBufferView() );
+    m_commandList->IASetIndexBuffer( &m_mesh.GetIndexBufferView() );
 
-    m_commandList->DrawIndexedInstanced( 36, 1, 0, 0, 0 );
+    const Submesh& submesh = m_mesh.submeshMap["box"];
+    m_commandList->DrawIndexedInstanced( submesh.numIndices, 1, submesh.baseIndex, submesh.baseVertex, 0 );
 
     ImGui_ImplDX12_RenderDrawData( ImGui::GetDrawData(), m_commandList.Get() );
 
@@ -131,24 +132,31 @@ void BoxDemo::InitGeometry()
         std::size( kVertices ),                          // count
         sizeof( kVertices[0] ),                          // stride
         D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, // afterState
-        m_vertexBuffer.GetAddressOf() ) );               // pBuffer
+        m_mesh.vertexBuffer.GetAddressOf() ) );          // pBuffer
 
     ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
-        m_device.Get(),                    // device
-        m_uploadBatch,                     // resourceUpload
-        kIndices,                          // data
-        std::size( kIndices ),             // count
-        sizeof( kIndices[0] ),             // stride
-        D3D12_RESOURCE_STATE_INDEX_BUFFER, // afterState
-        m_indexBuffer.GetAddressOf() ) );  // pBuffer
+        m_device.Get(),                        // device
+        m_uploadBatch,                         // resourceUpload
+        kIndices,                              // data
+        std::size( kIndices ),                 // count
+        sizeof( kIndices[0] ),                 // stride
+        D3D12_RESOURCE_STATE_INDEX_BUFFER,     // afterState
+        m_mesh.indexBuffer.GetAddressOf() ) ); // pBuffer
 
-    m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-    m_vertexBufferView.SizeInBytes = std::size( kVertices ) * sizeof( kVertices[0] );
-    m_vertexBufferView.StrideInBytes = sizeof( kVertices[0] );
+    m_mesh.vertexBufferData.resize( sizeof( kVertices ) );
+    memcpy( m_mesh.vertexBufferData.data(), kVertices, sizeof( kVertices ) );
 
-    m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
-    m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
-    m_indexBufferView.SizeInBytes = std::size( kIndices ) * sizeof( kIndices[0] );
+    m_mesh.indexBufferData.resize( sizeof( kIndices ) );
+    memcpy( m_mesh.indexBufferData.data(), kIndices, sizeof( kIndices ) );
+
+    m_mesh.indexBufferFormat = DXGI_FORMAT_R16_UINT;
+    m_mesh.indexBufferSize = sizeof( kIndices );
+    m_mesh.vertexBufferSize = sizeof( kVertices );
+    m_mesh.vertexBufferStride = sizeof( kVertices[0] );
+
+    m_mesh.submeshMap["box"] = { 0, std::size( kIndices ), 0, std::size( kVertices ) };
+
+    m_mesh.name = "Box";
 }
 
 void BoxDemo::InitRootSignature()
@@ -200,8 +208,6 @@ void BoxDemo::InitPipelineStates()
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoSolid.GetAddressOf() ) ) );
 
     desc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
-    desc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoWireframe.GetAddressOf() ) ) );
 }
 

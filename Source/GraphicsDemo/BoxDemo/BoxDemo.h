@@ -2,6 +2,7 @@
 
 #include "GraphicsDemo/GraphicsDemo.h"
 #include "UploadBuffer.h"
+#include "Mesh.h"
 
 #include <dxcapi.h>
 #include <DirectXMath.h>
@@ -41,25 +42,18 @@ private:
     void UpdateConstBuffers();
 
 private:
-    Microsoft::WRL::ComPtr<IDxcBlob> m_vertexShaderBlob;
-    Microsoft::WRL::ComPtr<IDxcBlob> m_pixelShaderBlob;
-
+    Microsoft::WRL::ComPtr<IDxcBlob>            m_vertexShaderBlob;
+    Microsoft::WRL::ComPtr<IDxcBlob>            m_pixelShaderBlob;
     Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
-
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_psoSolid;
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_psoWireframe;
+    UploadBuffer<ObjectConstants, true>         m_objectConstBuffer;
+    UploadBuffer<PassConstants, true>           m_passConstBuffer;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
-    Microsoft::WRL::ComPtr<ID3D12Resource> m_indexBuffer;
-
-    UploadBuffer<ObjectConstants, true> m_objectConstBuffer;
-    UploadBuffer<PassConstants, true>   m_passConstBuffer;
+    Mesh m_mesh = {};
 
     DirectX::XMFLOAT4X4 m_world;
     DirectX::XMFLOAT4X4 m_projection;
-
-    D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
-    D3D12_INDEX_BUFFER_VIEW  m_indexBufferView;
 
     float m_viewPolarAngle = DirectX::XM_PI * 1.25f;
     float m_viewAzimuthalAngle = DirectX::XM_PIDIV4;
