@@ -189,7 +189,7 @@
     <ClCompile Include="Source\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GraphicsDemo\BoxRawDemo\BoxRawDemo.cpp">
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Raw\BoxRawDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp">
@@ -202,6 +202,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex4\BoxDemoEx4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Axis\BoxAxisDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -771,7 +774,7 @@
     <ClInclude Include="Source\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GraphicsDemo\BoxRawDemo\BoxRawDemo.h">
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Raw\BoxRawDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemoCreateInfo.h">
@@ -796,6 +799,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex4\BoxDemoEx4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Axis\BoxAxisDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

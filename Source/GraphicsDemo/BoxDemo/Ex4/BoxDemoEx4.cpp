@@ -79,7 +79,7 @@ void BoxDemoEx4::OnRender()
     m_commandList->IASetVertexBuffers( 0, 1, &m_mesh.GetVertexBufferView() );
     m_commandList->IASetIndexBuffer( &m_mesh.GetIndexBufferView() );
 
-    const Submesh& submesh = m_mesh.submeshMap["box"];
+    const Submesh& submesh = m_mesh.submeshMap["pyramid"];
     m_commandList->DrawIndexedInstanced( submesh.numIndices, 1, submesh.baseIndex, submesh.baseVertex, 0 );
 
     ImGui_ImplDX12_RenderDrawData( ImGui::GetDrawData(), m_commandList.Get() );
@@ -151,9 +151,9 @@ void BoxDemoEx4::InitGeometry()
     m_mesh.vertexBufferSize = sizeof( kVertices );
     m_mesh.vertexBufferStride = sizeof( kVertices[0] );
 
-    m_mesh.submeshMap["box"] = { 0, std::size( kIndices ), 0, std::size( kVertices ) };
+    m_mesh.submeshMap["pyramid"] = { 0, std::size( kIndices ), 0, std::size( kVertices ) };
 
-    m_mesh.name = "Box";
+    m_mesh.name = "Pyramid";
 }
 
 void BoxDemoEx4::InitRootSignature()

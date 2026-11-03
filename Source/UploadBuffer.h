@@ -28,6 +28,11 @@ public:
         return m_bufferResource.Get();
     }
 
+    [[nodiscard]] D3D12_GPU_VIRTUAL_ADDRESS GetGpuAddress( uint32_t index = 0 ) const
+    {
+        return m_bufferResource->GetGPUVirtualAddress() + static_cast<size_t>( index ) * kElementSize;
+    }
+
     void SetElement( uint32_t index, const T& element )
     {
         memcpy( m_data + index * kElementSize, &element, sizeof( T ) );
