@@ -39,8 +39,8 @@ public:
     void OnResize( int32_t width, int32_t height ) override;
 
 private:
-    static D3D12_PRIMITIVE_TOPOLOGY_TYPE GetD3D12PrimitiveTopologyType( PrimitiveTopology topology );
-    static D3D_PRIMITIVE_TOPOLOGY        GetD3DPrimitiveTopology( PrimitiveTopology topology );
+    [[nodiscard]] static D3D12_PRIMITIVE_TOPOLOGY_TYPE GetD3D12PrimitiveTopologyType( PrimitiveTopology topology );
+    [[nodiscard]] static D3D_PRIMITIVE_TOPOLOGY        GetD3DPrimitiveTopology( PrimitiveTopology topology );
 
     void InitGeometry();
     void InitRootSignature();
