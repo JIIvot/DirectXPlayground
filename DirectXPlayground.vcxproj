@@ -149,6 +149,7 @@
     <ClCompile Include="Source\CbvSrvUavHeap.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxRawDemo\BoxRawDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.cpp" />
     <ClCompile Include="Source\Input.cpp" />
@@ -346,6 +347,7 @@
     <ClInclude Include="Source\CbvSrvUavHeap.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxRawDemo\BoxRawDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemoCreateInfo.h" />
     <ClInclude Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.h" />

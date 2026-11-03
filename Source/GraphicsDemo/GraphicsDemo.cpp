@@ -73,6 +73,7 @@ void GraphicsDemo::InitFenceObjects()
 void GraphicsDemo::InitImGui( HWND windowHandle )
 {
     ImGui::CreateContext();
+    ImGui::StyleColorsClassic();
     ImGui_ImplWin32_Init( windowHandle );
 
     ImGui_ImplDX12_InitInfo initInfo = {};
