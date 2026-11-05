@@ -181,7 +181,7 @@ GraphicsDemo::~GraphicsDemo()
     LOG_INFO( "Demo destroyed.\n" );
 }
 
-void GraphicsDemo::OnUpdate( const Input& input )
+void GraphicsDemo::OnUpdate( const GameTimer& timer, const Input& input )
 {
     if ( input.IsKeyJustPressed( VK_ESCAPE ) )
     {

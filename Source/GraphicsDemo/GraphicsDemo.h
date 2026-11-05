@@ -2,10 +2,12 @@
 
 #include "CbvSrvUavHeap.h"
 #include "GraphicsDemoCreateInfo.h"
-#include "Input.h"
 
 #include <dxgi1_6.h>
 #include <ResourceUploadBatch.h>
+
+class Input;
+class GameTimer;
 
 class GraphicsDemo
 {
@@ -18,8 +20,8 @@ public:
     GraphicsDemo( GraphicsDemo&& ) = delete;
     GraphicsDemo& operator=( GraphicsDemo&& ) = delete;
 
-    virtual void OnUpdate( const Input& input );
-    virtual void OnRender() = 0;
+    virtual void OnUpdate( const GameTimer& timer, const Input& input );
+    virtual void OnRender( const GameTimer& timer ) = 0;
 
     virtual void OnResize( int32_t width, int32_t height );
 

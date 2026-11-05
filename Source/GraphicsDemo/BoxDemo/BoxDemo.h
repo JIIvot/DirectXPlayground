@@ -23,8 +23,8 @@ private:
 public:
     explicit BoxDemo( const GraphicsDemoCreateInfo& info );
 
-    void OnUpdate( const Input& input ) override;
-    void OnRender() override;
+    void OnUpdate( const GameTimer& timer, const Input& input ) override;
+    void OnRender( const GameTimer& timer ) override;
 
     void OnResize( int32_t width, int32_t height ) override;
 

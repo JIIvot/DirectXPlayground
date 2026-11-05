@@ -40,13 +40,15 @@ BoxAxisDemo::BoxAxisDemo( const GraphicsDemoCreateInfo& info )
     uploadResult.wait();
 }
 
-void BoxAxisDemo::OnUpdate( const Input& input )
+void BoxAxisDemo::OnUpdate( const GameTimer& timer, const Input& input )
 {
+    GraphicsDemo::OnUpdate( timer, input );
+
     ProcessInput( input );
     UpdateConstBuffers();
 }
 
-void BoxAxisDemo::OnRender()
+void BoxAxisDemo::OnRender( const GameTimer& timer )
 {
     RenderImGui();
 
@@ -257,8 +259,6 @@ void BoxAxisDemo::AdjustProjection()
 
 void BoxAxisDemo::ProcessInput( const Input& input )
 {
-    GraphicsDemo::OnUpdate( input );
-
     if ( input.IsKeyJustPressed( 'F' ) )
     {
         m_isWireframeEnabled = !m_isWireframeEnabled;

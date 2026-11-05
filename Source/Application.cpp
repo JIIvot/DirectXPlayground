@@ -30,6 +30,8 @@ void Application::Run()
     ShowWindow( m_windowHandle, SW_SHOW );
 
     MSG message = {};
+    m_timer.Reset();
+
     while ( message.message != WM_QUIT )
     {
         if ( PeekMessage( &message, nullptr, 0, 0, PM_REMOVE ) )
@@ -39,6 +41,8 @@ void Application::Run()
 
             continue;
         }
+
+        m_timer.Tick();
 
         if ( m_isPaused )
         {
@@ -54,8 +58,8 @@ void Application::Run()
 
         m_input->OnUpdateStarted();
 
-        m_demo->OnUpdate( *m_input );
-        m_demo->OnRender();
+        m_demo->OnUpdate( m_timer, *m_input );
+        m_demo->OnRender( m_timer );
 
         m_input->OnUpdateFinished();
     }
@@ -143,7 +147,16 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
         return 0;
 
     case WM_ACTIVATE:
-        m_isPaused = LOWORD( wParam ) == WA_INACTIVE;
+        if ( LOWORD( wParam ) == WA_INACTIVE )
+        {
+            m_isPaused = true;
+            m_timer.Pause();
+        }
+        else
+        {
+            m_isPaused = false;
+            m_timer.Start();
+        }
         return 0;
 
     case WM_SIZE:

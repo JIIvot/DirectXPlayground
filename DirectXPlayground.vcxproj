@@ -147,6 +147,7 @@
     <ClCompile Include="External\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\CbvSrvUavHeap.cpp" />
+    <ClCompile Include="Source\GameTimer.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Axis\BoxAxisDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp" />
@@ -347,6 +348,7 @@
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\ApplicationConstants.h" />
     <ClInclude Include="Source\CbvSrvUavHeap.h" />
+    <ClInclude Include="Source\GameTimer.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Axis\BoxAxisDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h" />

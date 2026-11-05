@@ -6,7 +6,7 @@
 #include <backends/imgui_impl_win32.h>
 #include <d3dx12/d3dx12_barriers.h>
 
-void ClearScreenDemo::OnRender()
+void ClearScreenDemo::OnRender( const GameTimer& timer )
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), nullptr ) );

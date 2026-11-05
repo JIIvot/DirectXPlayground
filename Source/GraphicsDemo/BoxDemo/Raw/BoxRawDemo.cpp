@@ -58,13 +58,15 @@ BoxRawDemo::~BoxRawDemo()
     m_passConstBufferData = nullptr;
 }
 
-void BoxRawDemo::OnUpdate( const Input& input )
+void BoxRawDemo::OnUpdate( const GameTimer& timer, const Input& input )
 {
+    GraphicsDemo::OnUpdate( timer, input );
+
     ProcessInput( input );
     UpdateConstBuffers();
 }
 
-void BoxRawDemo::OnRender()
+void BoxRawDemo::OnRender( const GameTimer& timer )
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );
@@ -267,8 +269,6 @@ void BoxRawDemo::AdjustProjection()
 
 void BoxRawDemo::ProcessInput( const Input& input )
 {
-    GraphicsDemo::OnUpdate( input );
-
     if ( input.IsKeyJustPressed( 'F' ) )
     {
         m_isWireframeEnabled = !m_isWireframeEnabled;

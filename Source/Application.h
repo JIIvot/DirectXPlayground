@@ -2,6 +2,7 @@
 
 #include "GraphicsDemo/GraphicsDemo.h"
 #include "Input.h"
+#include "GameTimer.h"
 
 #include <cassert>
 #include <memory>
@@ -53,6 +54,8 @@ private:
 
     int32_t m_clientWidth = 1280;
     int32_t m_clientHeight = 720;
+
+    GameTimer m_timer;
 
     bool m_isPaused = false;
     bool m_shouldResize = false;

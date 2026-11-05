@@ -10,8 +10,8 @@ class TriangleDemo final : public GraphicsDemo
 public:
     explicit TriangleDemo( const GraphicsDemoCreateInfo& info );
 
-    void OnUpdate( const Input& input ) override;
-    void OnRender() override;
+    void OnUpdate( const GameTimer& timer, const Input& input ) override;
+    void OnRender( const GameTimer& timer ) override;
 
 private:
     void InitRootSignature();

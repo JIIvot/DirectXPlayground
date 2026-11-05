@@ -12,7 +12,7 @@ public:
     {
     }
 
-    void OnRender() override;
+    void OnRender( const GameTimer& timer ) override;
 
 private:
     void RenderImGui() const;

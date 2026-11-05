@@ -28,9 +28,9 @@ TriangleDemo::TriangleDemo( const GraphicsDemoCreateInfo& info )
     uploadResult.wait();
 }
 
-void TriangleDemo::OnUpdate( const Input& input )
+void TriangleDemo::OnUpdate( const GameTimer& timer, const Input& input )
 {
-    GraphicsDemo::OnUpdate( input );
+    GraphicsDemo::OnUpdate( timer, input );
 
     if ( input.IsKeyJustPressed( 'F' ) )
     {
@@ -38,7 +38,7 @@ void TriangleDemo::OnUpdate( const Input& input )
     }
 }
 
-void TriangleDemo::OnRender()
+void TriangleDemo::OnRender( const GameTimer& timer )
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );

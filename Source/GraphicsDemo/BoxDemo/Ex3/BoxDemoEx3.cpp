@@ -40,13 +40,15 @@ BoxDemoEx3::BoxDemoEx3( const GraphicsDemoCreateInfo& info )
     uploadResult.wait();
 }
 
-void BoxDemoEx3::OnUpdate( const Input& input )
+void BoxDemoEx3::OnUpdate( const GameTimer& timer, const Input& input )
 {
+    GraphicsDemo::OnUpdate( timer, input );
+
     ProcessInput( input );
     UpdateConstBuffers();
 }
 
-void BoxDemoEx3::OnRender()
+void BoxDemoEx3::OnRender( const GameTimer& timer )
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_pipelineStates[m_primitiveTopology].Get() ) );
@@ -275,8 +277,6 @@ void BoxDemoEx3::AdjustProjection()
 
 void BoxDemoEx3::ProcessInput( const Input& input )
 {
-    GraphicsDemo::OnUpdate( input );
-
     if ( input.IsKeyJustPressed( 'F' ) )
     {
         m_isWireframeEnabled = !m_isWireframeEnabled;
