@@ -162,14 +162,6 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
         return 0;
     }
 
-    case WM_GETMINMAXINFO:
-    {
-        MINMAXINFO* const info = reinterpret_cast<MINMAXINFO*>( lParam );
-        info->ptMinTrackSize.x = 200;
-        info->ptMinTrackSize.y = 200;
-        return 0;
-    }
-
     default:
         break;
     }
@@ -185,13 +177,13 @@ void Application::InitWindow()
     SetThreadDpiAwarenessContext( DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 );
 
     const HINSTANCE instanceHandle = GetModuleHandle( nullptr );
-
-    WNDCLASS windowClass = {};
-    windowClass.lpfnWndProc = WindowProcedure;
-    windowClass.hInstance = instanceHandle;
-    windowClass.hIcon = LoadIcon( nullptr, IDI_APPLICATION );
-    windowClass.hCursor = LoadCursor( nullptr, IDC_ARROW );
-    windowClass.lpszClassName = kClassName;
+    const WNDCLASS  windowClass = {
+        .lpfnWndProc = WindowProcedure,
+        .hInstance = instanceHandle,
+        .hIcon = LoadIcon( nullptr, IDI_APPLICATION ),
+        .hCursor = LoadCursor( nullptr, IDC_ARROW ),
+        .lpszClassName = kClassName
+    };
 
     ASSERT( RegisterClass( &windowClass ) );
 

@@ -27,21 +27,11 @@ struct Mesh
 
     [[nodiscard]] D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const
     {
-        D3D12_VERTEX_BUFFER_VIEW view;
-        view.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
-        view.SizeInBytes = vertexBufferSize;
-        view.StrideInBytes = vertexBufferStride;
-
-        return view;
+        return { .BufferLocation = vertexBuffer->GetGPUVirtualAddress(), .SizeInBytes = vertexBufferSize, .StrideInBytes = vertexBufferStride };
     }
 
     [[nodiscard]] D3D12_INDEX_BUFFER_VIEW GetIndexBufferView() const
     {
-        D3D12_INDEX_BUFFER_VIEW view;
-        view.BufferLocation = indexBuffer->GetGPUVirtualAddress();
-        view.Format = indexBufferFormat;
-        view.SizeInBytes = indexBufferSize;
-
-        return view;
+        return { .BufferLocation = indexBuffer->GetGPUVirtualAddress(), .SizeInBytes = indexBufferSize, .Format = indexBufferFormat };
     }
 };

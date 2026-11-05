@@ -35,10 +35,11 @@ Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath,
     Microsoft::WRL::ComPtr<IDxcBlobEncoding> sourceBlob;
     ASSERT_SUCCEEDED( s_utils->LoadFile( filePath, &codePage, sourceBlob.GetAddressOf() ) );
 
-    DxcBuffer sourceBuffer = {};
-    sourceBuffer.Ptr = sourceBlob->GetBufferPointer();
-    sourceBuffer.Size = sourceBlob->GetBufferSize();
-    sourceBuffer.Encoding = codePage;
+    const DxcBuffer sourceBuffer = {
+        .Ptr = sourceBlob->GetBufferPointer(),
+        .Size = sourceBlob->GetBufferSize(),
+        .Encoding = codePage
+    };
 
     Microsoft::WRL::ComPtr<IDxcResult> result;
 
@@ -74,22 +75,21 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
     IDxcBlob*                       vertexShaderBlob,
     IDxcBlob*                       pixelShaderBlob )
 {
-    D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-    desc.pRootSignature = rootSignature;
-    desc.VS = GetShaderByteCodeFromBlob( vertexShaderBlob );
-    desc.PS = GetShaderByteCodeFromBlob( pixelShaderBlob );
-    desc.RasterizerState = CD3DX12_RASTERIZER_DESC( D3D12_DEFAULT );
-    desc.BlendState = CD3DX12_BLEND_DESC( D3D12_DEFAULT );
-    desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC( D3D12_DEFAULT );
-    desc.SampleMask = UINT_MAX;
-    desc.InputLayout.NumElements = numInputElements;
-    desc.InputLayout.pInputElementDescs = inputElementDescs;
-    desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    desc.NumRenderTargets = 1;
-    desc.RTVFormats[0] = rtvFormat;
-    desc.DSVFormat = dsvFormat;
-    desc.SampleDesc.Count = 1;
-    desc.SampleDesc.Quality = 0;
+    const D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {
+        .pRootSignature = rootSignature,
+        .VS = GetShaderByteCodeFromBlob( vertexShaderBlob ),
+        .PS = GetShaderByteCodeFromBlob( pixelShaderBlob ),
+        .BlendState = CD3DX12_BLEND_DESC( D3D12_DEFAULT ),
+        .SampleMask = UINT_MAX,
+        .RasterizerState = CD3DX12_RASTERIZER_DESC( D3D12_DEFAULT ),
+        .DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC( D3D12_DEFAULT ),
+        .InputLayout = { inputElementDescs, numInputElements },
+        .PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+        .NumRenderTargets = 1,
+        .RTVFormats = { rtvFormat },
+        .DSVFormat = dsvFormat,
+        .SampleDesc = { .Count = 1 }
+    };
 
     return desc;
 }

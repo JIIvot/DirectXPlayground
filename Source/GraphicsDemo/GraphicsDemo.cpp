@@ -29,28 +29,30 @@ GraphicsDemo::GraphicsDemo( const GraphicsDemoCreateInfo& info )
 
 void GraphicsDemo::InitCommandObjects()
 {
-    D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-    queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-    queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    static constexpr D3D12_COMMAND_QUEUE_DESC kQueueDesc = {
+        .Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
+        .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE
+    };
 
-    ASSERT_SUCCEEDED( m_device->CreateCommandQueue( &queueDesc, IID_PPV_ARGS( m_commandQueue.GetAddressOf() ) ) );
+    ASSERT_SUCCEEDED( m_device->CreateCommandQueue( &kQueueDesc, IID_PPV_ARGS( m_commandQueue.GetAddressOf() ) ) );
     ASSERT_SUCCEEDED( m_device->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( m_commandAllocator.GetAddressOf() ) ) );
     ASSERT_SUCCEEDED( m_device->CreateCommandList1( 0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS( m_commandList.GetAddressOf() ) ) );
 }
 
 void GraphicsDemo::InitSwapChainAndDepthStencilBuffer( HWND windowHandle, int32_t width, int32_t height )
 {
-    DXGI_SWAP_CHAIN_DESC1 desc = {};
-    desc.Width = width;
-    desc.Height = height;
-    desc.Format = kBackBufferFormat;
-    desc.SampleDesc.Count = 1;
-    desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    desc.BufferCount = kNumSwapChainBuffers;
-    desc.Scaling = DXGI_SCALING_NONE;
-    desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-    desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    const DXGI_SWAP_CHAIN_DESC1 desc = {
+        .Width = static_cast<uint32_t>( width ),
+        .Height = static_cast<uint32_t>( height ),
+        .Format = kBackBufferFormat,
+        .SampleDesc = { .Count = 1 },
+        .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+        .BufferCount = kNumSwapChainBuffers,
+        .Scaling = DXGI_SCALING_NONE,
+        .SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
+        .AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED,
+        .Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
+    };
 
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain;
     ASSERT_SUCCEEDED( m_dxgiFactory->CreateSwapChainForHwnd( m_commandQueue.Get(), windowHandle, &desc, nullptr, nullptr, swapChain.GetAddressOf() ) );
@@ -74,7 +76,7 @@ void GraphicsDemo::InitImGui( HWND windowHandle )
     ImGui::StyleColorsClassic();
     ImGui_ImplWin32_Init( windowHandle );
 
-    ImGui_ImplDX12_InitInfo initInfo = {};
+    ImGui_ImplDX12_InitInfo initInfo;
     initInfo.Device = m_device.Get();
     initInfo.CommandQueue = m_commandQueue.Get();
     initInfo.NumFramesInFlight = 1;

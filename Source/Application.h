@@ -64,12 +64,13 @@ void Application::Init()
     assert( !s_instance );
     s_instance = new Application;
 
-    GraphicsDemoCreateInfo demoInfo = {};
-    demoInfo.windowHandle = s_instance->m_windowHandle;
-    demoInfo.dxgiFactory = s_instance->m_dxgiFactory.Get();
-    demoInfo.device = s_instance->m_device.Get();
-    demoInfo.clientWidth = s_instance->m_clientWidth;
-    demoInfo.clientHeight = s_instance->m_clientHeight;
+    const GraphicsDemoCreateInfo info = {
+        .windowHandle = s_instance->m_windowHandle,
+        .dxgiFactory = s_instance->m_dxgiFactory.Get(),
+        .device = s_instance->m_device.Get(),
+        .clientWidth = s_instance->m_clientWidth,
+        .clientHeight = s_instance->m_clientHeight
+    };
 
-    s_instance->m_demo = std::make_unique<TGraphicsDemo>( demoInfo );
+    s_instance->m_demo = std::make_unique<TGraphicsDemo>( info );
 }

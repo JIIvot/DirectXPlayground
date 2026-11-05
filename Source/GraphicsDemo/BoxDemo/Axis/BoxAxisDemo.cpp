@@ -228,7 +228,6 @@ void BoxAxisDemo::InitPipelineStates()
     desc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoBoxWireframe.GetAddressOf() ) ) );
 
-    desc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
     desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoAxis.GetAddressOf() ) ) );
 }
