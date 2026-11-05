@@ -76,8 +76,8 @@ protected:
 
     DirectX::ResourceUploadBatch m_uploadBatch;
 
-    D3D12_VIEWPORT m_viewport = {};
-    D3D12_RECT     m_scissorRect = {};
+    D3D12_VIEWPORT m_viewport;
+    D3D12_RECT     m_scissorRect;
 
     ResourceViewHeap m_rtvHeap;
     ResourceViewHeap m_dsvHeap;

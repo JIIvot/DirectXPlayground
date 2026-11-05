@@ -9,6 +9,8 @@
     #include <Windows.h>
     #include <cstdio>
 
+    #define COMMA_DEBUG_ARGS , DXC_ARG_DEBUG, DXC_ARG_SKIP_OPTIMIZATIONS
+
     #define ANSI_COLOR_RED "\x1b[31m"
     #define ANSI_COLOR_GREEN "\x1b[32m"
     #define ANSI_COLOR_YELLOW "\x1b[33m"
@@ -38,6 +40,8 @@
             __debugbreak();                                                                                     \
         }
 #else
+    #define COMMA_DEBUG_ARGS
+
     #define LOG_TRACE( x, ... )
     #define LOG_INFO( x, ... )
     #define LOG_WARN( x, ... )

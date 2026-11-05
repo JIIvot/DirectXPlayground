@@ -12,15 +12,17 @@ GraphicsDemo::GraphicsDemo( const GraphicsDemoCreateInfo& info )
     : m_dxgiFactory( info.dxgiFactory )
     , m_device( info.device )
     , m_uploadBatch( info.device )
+    , m_viewport( 0.0f, 0.0f, static_cast<float>( info.clientWidth ), static_cast<float>( info.clientHeight ), 0.0f, 1.0f )
+    , m_scissorRect( 0, 0, info.clientWidth, info.clientHeight )
     , m_rtvHeap( info.device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, kNumSwapChainBuffers )
     , m_dsvHeap( info.device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 )
     , m_cbvSrvUavHeap( info.device, kCbvSrvUavHeapCapacity )
+    , m_aspectRatio( m_viewport.Width / m_viewport.Height )
 {
     InitCommandObjects();
     InitSwapChainAndDepthStencilBuffer( info.windowHandle, info.clientWidth, info.clientHeight );
     InitFenceObjects();
     InitImGui( info.windowHandle );
-    UpdateViewportScissorsAndAspectRatio( info.clientWidth, info.clientHeight );
 
     LOG_INFO( "Demo initialized.\n" );
 }
@@ -29,9 +31,7 @@ void GraphicsDemo::InitCommandObjects()
 {
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-    queueDesc.Priority = 0;
     queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-    queueDesc.NodeMask = 0;
 
     ASSERT_SUCCEEDED( m_device->CreateCommandQueue( &queueDesc, IID_PPV_ARGS( m_commandQueue.GetAddressOf() ) ) );
     ASSERT_SUCCEEDED( m_device->CreateCommandAllocator( D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS( m_commandAllocator.GetAddressOf() ) ) );
@@ -44,9 +44,7 @@ void GraphicsDemo::InitSwapChainAndDepthStencilBuffer( HWND windowHandle, int32_
     desc.Width = width;
     desc.Height = height;
     desc.Format = kBackBufferFormat;
-    desc.Stereo = false;
     desc.SampleDesc.Count = 1;
-    desc.SampleDesc.Quality = 0;
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     desc.BufferCount = kNumSwapChainBuffers;
     desc.Scaling = DXGI_SCALING_NONE;
@@ -164,18 +162,10 @@ void GraphicsDemo::CreateSwapChainBufferViews( int32_t width, int32_t height )
 
 void GraphicsDemo::UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height )
 {
-    m_viewport.TopLeftX = 0.0f;
-    m_viewport.TopLeftY = 0.0f;
     m_viewport.Width = static_cast<float>( width );
     m_viewport.Height = static_cast<float>( height );
-    m_viewport.MaxDepth = 1.0f;
-    m_viewport.MinDepth = 0.0f;
-
-    m_scissorRect.left = 0;
-    m_scissorRect.top = 0;
     m_scissorRect.right = width;
     m_scissorRect.bottom = height;
-
     m_aspectRatio = m_viewport.Width / m_viewport.Height;
 }
 

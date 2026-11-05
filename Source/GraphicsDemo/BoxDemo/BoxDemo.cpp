@@ -8,11 +8,6 @@
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
 
-static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
-    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-};
-
 struct Vertex
 {
     DirectX::XMFLOAT3 position;
@@ -181,12 +176,6 @@ void BoxDemo::InitRootSignature()
 
 void BoxDemo::InitShaders()
 {
-#ifdef _DEBUG
-    #define COMMA_DEBUG_ARGS , DXC_ARG_DEBUG, DXC_ARG_SKIP_OPTIMIZATIONS
-#else
-    #define COMMA_DEBUG_ARGS
-#endif
-
     const wchar_t* vertexShaderArgs[] = { L"-E", L"VS", L"-T", L"vs_6_6" COMMA_DEBUG_ARGS };
     const wchar_t* pixelShaderArgs[] = { L"-E", L"PS", L"-T", L"ps_6_6" COMMA_DEBUG_ARGS };
 
@@ -196,6 +185,11 @@ void BoxDemo::InitShaders()
 
 void BoxDemo::InitPipelineStates()
 {
+    static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+    };
+
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = Utility::CreateDefaultPsoDesc(
         kBackBufferFormat,
         kDepthStencilFormat,
