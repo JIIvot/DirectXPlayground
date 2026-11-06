@@ -102,7 +102,7 @@ void BoxDemo::OnResize( int32_t width, int32_t height )
 
 void BoxDemo::InitGeometry()
 {
-    static const Vertex kVertices[8] = {
+    static const Vertex kVertices[] = {
         { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Wheat ) },
         { .position = DirectX::XMFLOAT3( -1.0f, +1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Coral ) },
         { .position = DirectX::XMFLOAT3( +1.0f, +1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Red ) },
@@ -113,7 +113,7 @@ void BoxDemo::InitGeometry()
         { .position = DirectX::XMFLOAT3( +1.0f, -1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::DeepSkyBlue ) }
     };
 
-    static constexpr uint16_t kIndices[36] = {
+    static constexpr uint16_t kIndices[] = {
         0, 1, 2, 0, 2, 3, // front face
         4, 6, 5, 4, 7, 6, // back face
         4, 5, 1, 4, 1, 0, // left face
@@ -151,7 +151,7 @@ void BoxDemo::InitGeometry()
     m_mesh.vertexBufferSize = sizeof( kVertices );
     m_mesh.vertexBufferStride = sizeof( kVertices[0] );
 
-    m_mesh.submeshMap["box"] = { 0, std::size( kIndices ), 0, std::size( kVertices ) };
+    m_mesh.submeshMap["box"] = { .baseIndex = 0, .numIndices = std::size( kIndices ), .baseVertex = 0, .numVertices = std::size( kVertices ) };
 
     m_mesh.name = "Box";
 }
@@ -264,15 +264,14 @@ void BoxDemo::UpdateConstBuffers()
     const DirectX::XMVECTOR up = DirectX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 
     const DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH( position, target, up );
-    const DirectX::XMMATRIX world = DirectX::XMLoadFloat4x4( &m_world );
     const DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4( &m_projection );
     const DirectX::XMMATRIX viewProjection = view * projection;
 
-    ObjectConstants objectConstants = {};
-    DirectX::XMStoreFloat4x4( &objectConstants.world, DirectX::XMMatrixTranspose( world ) );
+    ObjectConstants objectConstants;
+    DirectX::XMStoreFloat4x4( &objectConstants.world, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4( &m_world ) ) );
     m_objectConstBuffer.SetElement( 0, objectConstants );
 
-    PassConstants passConstants = {};
+    PassConstants passConstants;
     DirectX::XMStoreFloat4x4( &passConstants.viewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
     m_passConstBuffer.SetElement( 0, passConstants );
 }
