@@ -34,7 +34,7 @@ private:
     void InitShaders();
     void InitPipelineStates();
 
-    void RenderImGui();
+    void RenderImGui( const GameTimer& timer );
 
     void AdjustProjection();
 

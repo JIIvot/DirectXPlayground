@@ -175,6 +175,20 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
         return 0;
     }
 
+    case WM_ENTERSIZEMOVE:
+    {
+        m_isPaused = true;
+        m_timer.Pause();
+        return 0;
+    }
+
+    case WM_EXITSIZEMOVE:
+    {
+        m_isPaused = false;
+        m_timer.Start();
+        return 0;
+    }
+
     default:
         break;
     }

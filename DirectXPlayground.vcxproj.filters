@@ -210,6 +210,12 @@
     <ClCompile Include="Source\GameTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex6\BoxDemoEx6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex7\BoxDemoEx7.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="External\DirectXTK12\Src\TeapotData.inc">
@@ -808,6 +814,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex6\BoxDemoEx6.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex7\BoxDemoEx7.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

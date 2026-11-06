@@ -153,6 +153,8 @@
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex4\BoxDemoEx4.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex6\BoxDemoEx6.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex7\BoxDemoEx7.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Raw\BoxRawDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.cpp" />
     <ClCompile Include="Source\Input.cpp" />
@@ -354,6 +356,8 @@
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex4\BoxDemoEx4.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex6\BoxDemoEx6.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex7\BoxDemoEx7.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Raw\BoxRawDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemoCreateInfo.h" />
     <ClInclude Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.h" />

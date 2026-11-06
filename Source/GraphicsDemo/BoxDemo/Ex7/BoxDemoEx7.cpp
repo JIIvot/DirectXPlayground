@@ -1,0 +1,307 @@
+#include "BoxDemoEx7.h"
+#include "Utility.h"
+#include "Application.h"
+
+#include <DirectXMath.h>
+#include <DirectXColors.h>
+#include <BufferHelpers.h>
+#include <backends/imgui_impl_dx12.h>
+#include <backends/imgui_impl_win32.h>
+
+struct Vertex
+{
+    DirectX::XMFLOAT3 position;
+    DirectX::XMFLOAT4 color;
+};
+
+enum RootArgument : uint8_t
+{
+    eRootArgument_ObjectConstBuffer = 0,
+    eRootArgument_PassConstBuffer,
+    eRootArgument_Count
+};
+
+BoxDemoEx7::BoxDemoEx7( const GraphicsDemoCreateInfo& info )
+    : GraphicsDemo( info )
+    , m_objectConstBuffer( info.device, 2 )
+    , m_passConstBuffer( info.device, 1 )
+{
+    m_uploadBatch.Begin();
+    InitGeometry();
+    std::future<void> uploadResult = m_uploadBatch.End( m_commandQueue.Get() );
+
+    DirectX::XMStoreFloat4x4( &m_worldMatrices[eObjectConstBufferIndex_Box], DirectX::XMMatrixIdentity() );
+    DirectX::XMStoreFloat4x4( &m_worldMatrices[eObjectConstBufferIndex_Pyramid], DirectX::XMMatrixTranslation( 2.0f, 0.0f, 2.0f ) );
+
+    AdjustProjection();
+
+    InitRootSignature();
+    InitShaders();
+    InitPipelineStates();
+
+    uploadResult.wait();
+}
+
+void BoxDemoEx7::OnUpdate( const GameTimer& timer, const Input& input )
+{
+    GraphicsDemo::OnUpdate( timer, input );
+
+    ProcessInput( input );
+    UpdateConstBuffers();
+}
+
+void BoxDemoEx7::OnRender( const GameTimer& timer )
+{
+    ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
+    ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );
+
+    RenderImGui();
+
+    ID3D12DescriptorHeap* const cbvSrvUavHeap = m_cbvSrvUavHeap.GetHeap();
+    m_commandList->SetDescriptorHeaps( 1, &cbvSrvUavHeap );
+
+    m_commandList->RSSetViewports( 1, &m_viewport );
+    m_commandList->RSSetScissorRects( 1, &m_scissorRect );
+
+    m_commandList->ResourceBarrier( 1, &CD3DX12_RESOURCE_BARRIER::Transition( GetCurrBackBufferResource(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET ) );
+
+    m_commandList->ClearRenderTargetView( GetCurrBackBufferViewHandle(), DirectX::Colors::Black, 0, nullptr );
+    m_commandList->ClearDepthStencilView( m_dsvHeap.GetCpuHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr );
+
+    m_commandList->OMSetRenderTargets( 1, &GetCurrBackBufferViewHandle(), true, &m_dsvHeap.GetCpuHandle() );
+
+    m_commandList->SetGraphicsRootSignature( m_rootSignature.Get() );
+    m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_PassConstBuffer, m_passConstBuffer.GetGpuAddress() );
+
+    m_commandList->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+    m_commandList->IASetVertexBuffers( 0, 1, &m_mesh.GetVertexBufferView() );
+    m_commandList->IASetIndexBuffer( &m_mesh.GetIndexBufferView() );
+
+    m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_ObjectConstBuffer, m_objectConstBuffer.GetGpuAddress( eObjectConstBufferIndex_Box ) );
+
+    const Submesh& boxSubmesh = m_mesh.submeshMap["box"];
+    m_commandList->DrawIndexedInstanced( boxSubmesh.numIndices, 1, boxSubmesh.baseIndex, boxSubmesh.baseVertex, 0 );
+
+    m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_ObjectConstBuffer, m_objectConstBuffer.GetGpuAddress( eObjectConstBufferIndex_Pyramid ) );
+
+    const Submesh& pyramidSubmesh = m_mesh.submeshMap["pyramid"];
+    m_commandList->DrawIndexedInstanced( pyramidSubmesh.numIndices, 1, pyramidSubmesh.baseIndex, pyramidSubmesh.baseVertex, 0 );
+
+    ImGui_ImplDX12_RenderDrawData( ImGui::GetDrawData(), m_commandList.Get() );
+
+    m_commandList->ResourceBarrier( 1, &CD3DX12_RESOURCE_BARRIER::Transition( GetCurrBackBufferResource(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT ) );
+
+    ASSERT_SUCCEEDED( m_commandList->Close() );
+
+    ID3D12CommandList* const commandList = m_commandList.Get();
+    m_commandQueue->ExecuteCommandLists( 1, &commandList );
+
+    ASSERT_SUCCEEDED( m_dxgiSwapChain->Present( 0, 0 ) );
+    m_currBackBufferIndex = ( m_currBackBufferIndex + 1 ) % kNumSwapChainBuffers;
+
+    FlushCommandQueue();
+}
+
+void BoxDemoEx7::OnResize( int32_t width, int32_t height )
+{
+    GraphicsDemo::OnResize( width, height );
+    AdjustProjection();
+}
+
+void BoxDemoEx7::InitGeometry()
+{
+    static const Vertex kVertices[] = {
+        // Box
+        { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Wheat ) },
+        { .position = DirectX::XMFLOAT3( -1.0f, +1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Coral ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, +1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Red ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::LightSeaGreen ) },
+        { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Blue ) },
+        { .position = DirectX::XMFLOAT3( -1.0f, +1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Orange ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, +1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Purple ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, -1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::DeepSkyBlue ) },
+
+        // Pyramid
+        { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::LightGreen ) },
+        { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::LightGreen ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, -1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::LightGreen ) },
+        { .position = DirectX::XMFLOAT3( +1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::LightGreen ) },
+        { .position = DirectX::XMFLOAT3( +0.0f, +1.0f, +0.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Red ) }
+    };
+
+    static constexpr uint16_t kIndices[] = {
+        // Box
+        0, 1, 2, 0, 2, 3, // front face
+        4, 6, 5, 4, 7, 6, // back face
+        4, 5, 1, 4, 1, 0, // left face
+        3, 2, 6, 3, 6, 7, // right face
+        1, 5, 6, 1, 6, 2, // top face
+        4, 0, 3, 4, 3, 7, // bottom face
+
+        // Pyramid
+        1, 0, 2,
+        2, 0, 3,
+        0, 4, 3,
+        3, 4, 2,
+        2, 4, 1,
+        1, 4, 0
+    };
+
+    ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
+        m_device.Get(),                                  // device
+        m_uploadBatch,                                   // resourceUpload
+        kVertices,                                       // data
+        std::size( kVertices ),                          // count
+        sizeof( kVertices[0] ),                          // stride
+        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, // afterState
+        m_mesh.vertexBuffer.GetAddressOf() ) );          // pBuffer
+
+    ASSERT_SUCCEEDED( DirectX::CreateStaticBuffer(
+        m_device.Get(),                        // device
+        m_uploadBatch,                         // resourceUpload
+        kIndices,                              // data
+        std::size( kIndices ),                 // count
+        sizeof( kIndices[0] ),                 // stride
+        D3D12_RESOURCE_STATE_INDEX_BUFFER,     // afterState
+        m_mesh.indexBuffer.GetAddressOf() ) ); // pBuffer
+
+    m_mesh.vertexBufferData.resize( sizeof( kVertices ) );
+    memcpy( m_mesh.vertexBufferData.data(), kVertices, sizeof( kVertices ) );
+
+    m_mesh.indexBufferData.resize( sizeof( kIndices ) );
+    memcpy( m_mesh.indexBufferData.data(), kIndices, sizeof( kIndices ) );
+
+    m_mesh.indexBufferFormat = DXGI_FORMAT_R16_UINT;
+    m_mesh.indexBufferSize = sizeof( kIndices );
+    m_mesh.vertexBufferSize = sizeof( kVertices );
+    m_mesh.vertexBufferStride = sizeof( kVertices[0] );
+
+    m_mesh.submeshMap["box"] = { .baseIndex = 0, .numIndices = 36, .baseVertex = 0, .numVertices = 8 };
+    m_mesh.submeshMap["pyramid"] = { .baseIndex = 36, .numIndices = 18, .baseVertex = 8, .numVertices = 5 };
+
+    m_mesh.name = "Geometry";
+}
+
+void BoxDemoEx7::InitRootSignature()
+{
+    CD3DX12_ROOT_PARAMETER rootParameters[eRootArgument_Count] = {};
+    rootParameters[eRootArgument_ObjectConstBuffer].InitAsConstantBufferView( 0 );
+    rootParameters[eRootArgument_PassConstBuffer].InitAsConstantBufferView( 1 );
+
+    const CD3DX12_ROOT_SIGNATURE_DESC desc(
+        std::size( rootParameters ),
+        rootParameters,
+        0,
+        nullptr,
+        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT );
+
+    Microsoft::WRL::ComPtr<ID3DBlob> serializedBlob;
+    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
+
+    ASSERT_SUCCEEDED( D3D12SerializeRootSignature( &desc, D3D_ROOT_SIGNATURE_VERSION_1, serializedBlob.GetAddressOf(), errorBlob.GetAddressOf() ) );
+    ASSERT_SUCCEEDED( m_device->CreateRootSignature( 0, serializedBlob->GetBufferPointer(), serializedBlob->GetBufferSize(), IID_PPV_ARGS( m_rootSignature.GetAddressOf() ) ) );
+}
+
+void BoxDemoEx7::InitShaders()
+{
+    const wchar_t* vertexShaderArgs[] = { L"-E", L"VS", L"-T", L"vs_6_6" COMMA_DEBUG_ARGS };
+    const wchar_t* pixelShaderArgs[] = { L"-E", L"PS", L"-T", L"ps_6_6" COMMA_DEBUG_ARGS };
+
+    m_vertexShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColor.hlsl", std::size( vertexShaderArgs ), vertexShaderArgs );
+    m_pixelShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColor.hlsl", std::size( pixelShaderArgs ), pixelShaderArgs );
+}
+
+void BoxDemoEx7::InitPipelineStates()
+{
+    static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+    };
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = Utility::CreateDefaultPsoDesc(
+        kBackBufferFormat,
+        kDepthStencilFormat,
+        std::size( kInputElementDescs ),
+        kInputElementDescs,
+        m_rootSignature.Get(),
+        m_vertexShaderBlob.Get(),
+        m_pixelShaderBlob.Get() );
+
+    ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoSolid.GetAddressOf() ) ) );
+
+    desc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+    ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoWireframe.GetAddressOf() ) ) );
+}
+
+void BoxDemoEx7::RenderImGui()
+{
+    ImGui_ImplWin32_NewFrame();
+    ImGui_ImplDX12_NewFrame();
+    ImGui::NewFrame();
+
+    const float framerate = ImGui::GetIO().Framerate;
+
+    ImGui::Begin( "Options" );
+    ImGui::Text( "FPS:       %.0f", framerate );
+    ImGui::Text( "FrameTime: %.3f", 1000.0f / framerate );
+    ImGui::Checkbox( "Wireframe", &m_isWireframeEnabled );
+    ImGui::End();
+
+    ImGui::Render();
+}
+
+void BoxDemoEx7::AdjustProjection()
+{
+    const DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH( DirectX::XM_PIDIV4, m_aspectRatio, 1.0f, 1000.0f );
+    DirectX::XMStoreFloat4x4( &m_projection, projection );
+}
+
+void BoxDemoEx7::ProcessInput( const Input& input )
+{
+    if ( input.IsKeyJustPressed( 'F' ) )
+    {
+        m_isWireframeEnabled = !m_isWireframeEnabled;
+    }
+
+    if ( input.IsButtonPressed( Input::eMouseButton_Left ) && !ImGui::GetIO().WantCaptureMouse )
+    {
+        const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
+        m_viewPolarAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.x );
+        m_viewAzimuthalAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.y );
+    }
+
+    if ( input.IsButtonPressed( Input::eMouseButton_Right ) && !ImGui::GetIO().WantCaptureMouse )
+    {
+        const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
+        m_viewRadius += 0.01f * static_cast<float>( mouseDelta.x - mouseDelta.y );
+    }
+}
+
+void BoxDemoEx7::UpdateConstBuffers()
+{
+    // Convert from spherical coordinates to cartesian
+    const DirectX::XMVECTOR position = DirectX::XMVectorSet(
+        m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::cos( m_viewPolarAngle ),
+        m_viewRadius * std::cos( m_viewAzimuthalAngle ),
+        m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::sin( m_viewPolarAngle ),
+        1.0f );
+
+    const DirectX::XMVECTOR target = DirectX::XMVectorZero();
+    const DirectX::XMVECTOR up = DirectX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+
+    const DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH( position, target, up );
+    const DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4( &m_projection );
+    const DirectX::XMMATRIX viewProjection = view * projection;
+
+    ObjectConstants objectConstants;
+
+    DirectX::XMStoreFloat4x4( &objectConstants.world, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4( &m_worldMatrices[eObjectConstBufferIndex_Box] ) ) );
+    m_objectConstBuffer.SetElement( eObjectConstBufferIndex_Box, objectConstants );
+
+    DirectX::XMStoreFloat4x4( &objectConstants.world, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4( &m_worldMatrices[eObjectConstBufferIndex_Pyramid] ) ) );
+    m_objectConstBuffer.SetElement( eObjectConstBufferIndex_Pyramid, objectConstants );
+
+    PassConstants passConstants;
+    DirectX::XMStoreFloat4x4( &passConstants.viewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
+    m_passConstBuffer.SetElement( 0, passConstants );
+}

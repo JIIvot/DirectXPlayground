@@ -50,7 +50,7 @@ void BoxAxisDemo::OnUpdate( const GameTimer& timer, const Input& input )
 
 void BoxAxisDemo::OnRender( const GameTimer& timer )
 {
-    RenderImGui();
+    RenderImGui( timer );
 
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_psoAxis.Get() ) );
@@ -234,17 +234,15 @@ void BoxAxisDemo::InitPipelineStates()
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoAxis.GetAddressOf() ) ) );
 }
 
-void BoxAxisDemo::RenderImGui()
+void BoxAxisDemo::RenderImGui( const GameTimer& timer )
 {
     ImGui_ImplWin32_NewFrame();
     ImGui_ImplDX12_NewFrame();
     ImGui::NewFrame();
 
-    const float framerate = ImGui::GetIO().Framerate;
-
     ImGui::Begin( "Options" );
-    ImGui::Text( "FPS:       %.0f", framerate );
-    ImGui::Text( "FrameTime: %.3f", 1000.0f / framerate );
+    ImGui::Text( "FPS:       %.0f", 1.0f / timer.GetDeltaTime() );
+    ImGui::Text( "FrameTime: %.3f", timer.GetDeltaTime() );
     ImGui::Checkbox( "Wireframe", &m_isWireframeEnabled );
     ImGui::End();
 
