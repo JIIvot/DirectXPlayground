@@ -69,13 +69,13 @@ namespace Utility
     IDxcBlob*                       vertexShaderBlob,
     IDxcBlob*                       pixelShaderBlob );
 
-[[nodiscard]] inline constexpr uint32_t AlignSize( uint32_t size, uint32_t alignment )
+[[nodiscard]] constexpr uint32_t AlignSize( uint32_t size, uint32_t alignment )
 {
     return ( size + alignment - 1 ) & ~( alignment - 1 );
 }
 
 template<typename T>
-[[nodiscard]] inline constexpr uint32_t GetConstBufferAlignedSize()
+[[nodiscard]] constexpr uint32_t GetConstBufferAlignedSize()
 {
     return AlignSize( sizeof( T ), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT );
 }
