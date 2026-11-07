@@ -30,6 +30,8 @@ public:
 protected:
     explicit GraphicsDemo( const GraphicsDemoCreateInfo& info );
 
+    virtual void UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height );
+
     void FlushCommandQueue();
 
     [[nodiscard]] ID3D12Resource* GetCurrBackBufferResource() const
@@ -51,8 +53,6 @@ private:
     void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
     void ResizeSwapChain( int32_t width, int32_t height );
     void CreateSwapChainBufferViews( int32_t width, int32_t height );
-
-    void UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height );
 
 protected:
     static constexpr int32_t     kNumSwapChainBuffers = 2;
