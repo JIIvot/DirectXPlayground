@@ -149,6 +149,7 @@
     <ClCompile Include="Source\CbvSrvUavHeap.cpp" />
     <ClCompile Include="Source\GameTimer.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Axis\BoxAxisDemo.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.cpp" />
@@ -156,7 +157,7 @@
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex6\BoxDemoEx6.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex7\BoxDemoEx7.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex8\BoxDemoEx8.cpp" />
-    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex9\BoxDemoEx9.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex10\BoxDemoEx10.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Raw\BoxRawDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.cpp" />
     <ClCompile Include="Source\Input\Input.cpp" />
@@ -354,6 +355,7 @@
     <ClInclude Include="Source\CbvSrvUavHeap.h" />
     <ClInclude Include="Source\GameTimer.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Axis\BoxAxisDemo.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.h" />
@@ -361,7 +363,7 @@
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex6\BoxDemoEx6.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex7\BoxDemoEx7.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex8\BoxDemoEx8.h" />
-    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex9\BoxDemoEx9.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex10\BoxDemoEx10.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\ObjectConstants.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\PassConstants.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Raw\BoxRawDemo.h" />

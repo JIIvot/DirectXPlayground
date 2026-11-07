@@ -14,11 +14,11 @@ struct Vertex
     DirectX::XMFLOAT4 color;
 };
 
-enum RootArgument : uint8_t
+enum class RootArgument : uint8_t
 {
-    eRootArgument_ObjectConstBuffer,
-    eRootArgument_PassConstBuffer,
-    eRootArgument_Count
+    ObjectConstBuffer,
+    PassConstBuffer,
+    Count
 };
 
 BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
@@ -63,14 +63,14 @@ void BoxDemo::OnRender( const GameTimer& timer )
 
     m_commandList->ResourceBarrier( 1, &CD3DX12_RESOURCE_BARRIER::Transition( GetCurrBackBufferResource(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET ) );
 
-    m_commandList->ClearRenderTargetView( GetCurrBackBufferViewHandle(), DirectX::Colors::Black, 0, nullptr );
+    m_commandList->ClearRenderTargetView( GetCurrBackBufferViewHandle(), DirectX::Colors::CornflowerBlue, 0, nullptr );
     m_commandList->ClearDepthStencilView( m_dsvHeap.GetCpuHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr );
 
     m_commandList->OMSetRenderTargets( 1, &GetCurrBackBufferViewHandle(), true, &m_dsvHeap.GetCpuHandle() );
 
     m_commandList->SetGraphicsRootSignature( m_rootSignature.Get() );
-    m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_ObjectConstBuffer, m_objectConstBuffer.GetResource()->GetGPUVirtualAddress() );
-    m_commandList->SetGraphicsRootConstantBufferView( eRootArgument_PassConstBuffer, m_passConstBuffer.GetResource()->GetGPUVirtualAddress() );
+    m_commandList->SetGraphicsRootConstantBufferView( static_cast<int32_t>( RootArgument::ObjectConstBuffer ), m_objectConstBuffer.GetResource()->GetGPUVirtualAddress() );
+    m_commandList->SetGraphicsRootConstantBufferView( static_cast<int32_t>( RootArgument::PassConstBuffer ), m_passConstBuffer.GetResource()->GetGPUVirtualAddress() );
 
     m_commandList->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
     m_commandList->IASetVertexBuffers( 0, 1, &m_mesh.GetVertexBufferView() );
@@ -160,9 +160,9 @@ void BoxDemo::InitGeometry()
 
 void BoxDemo::InitRootSignature()
 {
-    CD3DX12_ROOT_PARAMETER rootParameters[eRootArgument_Count] = {};
-    rootParameters[eRootArgument_ObjectConstBuffer].InitAsConstantBufferView( 0 );
-    rootParameters[eRootArgument_PassConstBuffer].InitAsConstantBufferView( 1 );
+    CD3DX12_ROOT_PARAMETER rootParameters[static_cast<int32_t>( RootArgument::Count )] = {};
+    rootParameters[static_cast<int32_t>( RootArgument::ObjectConstBuffer )].InitAsConstantBufferView( 0 );
+    rootParameters[static_cast<int32_t>( RootArgument::PassConstBuffer )].InitAsConstantBufferView( 1 );
 
     const CD3DX12_ROOT_SIGNATURE_DESC desc(
         std::size( rootParameters ),

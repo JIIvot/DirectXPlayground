@@ -12,17 +12,33 @@ public:
 
     void OnKeyDown( int32_t key );
     void OnKeyUp( int32_t key );
-    void OnButtonDown( MouseButton button );
-    void OnButtonUp( MouseButton button );
     void OnMouseMove( int32_t mouseX, int32_t mouseY );
+
+    void OnButtonDown( MouseButton button )
+    {
+        m_currButtons[static_cast<int32_t>( button )] = true;
+    }
+
+    void OnButtonUp( MouseButton button )
+    {
+        m_currButtons[static_cast<int32_t>( button )] = false;
+    }
 
     void OnUpdateStarted();
     void OnUpdateFinished();
 
     [[nodiscard]] bool IsKeyPressed( int32_t key ) const;
     [[nodiscard]] bool IsKeyJustPressed( int32_t key ) const;
-    [[nodiscard]] bool IsButtonPressed( MouseButton button ) const;
-    [[nodiscard]] bool IsButtonJustPressed( MouseButton button ) const;
+
+    [[nodiscard]] bool IsButtonPressed( MouseButton button ) const
+    {
+        return m_currButtons[static_cast<int32_t>( button )];
+    }
+
+    [[nodiscard]] bool IsButtonJustPressed( MouseButton button ) const
+    {
+        return m_currButtons[static_cast<int32_t>( button )] && !m_lastButtons[static_cast<int32_t>( button )];
+    }
 
     [[nodiscard]] DirectX::XMFLOAT2 GetMousePosition() const
     {

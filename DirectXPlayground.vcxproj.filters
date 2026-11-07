@@ -219,7 +219,10 @@
     <ClCompile Include="Source\Input\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex9\BoxDemoEx9.cpp">
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex10\BoxDemoEx10.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -840,7 +843,10 @@
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\PassConstants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex9\BoxDemoEx9.h">
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex10\BoxDemoEx10.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -51,6 +51,7 @@ private:
     void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
     void ResizeSwapChain( int32_t width, int32_t height );
     void CreateSwapChainBufferViews( int32_t width, int32_t height );
+
     void UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height );
 
 protected:

@@ -256,6 +256,7 @@ bool Application::InitWindow()
     }
 
     LOG_TRACE( "Window created. Client width: %d, Client height: %d\n", m_clientWidth, m_clientHeight );
+    return true;
 }
 
 void Application::InitGraphics()
