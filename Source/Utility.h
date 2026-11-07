@@ -25,13 +25,6 @@
     #define MAKE_STRING_INTERNAL( x ) #x
     #define MAKE_STRING( x ) MAKE_STRING_INTERNAL( x )
 
-    #define ASSERT( x )                                                                                           \
-        if ( !x )                                                                                                 \
-        {                                                                                                         \
-            LOG_ERROR( "ASSERTION failed in " MAKE_STRING( __FILE__ ) " at line " MAKE_STRING( __LINE__ ) "\n" ); \
-            __debugbreak();                                                                                       \
-        }
-
     #define ASSERT_SUCCEEDED( hr )                                                                              \
         if ( FAILED( hr ) )                                                                                     \
         {                                                                                                       \
@@ -40,6 +33,8 @@
             __debugbreak();                                                                                     \
         }
 #else
+    #include <cstdlib>
+
     #define COMMA_DEBUG_ARGS
 
     #define LOG_TRACE( x, ... )
@@ -47,8 +42,11 @@
     #define LOG_WARN( x, ... )
     #define LOG_ERROR( x, ... )
 
-    #define ASSERT( x ) ( void )( x )
-    #define ASSERT_SUCCEEDED( hr, ... ) ( void )( hr )
+    #define ASSERT_SUCCEEDED( hr ) \
+        if ( FAILED( hr ) )        \
+        {                          \
+            abort();               \
+        }
 #endif
 
 namespace Utility
@@ -74,9 +72,8 @@ namespace Utility
     return ( size + alignment - 1 ) & ~( alignment - 1 );
 }
 
-template<typename T>
-[[nodiscard]] constexpr uint32_t GetConstBufferAlignedSize()
+[[nodiscard]] constexpr uint32_t GetConstBufferAlignedSize( uint32_t size )
 {
-    return AlignSize( sizeof( T ), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT );
+    return AlignSize( size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT );
 }
 } // namespace Utility

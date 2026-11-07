@@ -45,7 +45,7 @@ public:
     }
 
 private:
-    static constexpr uint32_t kElementSize = kIsConstBuffer ? Utility::GetConstBufferAlignedSize<T>() : sizeof( T );
+    static constexpr uint32_t kElementSize = kIsConstBuffer ? Utility::GetConstBufferAlignedSize( sizeof( T ) ) : sizeof( T );
 
     Microsoft::WRL::ComPtr<ID3D12Resource> m_bufferResource;
     std::byte*                             m_data;

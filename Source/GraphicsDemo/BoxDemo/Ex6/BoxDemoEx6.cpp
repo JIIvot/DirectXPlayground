@@ -237,14 +237,14 @@ void BoxDemoEx6::ProcessInput( const Input& input )
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
 
-    if ( input.IsButtonPressed( Input::eMouseButton_Left ) && !ImGui::GetIO().WantCaptureMouse )
+    if ( input.IsButtonPressed( MouseButton::Left ) && !ImGui::GetIO().WantCaptureMouse )
     {
         const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
         m_viewPolarAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.x );
         m_viewAzimuthalAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.y );
     }
 
-    if ( input.IsButtonPressed( Input::eMouseButton_Right ) && !ImGui::GetIO().WantCaptureMouse )
+    if ( input.IsButtonPressed( MouseButton::Right ) && !ImGui::GetIO().WantCaptureMouse )
     {
         const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
         m_viewRadius += 0.01f * static_cast<float>( mouseDelta.x - mouseDelta.y );

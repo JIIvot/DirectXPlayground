@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GraphicsDemo/GraphicsDemo.h"
-#include "Input.h"
+#include "Input/Input.h"
 #include "GameTimer.h"
 
 #include <cassert>
@@ -37,8 +37,8 @@ private:
     static LRESULT CALLBACK WindowProcedure( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
     LRESULT                 ProcessWindowMessage( HWND windowHandle, uint32_t message, WPARAM wParam, LPARAM lParam );
 
-    void InitWindow();
-    void InitGraphics();
+    [[nodiscard]] bool InitWindow();
+    void               InitGraphics();
 
 private:
     static Application* s_instance;

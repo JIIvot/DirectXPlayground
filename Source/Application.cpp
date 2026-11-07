@@ -69,7 +69,11 @@ void Application::Run()
 
 Application::Application()
 {
-    InitWindow();
+    if ( !InitWindow() )
+    {
+        return;
+    }
+
     InitGraphics();
 
     POINT cursorPosition;
@@ -119,27 +123,27 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
         return 0;
 
     case WM_LBUTTONDOWN:
-        m_input->OnButtonDown( Input::eMouseButton_Left );
+        m_input->OnButtonDown( MouseButton::Left );
         return 0;
 
     case WM_LBUTTONUP:
-        m_input->OnButtonUp( Input::eMouseButton_Left );
+        m_input->OnButtonUp( MouseButton::Left );
         return 0;
 
     case WM_MBUTTONDOWN:
-        m_input->OnButtonDown( Input::eMouseButton_Middle );
+        m_input->OnButtonDown( MouseButton::Middle );
         return 0;
 
     case WM_MBUTTONUP:
-        m_input->OnButtonUp( Input::eMouseButton_Middle );
+        m_input->OnButtonUp( MouseButton::Middle );
         return 0;
 
     case WM_RBUTTONDOWN:
-        m_input->OnButtonDown( Input::eMouseButton_Right );
+        m_input->OnButtonDown( MouseButton::Right );
         return 0;
 
     case WM_RBUTTONUP:
-        m_input->OnButtonUp( Input::eMouseButton_Right );
+        m_input->OnButtonUp( MouseButton::Right );
         return 0;
 
     case WM_MOUSEMOVE:
@@ -196,7 +200,7 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
     return DefWindowProc( windowHandle, message, wParam, lParam );
 }
 
-void Application::InitWindow()
+bool Application::InitWindow()
 {
     static constexpr wchar_t kClassName[] = L"App";
     static constexpr DWORD   kStyle = WS_OVERLAPPEDWINDOW;
@@ -212,7 +216,11 @@ void Application::InitWindow()
         .lpszClassName = kClassName
     };
 
-    ASSERT( RegisterClass( &windowClass ) );
+    if ( !RegisterClass( &windowClass ) )
+    {
+        LOG_ERROR( "Failed to register a window class!\n" );
+        return false;
+    }
 
     const int32_t screenWidth = GetSystemMetrics( SM_CXSCREEN );
     const int32_t screenHeight = GetSystemMetrics( SM_CYSCREEN );
@@ -241,7 +249,12 @@ void Application::InitWindow()
         instanceHandle, // hInstance
         nullptr );      // lpParam
 
-    assert( m_windowHandle );
+    if ( !m_windowHandle )
+    {
+        LOG_ERROR( "Failed to create a window!\n" );
+        return false;
+    }
+
     LOG_TRACE( "Window created. Client width: %d, Client height: %d\n", m_clientWidth, m_clientHeight );
 }
 

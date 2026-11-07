@@ -188,8 +188,8 @@ void BoxRawDemo::InitRootSignature()
 
 void BoxRawDemo::InitConstantBuffers()
 {
-    static constexpr uint32_t kObjectConstantsAlignedSize = Utility::GetConstBufferAlignedSize<ObjectConstants>();
-    static constexpr uint32_t kPassConstantsAlignedSize = Utility::GetConstBufferAlignedSize<PassConstants>();
+    static constexpr uint32_t kObjectConstantsAlignedSize = Utility::GetConstBufferAlignedSize( sizeof( kObjectConstantsAlignedSize ) );
+    static constexpr uint32_t kPassConstantsAlignedSize = Utility::GetConstBufferAlignedSize( sizeof( PassConstants ) );
 
     ASSERT_SUCCEEDED( m_device->CreateCommittedResource(
         &CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),
@@ -274,14 +274,14 @@ void BoxRawDemo::ProcessInput( const Input& input )
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
 
-    if ( input.IsButtonPressed( Input::eMouseButton_Left ) && !ImGui::GetIO().WantCaptureMouse )
+    if ( input.IsButtonPressed( MouseButton::Left ) && !ImGui::GetIO().WantCaptureMouse )
     {
         const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
         m_viewPolarAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.x );
         m_viewAzimuthalAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.y );
     }
 
-    if ( input.IsButtonPressed( Input::eMouseButton_Right ) && !ImGui::GetIO().WantCaptureMouse )
+    if ( input.IsButtonPressed( MouseButton::Right ) && !ImGui::GetIO().WantCaptureMouse )
     {
         const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
         m_viewRadius += 0.01f * static_cast<float>( mouseDelta.x - mouseDelta.y );

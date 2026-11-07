@@ -16,7 +16,7 @@ struct Vertex
 
 enum RootArgument : uint8_t
 {
-    eRootArgument_ObjectConstBuffer = 0,
+    eRootArgument_ObjectConstBuffer,
     eRootArgument_PassConstBuffer,
     eRootArgument_Count
 };
@@ -151,7 +151,9 @@ void BoxDemo::InitGeometry()
     m_mesh.vertexBufferSize = sizeof( kVertices );
     m_mesh.vertexBufferStride = sizeof( kVertices[0] );
 
-    m_mesh.submeshMap["box"] = { .baseIndex = 0, .numIndices = std::size( kIndices ), .baseVertex = 0, .numVertices = std::size( kVertices ) };
+    m_mesh.submeshMap.emplace(
+        "box",
+        Submesh{ .baseIndex = 0, .numIndices = std::size( kIndices ), .baseVertex = 0, .numVertices = std::size( kVertices ) } );
 
     m_mesh.name = "Box";
 }
@@ -237,14 +239,14 @@ void BoxDemo::ProcessInput( const Input& input )
         m_isWireframeEnabled = !m_isWireframeEnabled;
     }
 
-    if ( input.IsButtonPressed( Input::eMouseButton_Left ) && !ImGui::GetIO().WantCaptureMouse )
+    if ( input.IsButtonPressed( MouseButton::Left ) && !ImGui::GetIO().WantCaptureMouse )
     {
         const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
         m_viewPolarAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.x );
         m_viewAzimuthalAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.y );
     }
 
-    if ( input.IsButtonPressed( Input::eMouseButton_Right ) && !ImGui::GetIO().WantCaptureMouse )
+    if ( input.IsButtonPressed( MouseButton::Right ) && !ImGui::GetIO().WantCaptureMouse )
     {
         const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
         m_viewRadius += 0.01f * static_cast<float>( mouseDelta.x - mouseDelta.y );

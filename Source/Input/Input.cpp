@@ -22,14 +22,14 @@ void Input::OnKeyUp( int32_t key )
 
 void Input::OnButtonDown( MouseButton button )
 {
-    assert( button < eMouseButton_Count );
-    m_currButtons[button] = true;
+    assert( button < MouseButton::Count );
+    m_currButtons[static_cast<int32_t>( button )] = true;
 }
 
 void Input::OnButtonUp( MouseButton button )
 {
-    assert( button < eMouseButton_Count );
-    m_currButtons[button] = false;
+    assert( button < MouseButton::Count );
+    m_currButtons[static_cast<int32_t>( button )] = false;
 }
 
 void Input::OnMouseMove( int32_t mouseX, int32_t mouseY )
@@ -65,12 +65,12 @@ bool Input::IsKeyJustPressed( int32_t key ) const
 
 bool Input::IsButtonPressed( MouseButton button ) const
 {
-    assert( button < eMouseButton_Count );
-    return m_currButtons[button];
+    assert( button < MouseButton::Count );
+    return m_currButtons[static_cast<int32_t>( button )];
 }
 
 bool Input::IsButtonJustPressed( MouseButton button ) const
 {
-    assert( button < eMouseButton_Count );
-    return m_currButtons[button] && !m_lastButtons[button];
+    assert( button < MouseButton::Count );
+    return m_currButtons[static_cast<int32_t>( button )] && !m_lastButtons[static_cast<int32_t>( button )];
 }
