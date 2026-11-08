@@ -51,8 +51,8 @@ private:
     std::byte*                             m_data;
 };
 
-template<typename T, bool isConstBuffer>
-UploadBuffer<T, isConstBuffer>::UploadBuffer( ID3D12Device* device, uint32_t capacity )
+template<typename T, bool kIsConstBuffer>
+UploadBuffer<T, kIsConstBuffer>::UploadBuffer( ID3D12Device* device, uint32_t capacity )
 {
     ASSERT_SUCCEEDED( device->CreateCommittedResource(
         &CD3DX12_HEAP_PROPERTIES( D3D12_HEAP_TYPE_UPLOAD ),

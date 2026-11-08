@@ -42,13 +42,13 @@ void Application::Run()
             continue;
         }
 
-        m_timer.Tick();
-
         if ( m_isPaused )
         {
             Sleep( 100 );
             continue;
         }
+
+        m_timer.Tick();
 
         if ( m_shouldResize )
         {
@@ -151,6 +151,7 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
         return 0;
 
     case WM_ACTIVATE:
+    {
         if ( LOWORD( wParam ) == WA_INACTIVE )
         {
             m_isPaused = true;
@@ -161,7 +162,9 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
             m_isPaused = false;
             m_timer.Start();
         }
+
         return 0;
+    }
 
     case WM_SIZE:
     {
@@ -176,6 +179,7 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
         m_shouldResize = newWidth != m_clientWidth || newHeight != m_clientHeight;
         m_clientWidth = newWidth;
         m_clientHeight = newHeight;
+
         return 0;
     }
 
@@ -183,6 +187,7 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
     {
         m_isPaused = true;
         m_timer.Pause();
+
         return 0;
     }
 
@@ -190,6 +195,7 @@ LRESULT Application::ProcessWindowMessage( HWND windowHandle, uint32_t message, 
     {
         m_isPaused = false;
         m_timer.Start();
+
         return 0;
     }
 
