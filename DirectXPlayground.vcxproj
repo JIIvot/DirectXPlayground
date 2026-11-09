@@ -150,6 +150,8 @@
     <ClCompile Include="Source\GameTimer.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Axis\BoxAxisDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex12\BoxDemoEx12.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex13\BoxDemoEx13.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.cpp" />
@@ -356,6 +358,8 @@
     <ClInclude Include="Source\GameTimer.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Axis\BoxAxisDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex12\BoxDemoEx12.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex13\BoxDemoEx13.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.h" />

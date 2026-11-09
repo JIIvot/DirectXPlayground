@@ -225,6 +225,12 @@
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex12\BoxDemoEx12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex13\BoxDemoEx13.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="External\DirectXTK12\Src\TeapotData.inc">
@@ -847,6 +853,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex12\BoxDemoEx12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex13\BoxDemoEx13.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
