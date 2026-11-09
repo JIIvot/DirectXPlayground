@@ -152,6 +152,8 @@
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex12\BoxDemoEx12.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex13\BoxDemoEx13.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex14\BoxDemoEx14.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex16\BoxDemoEx16.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.cpp" />
@@ -360,6 +362,10 @@
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex11\BoxDemoEx11.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex12\BoxDemoEx12.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex13\BoxDemoEx13.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex14\BoxDemoEx14.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex14\PassConstantsEx14.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex16\BoxDemoEx16.h" />
+    <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex16\PassConstantsEx16.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex2\BoxDemoEx2.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\BoxDemo\Ex3\BoxDemoEx3.h" />

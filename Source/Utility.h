@@ -1,12 +1,13 @@
 #pragma once
 
 #include <cstdint>
+#include <cstdlib>
 #include <d3d12.h>
 #include <dxcapi.h>
 #include <wrl/client.h>
+#include <Windows.h>
 
 #ifdef _DEBUG
-    #include <Windows.h>
     #include <cstdio>
 
     #define COMMA_DEBUG_ARGS , DXC_ARG_DEBUG, DXC_ARG_SKIP_OPTIMIZATIONS
@@ -24,30 +25,22 @@
 
     #define MAKE_STRING_INTERNAL( x ) #x
     #define MAKE_STRING( x ) MAKE_STRING_INTERNAL( x )
-
-    #define ASSERT_SUCCEEDED( hr )                                                                              \
-        if ( FAILED( hr ) )                                                                                     \
-        {                                                                                                       \
-            LOG_ERROR( "HRESULT failed in " MAKE_STRING( __FILE__ ) " at line " MAKE_STRING( __LINE__ ) "\n" ); \
-            LOG_ERROR( "hr = 0x%08X\n", hr );                                                                   \
-            __debugbreak();                                                                                     \
-        }
 #else
-    #include <cstdlib>
-
     #define COMMA_DEBUG_ARGS
 
     #define LOG_TRACE( x, ... )
     #define LOG_INFO( x, ... )
     #define LOG_WARN( x, ... )
     #define LOG_ERROR( x, ... )
-
-    #define ASSERT_SUCCEEDED( hr ) \
-        if ( FAILED( hr ) )        \
-        {                          \
-            abort();               \
-        }
 #endif
+
+#define ASSERT_SUCCEEDED( hr )                                                                              \
+    if ( FAILED( hr ) )                                                                                     \
+    {                                                                                                       \
+        LOG_ERROR( "HRESULT failed in " MAKE_STRING( __FILE__ ) " at line " MAKE_STRING( __LINE__ ) "\n" ); \
+        LOG_ERROR( "hr = 0x%08X\n", hr );                                                                   \
+        abort();                                                                                            \
+    }
 
 namespace Utility
 {

@@ -1,9 +1,9 @@
-cbuffer cbufferObject : register( b0 )
+cbuffer objectConstBuffer : register( b0 )
 {
     float4x4 g_world;
 }
 
-cbuffer cbufferPass : register( b1 )
+cbuffer passConstBuffer : register( b1 )
 {
     float4x4 g_viewProjection;
 }
