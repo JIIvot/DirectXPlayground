@@ -149,6 +149,7 @@
     <ClCompile Include="Source\CbvSrvUavHeap.cpp" />
     <ClCompile Include="Source\GameTimer.cpp" />
     <ClCompile Include="Source\GraphicsDemo\Box\BoxDemo.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\Shapes\ShapesFrameResource.cpp" />
     <ClCompile Include="Source\GraphicsDemo\Triangle\TriangleDemo.cpp" />
     <ClCompile Include="Source\Input\Input.cpp" />
     <ClCompile Include="Source\ResourceViewHeap.cpp" />
@@ -345,12 +346,17 @@
     <ClInclude Include="Source\CbvSrvUavHeap.h" />
     <ClInclude Include="Source\GameTimer.h" />
     <ClInclude Include="Source\GraphicsDemo\Box\BoxDemo.h" />
-    <ClInclude Include="Source\GraphicsDemo\Box\BoxDemoObjectConstants.h" />
-    <ClInclude Include="Source\GraphicsDemo\Box\BoxDemoPassConstants.h" />
+    <ClInclude Include="Source\GraphicsDemo\Box\BoxObjectConstants.h" />
+    <ClInclude Include="Source\GraphicsDemo\Box\BoxPassConstants.h" />
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemoCreateInfo.h" />
+    <ClInclude Include="Source\GraphicsDemo\Shapes\ShapesFrameResource.h" />
+    <ClInclude Include="Source\GraphicsDemo\Shapes\ShapesObjectConstants.h" />
+    <ClInclude Include="Source\GraphicsDemo\Shapes\ShapesPassConstants.h" />
+    <ClInclude Include="Source\GraphicsDemo\Shapes\ShapesRenderItem.h" />
     <ClInclude Include="Source\GraphicsDemo\Triangle\TriangleDemo.h" />
     <ClInclude Include="Source\Input\Input.h" />
     <ClInclude Include="Source\Input\MouseButton.h" />
+    <ClInclude Include="Source\Material.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\PositionColorVertex.h" />
     <ClInclude Include="Source\ResourceViewHeap.h" />

@@ -3,8 +3,8 @@
 #include "GraphicsDemo/GraphicsDemo.h"
 #include "UploadBuffer.h"
 #include "Mesh.h"
-#include "BoxDemoObjectConstants.h"
-#include "BoxDemoPassConstants.h"
+#include "BoxObjectConstants.h"
+#include "BoxPassConstants.h"
 
 #include <dxcapi.h>
 #include <DirectXMath.h>
