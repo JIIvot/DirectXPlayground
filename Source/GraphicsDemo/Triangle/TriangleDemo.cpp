@@ -9,7 +9,9 @@
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
 
-TriangleDemo::TriangleDemo( const GraphicsDemoCreateInfo& info )
+namespace TriangleDemo
+{
+Demo::Demo( const GraphicsDemoCreateInfo& info )
     : GraphicsDemo( info )
 {
     m_uploadBatch.Begin();
@@ -23,7 +25,7 @@ TriangleDemo::TriangleDemo( const GraphicsDemoCreateInfo& info )
     uploadResult.wait();
 }
 
-void TriangleDemo::OnUpdate( const GameTimer& timer, const Input& input )
+void Demo::OnUpdate( const GameTimer& timer, const Input& input )
 {
     GraphicsDemo::OnUpdate( timer, input );
 
@@ -33,7 +35,7 @@ void TriangleDemo::OnUpdate( const GameTimer& timer, const Input& input )
     }
 }
 
-void TriangleDemo::OnRender( const GameTimer& timer )
+void Demo::OnRender( const GameTimer& timer )
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );
@@ -76,7 +78,7 @@ void TriangleDemo::OnRender( const GameTimer& timer )
     FlushCommandQueue();
 }
 
-void TriangleDemo::InitRootSignature()
+void Demo::InitRootSignature()
 {
     const CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(
         0,                                                              // numParameters
@@ -101,7 +103,7 @@ void TriangleDemo::InitRootSignature()
         IID_PPV_ARGS( m_rootSignature.GetAddressOf() ) ) );
 }
 
-void TriangleDemo::InitShaders()
+void Demo::InitShaders()
 {
     const wchar_t* vertexShaderArgs[] = { L"-E", L"VS", L"-T", L"vs_6_6" COMMA_DEBUG_ARGS };
     const wchar_t* pixelShaderArgs[] = { L"-E", L"PS", L"-T", L"ps_6_6" COMMA_DEBUG_ARGS };
@@ -110,7 +112,7 @@ void TriangleDemo::InitShaders()
     m_pixelShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColorTriangle.hlsl", std::size( pixelShaderArgs ), pixelShaderArgs );
 }
 
-void TriangleDemo::InitGeometry()
+void Demo::InitGeometry()
 {
     static constexpr Vertex kVertices[] = {
         { .position = DirectX::XMFLOAT3( -0.5f, -0.5f, +0.0f ), .color = DirectX::XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
@@ -147,7 +149,7 @@ void TriangleDemo::InitGeometry()
     m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
 }
 
-void TriangleDemo::InitPipelineStates()
+void Demo::InitPipelineStates()
 {
     static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -170,7 +172,7 @@ void TriangleDemo::InitPipelineStates()
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoWireframe.GetAddressOf() ) ) );
 }
 
-void TriangleDemo::RenderImGui()
+void Demo::RenderImGui()
 {
     ImGui_ImplWin32_NewFrame();
     ImGui_ImplDX12_NewFrame();
@@ -186,3 +188,4 @@ void TriangleDemo::RenderImGui()
 
     ImGui::Render();
 }
+} // namespace TriangleDemo

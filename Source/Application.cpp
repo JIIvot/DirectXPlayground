@@ -7,8 +7,6 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
-Application* Application::s_instance;
-
 Application& Application::Get()
 {
     assert( s_instance );

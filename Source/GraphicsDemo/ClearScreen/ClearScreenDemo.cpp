@@ -6,7 +6,11 @@
 #include <backends/imgui_impl_win32.h>
 #include <d3dx12/d3dx12_barriers.h>
 
-static void RenderImGui()
+namespace ClearScreenDemo
+{
+namespace
+{
+void RenderImGui()
 {
     ImGui_ImplWin32_NewFrame();
     ImGui_ImplDX12_NewFrame();
@@ -21,8 +25,9 @@ static void RenderImGui()
 
     ImGui::Render();
 }
+} // namespace
 
-void ClearScreenDemo::OnRender( const GameTimer& timer )
+void Demo::OnRender( const GameTimer& timer )
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), nullptr ) );
@@ -56,3 +61,4 @@ void ClearScreenDemo::OnRender( const GameTimer& timer )
 
     FlushCommandQueue();
 }
+} // namespace ClearScreenDemo

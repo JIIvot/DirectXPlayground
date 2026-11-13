@@ -4,10 +4,12 @@
 
 #include <dxcapi.h>
 
-class TriangleDemo final : public GraphicsDemo
+namespace TriangleDemo
+{
+class Demo final : public GraphicsDemo
 {
 public:
-    explicit TriangleDemo( const GraphicsDemoCreateInfo& info );
+    explicit Demo( const GraphicsDemoCreateInfo& info );
 
     void OnUpdate( const GameTimer& timer, const Input& input ) override;
     void OnRender( const GameTimer& timer ) override;
@@ -34,3 +36,4 @@ private:
 
     bool m_isWireframeEnabled = false;
 };
+} // namespace Demo

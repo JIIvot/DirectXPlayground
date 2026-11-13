@@ -3,25 +3,18 @@
 #include "GraphicsDemo/GraphicsDemo.h"
 #include "UploadBuffer.h"
 #include "Mesh.h"
+#include "BoxDemoObjectConstants.h"
+#include "BoxDemoPassConstants.h"
 
 #include <dxcapi.h>
 #include <DirectXMath.h>
 
-class BoxDemo final : public GraphicsDemo
+namespace BoxDemo
 {
-private:
-    struct ObjectConstants
-    {
-        DirectX::XMFLOAT4X4 world;
-    };
-
-    struct PassConstants
-    {
-        DirectX::XMFLOAT4X4 viewProjection;
-    };
-
+class Demo final : public GraphicsDemo
+{
 public:
-    explicit BoxDemo( const GraphicsDemoCreateInfo& info );
+    explicit Demo( const GraphicsDemoCreateInfo& info );
 
     void OnUpdate( const GameTimer& timer, const Input& input ) override;
     void OnRender( const GameTimer& timer ) override;
@@ -61,3 +54,4 @@ private:
 
     bool m_isWireframeEnabled = false;
 };
+} // namespace BoxDemo

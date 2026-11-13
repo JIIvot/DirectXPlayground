@@ -41,7 +41,7 @@ private:
     void               InitGraphics();
 
 private:
-    static Application* s_instance;
+    inline static Application* s_instance;
 
     HWND                          m_windowHandle = nullptr;
     std::unique_ptr<GraphicsDemo> m_demo;

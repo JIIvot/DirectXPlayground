@@ -9,6 +9,8 @@
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
 
+namespace BoxDemo
+{
 namespace
 {
 enum RootArgument : uint8_t
@@ -19,7 +21,7 @@ enum RootArgument : uint8_t
 };
 } // namespace
 
-BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
+Demo::Demo( const GraphicsDemoCreateInfo& info )
     : GraphicsDemo( info )
     , m_objectConstBuffer( info.device, 1 )
     , m_passConstBuffer( info.device, 1 )
@@ -38,7 +40,7 @@ BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
     uploadResult.wait();
 }
 
-void BoxDemo::OnUpdate( const GameTimer& timer, const Input& input )
+void Demo::OnUpdate( const GameTimer& timer, const Input& input )
 {
     GraphicsDemo::OnUpdate( timer, input );
 
@@ -46,7 +48,7 @@ void BoxDemo::OnUpdate( const GameTimer& timer, const Input& input )
     UpdateConstBuffers();
 }
 
-void BoxDemo::OnRender( const GameTimer& timer )
+void Demo::OnRender( const GameTimer& timer )
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
     ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );
@@ -92,13 +94,13 @@ void BoxDemo::OnRender( const GameTimer& timer )
     FlushCommandQueue();
 }
 
-void BoxDemo::OnResize( int32_t width, int32_t height )
+void Demo::OnResize( int32_t width, int32_t height )
 {
     GraphicsDemo::OnResize( width, height );
     AdjustProjection();
 }
 
-void BoxDemo::InitGeometry()
+void Demo::InitGeometry()
 {
     static const Vertex kVertices[] = {
         { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Wheat ) },
@@ -156,7 +158,7 @@ void BoxDemo::InitGeometry()
     m_mesh.name = "Box";
 }
 
-void BoxDemo::InitRootSignature()
+void Demo::InitRootSignature()
 {
     CD3DX12_ROOT_PARAMETER rootParameters[eRootArgument_Count] = {};
     rootParameters[eRootArgument_ObjectConstBuffer].InitAsConstantBufferView( 0 );
@@ -176,7 +178,7 @@ void BoxDemo::InitRootSignature()
     ASSERT_SUCCEEDED( m_device->CreateRootSignature( 0, serializedBlob->GetBufferPointer(), serializedBlob->GetBufferSize(), IID_PPV_ARGS( m_rootSignature.GetAddressOf() ) ) );
 }
 
-void BoxDemo::InitShaders()
+void Demo::InitShaders()
 {
     const wchar_t* vertexShaderArgs[] = { L"-E", L"VS", L"-T", L"vs_6_6" COMMA_DEBUG_ARGS };
     const wchar_t* pixelShaderArgs[] = { L"-E", L"PS", L"-T", L"ps_6_6" COMMA_DEBUG_ARGS };
@@ -185,7 +187,7 @@ void BoxDemo::InitShaders()
     m_pixelShaderBlob = Utility::CompileShaderFromFile( L"Shaders/BasicColor.hlsl", std::size( pixelShaderArgs ), pixelShaderArgs );
 }
 
-void BoxDemo::InitPipelineStates()
+void Demo::InitPipelineStates()
 {
     static constexpr D3D12_INPUT_ELEMENT_DESC kInputElementDescs[2] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -207,7 +209,7 @@ void BoxDemo::InitPipelineStates()
     ASSERT_SUCCEEDED( m_device->CreateGraphicsPipelineState( &desc, IID_PPV_ARGS( m_psoWireframe.GetAddressOf() ) ) );
 }
 
-void BoxDemo::RenderImGui()
+void Demo::RenderImGui()
 {
     ImGui_ImplWin32_NewFrame();
     ImGui_ImplDX12_NewFrame();
@@ -224,13 +226,13 @@ void BoxDemo::RenderImGui()
     ImGui::Render();
 }
 
-void BoxDemo::AdjustProjection()
+void Demo::AdjustProjection()
 {
     const DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH( DirectX::XM_PIDIV4, m_aspectRatio, 1.0f, 1000.0f );
     DirectX::XMStoreFloat4x4( &m_projection, projection );
 }
 
-void BoxDemo::ProcessInput( const Input& input )
+void Demo::ProcessInput( const Input& input )
 {
     if ( input.IsKeyJustPressed( 'F' ) )
     {
@@ -251,7 +253,7 @@ void BoxDemo::ProcessInput( const Input& input )
     }
 }
 
-void BoxDemo::UpdateConstBuffers()
+void Demo::UpdateConstBuffers()
 {
     // Convert from spherical coordinates to cartesian
     const DirectX::XMVECTOR position = DirectX::XMVectorSet(
@@ -275,3 +277,4 @@ void BoxDemo::UpdateConstBuffers()
     DirectX::XMStoreFloat4x4( &passConstants.viewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
     m_passConstBuffer.SetElement( 0, passConstants );
 }
+} // namespace Demo

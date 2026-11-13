@@ -153,7 +153,7 @@
     <ClCompile Include="Source\GraphicsDemo\GraphicsDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.cpp">
+    <ClCompile Include="Source\GraphicsDemo\ClearScreen\ClearScreenDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -177,7 +177,7 @@
     <ClCompile Include="Source\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.cpp">
+    <ClCompile Include="Source\GraphicsDemo\Triangle\TriangleDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="External\imgui\backends\imgui_impl_dx12.cpp">
@@ -186,7 +186,7 @@
     <ClCompile Include="External\imgui\backends\imgui_impl_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GraphicsDemo\BoxDemo\BoxDemo.cpp">
+    <ClCompile Include="Source\GraphicsDemo\Box\BoxDemo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameTimer.cpp">
@@ -723,7 +723,7 @@
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GraphicsDemo\ClearScreenDemo\ClearScreenDemo.h">
+    <ClInclude Include="Source\GraphicsDemo\ClearScreen\ClearScreenDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="External\imgui\imconfig.h">
@@ -750,7 +750,7 @@
     <ClInclude Include="Source\ApplicationConstants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GraphicsDemo\TriangleDemo\TriangleDemo.h">
+    <ClInclude Include="Source\GraphicsDemo\Triangle\TriangleDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="External\imgui\backends\imgui_impl_dx12.h">
@@ -765,7 +765,7 @@
     <ClInclude Include="Source\UploadBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GraphicsDemo\BoxDemo\BoxDemo.h">
+    <ClInclude Include="Source\GraphicsDemo\Box\BoxDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Submesh.h">
@@ -784,6 +784,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\PositionColorVertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\Box\BoxDemoObjectConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\Box\BoxDemoPassConstants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

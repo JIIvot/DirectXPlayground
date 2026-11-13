@@ -2,13 +2,16 @@
 
 #include "GraphicsDemo/GraphicsDemo.h"
 
-class ClearScreenDemo final : public GraphicsDemo
+namespace ClearScreenDemo
+{
+class Demo final : public GraphicsDemo
 {
 public:
-    explicit ClearScreenDemo( const GraphicsDemoCreateInfo& info )
+    explicit Demo( const GraphicsDemoCreateInfo& info )
         : GraphicsDemo( info )
     {
     }
 
     void OnRender( const GameTimer& timer ) override;
 };
+} // namespace Demo
