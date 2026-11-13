@@ -3,14 +3,23 @@
 #include "GraphicsDemo/GraphicsDemo.h"
 #include "UploadBuffer.h"
 #include "Mesh.h"
-#include "ObjectConstants.h"
-#include "PassConstants.h"
 
 #include <dxcapi.h>
 #include <DirectXMath.h>
 
 class BoxDemo final : public GraphicsDemo
 {
+private:
+    struct ObjectConstants
+    {
+        DirectX::XMFLOAT4X4 world;
+    };
+
+    struct PassConstants
+    {
+        DirectX::XMFLOAT4X4 viewProjection;
+    };
+
 public:
     explicit BoxDemo( const GraphicsDemoCreateInfo& info );
 

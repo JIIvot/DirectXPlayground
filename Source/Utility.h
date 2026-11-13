@@ -1,11 +1,9 @@
 #pragma once
 
 #include <cstdint>
-#include <cstdlib>
 #include <d3d12.h>
 #include <dxcapi.h>
 #include <wrl/client.h>
-#include <Windows.h>
 
 #ifdef _DEBUG
     #include <cstdio>
@@ -38,7 +36,7 @@
     if ( FAILED( hr ) )                                                                                     \
     {                                                                                                       \
         LOG_ERROR( "HRESULT failed in " MAKE_STRING( __FILE__ ) " at line " MAKE_STRING( __LINE__ ) "\n" ); \
-        LOG_ERROR( "hr = 0x%08X\n", hr );                                                                   \
+        LOG_ERROR( "hr = 0x%08X\n", static_cast<uint32_t>( hr ) );                                          \
         abort();                                                                                            \
     }
 

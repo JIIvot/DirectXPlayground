@@ -1,9 +1,7 @@
 ﻿#include "Utility.h"
-#include "ApplicationConstants.h"
 
 #include <filesystem>
 #include <cassert>
-#include <string>
 #include <Windows.h>
 #include <d3dx12.h>
 
@@ -33,6 +31,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath,
 
     uint32_t                                 codePage = CP_UTF8;
     Microsoft::WRL::ComPtr<IDxcBlobEncoding> sourceBlob;
+
     ASSERT_SUCCEEDED( s_utils->LoadFile( filePath, &codePage, sourceBlob.GetAddressOf() ) );
 
     const DxcBuffer sourceBuffer = {
@@ -47,7 +46,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath,
     Microsoft::WRL::ComPtr<IDxcBlobEncoding> errorMessages;
 
     const HRESULT hr = s_compiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, s_includeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) );
-    result->GetErrorBuffer( errorMessages.GetAddressOf() );
+    ASSERT_SUCCEEDED( result->GetErrorBuffer( errorMessages.GetAddressOf() ) );
 
     if ( errorMessages->GetBufferSize() > 0 )
     {
@@ -83,7 +82,7 @@ D3D12_GRAPHICS_PIPELINE_STATE_DESC CreateDefaultPsoDesc(
         .SampleMask = UINT_MAX,
         .RasterizerState = CD3DX12_RASTERIZER_DESC( D3D12_DEFAULT ),
         .DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC( D3D12_DEFAULT ),
-        .InputLayout = { inputElementDescs, numInputElements },
+        .InputLayout = { .pInputElementDescs = inputElementDescs, .NumElements = numInputElements },
         .PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
         .NumRenderTargets = 1,
         .RTVFormats = { rtvFormat },

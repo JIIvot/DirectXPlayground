@@ -6,6 +6,22 @@
 #include <backends/imgui_impl_win32.h>
 #include <d3dx12/d3dx12_barriers.h>
 
+static void RenderImGui()
+{
+    ImGui_ImplWin32_NewFrame();
+    ImGui_ImplDX12_NewFrame();
+    ImGui::NewFrame();
+
+    const ImGuiIO& io = ImGui::GetIO();
+
+    ImGui::Begin( "Options" );
+    ImGui::Text( "FPS:          %d", static_cast<int32_t>( io.Framerate ) );
+    ImGui::Text( "FrameTime:    %.3f", 1000.0f / io.Framerate );
+    ImGui::End();
+
+    ImGui::Render();
+}
+
 void ClearScreenDemo::OnRender( const GameTimer& timer )
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
@@ -39,20 +55,4 @@ void ClearScreenDemo::OnRender( const GameTimer& timer )
     m_currBackBufferIndex = ( m_currBackBufferIndex + 1 ) % kNumSwapChainBuffers;
 
     FlushCommandQueue();
-}
-
-void ClearScreenDemo::RenderImGui() const
-{
-    ImGui_ImplWin32_NewFrame();
-    ImGui_ImplDX12_NewFrame();
-    ImGui::NewFrame();
-
-    const ImGuiIO& io = ImGui::GetIO();
-
-    ImGui::Begin( "Options" );
-    ImGui::Text( "FPS:          %d", static_cast<int32_t>( io.Framerate ) );
-    ImGui::Text( "FrameTime:    %.3f", 1000.0f / io.Framerate );
-    ImGui::End();
-
-    ImGui::Render();
 }

@@ -2,8 +2,6 @@
 
 #include "GraphicsDemo/GraphicsDemo.h"
 
-#include <string>
-
 class ClearScreenDemo final : public GraphicsDemo
 {
 public:
@@ -13,7 +11,4 @@ public:
     }
 
     void OnRender( const GameTimer& timer ) override;
-
-private:
-    void RenderImGui() const;
 };

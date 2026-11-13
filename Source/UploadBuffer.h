@@ -39,7 +39,7 @@ public:
     }
 
     void CopyData( uint32_t numElements, const T* elements )
-        requires !kIsConstBuffer
+        requires ( !kIsConstBuffer )
     {
         memcpy( m_data, elements, numElements * sizeof( T ) );
     }

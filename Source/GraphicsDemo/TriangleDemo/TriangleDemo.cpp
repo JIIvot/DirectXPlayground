@@ -1,6 +1,7 @@
 #include "TriangleDemo.h"
 #include "Utility.h"
 #include "Application.h"
+#include "PositionColorVertex.h"
 
 #include <DirectXMath.h>
 #include <DirectXColors.h>
@@ -8,18 +9,12 @@
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
 
-struct Vertex
-{
-    DirectX::XMFLOAT3 position;
-    DirectX::XMFLOAT4 color;
-};
-
 TriangleDemo::TriangleDemo( const GraphicsDemoCreateInfo& info )
     : GraphicsDemo( info )
 {
     m_uploadBatch.Begin();
     InitGeometry();
-    std::future<void> uploadResult = m_uploadBatch.End( m_commandQueue.Get() );
+    const std::future<void> uploadResult = m_uploadBatch.End( m_commandQueue.Get() );
 
     InitRootSignature();
     InitShaders();
@@ -118,9 +113,9 @@ void TriangleDemo::InitShaders()
 void TriangleDemo::InitGeometry()
 {
     static constexpr Vertex kVertices[] = {
-        { DirectX::XMFLOAT3( -0.5f, -0.5f, 0.0f ), DirectX::XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
-        { DirectX::XMFLOAT3( 0.0f, 0.5f, 0.0f ), DirectX::XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) },
-        { DirectX::XMFLOAT3( 0.5f, -0.5f, 0.0f ), DirectX::XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) }
+        { .position = DirectX::XMFLOAT3( -0.5f, -0.5f, +0.0f ), .color = DirectX::XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
+        { .position = DirectX::XMFLOAT3( -0.0f, +0.5f, +0.0f ), .color = DirectX::XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) },
+        { .position = DirectX::XMFLOAT3( -0.5f, -0.5f, +0.0f ), .color = DirectX::XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) }
     };
 
     static constexpr uint16_t kIndices[] = { 0, 1, 2 };

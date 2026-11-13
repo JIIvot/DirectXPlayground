@@ -3,7 +3,6 @@
 #include "Utility.h"
 
 #include <imgui.h>
-#include <backends/imgui_impl_win32.h>
 #include <windowsx.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
@@ -234,7 +233,7 @@ bool Application::InitWindow()
     m_clientWidth = screenWidth / 3 * 2;
     m_clientHeight = screenHeight / 3 * 2;
 
-    RECT windowRect = { 0, 0, m_clientWidth, m_clientHeight };
+    RECT windowRect = { .right = m_clientWidth, .bottom = m_clientHeight };
     AdjustWindowRect( &windowRect, kStyle, false );
 
     const int32_t windowWidth = windowRect.right - windowRect.left;

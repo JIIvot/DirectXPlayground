@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <DirectXCollision.h>
 
 struct Submesh

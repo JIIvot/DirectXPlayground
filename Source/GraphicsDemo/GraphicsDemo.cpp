@@ -85,6 +85,7 @@ void GraphicsDemo::InitImGui( HWND windowHandle )
     initInfo.UserData = &m_cbvSrvUavHeap;
     initInfo.SrvDescriptorHeap = m_cbvSrvUavHeap.GetHeap();
 
+    // ReSharper disable once CppParameterMayBeConstPtrOrRef
     initInfo.SrvDescriptorAllocFn = []( ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE* cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* gpuHandle )
     {
         CbvSrvUavHeap* const heap = static_cast<CbvSrvUavHeap*>( info->UserData );
@@ -94,6 +95,7 @@ void GraphicsDemo::InitImGui( HWND windowHandle )
         *gpuHandle = heap->GetGpuHandle( index );
     };
 
+    // ReSharper disable once CppParameterMayBeConstPtrOrRef
     initInfo.SrvDescriptorFreeFn = []( ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle )
     {
         CbvSrvUavHeap* const heap = static_cast<CbvSrvUavHeap*>( info->UserData );

@@ -1,6 +1,7 @@
 #include "BoxDemo.h"
 #include "Utility.h"
 #include "Application.h"
+#include "PositionColorVertex.h"
 
 #include <DirectXMath.h>
 #include <DirectXColors.h>
@@ -8,18 +9,15 @@
 #include <backends/imgui_impl_dx12.h>
 #include <backends/imgui_impl_win32.h>
 
-struct Vertex
+namespace
 {
-    DirectX::XMFLOAT3 position;
-    DirectX::XMFLOAT4 color;
-};
-
 enum RootArgument : uint8_t
 {
     eRootArgument_ObjectConstBuffer,
     eRootArgument_PassConstBuffer,
     eRootArgument_Count
 };
+} // namespace
 
 BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
     : GraphicsDemo( info )
@@ -28,7 +26,7 @@ BoxDemo::BoxDemo( const GraphicsDemoCreateInfo& info )
 {
     m_uploadBatch.Begin();
     InitGeometry();
-    std::future<void> uploadResult = m_uploadBatch.End( m_commandQueue.Get() );
+    const std::future<void> uploadResult = m_uploadBatch.End( m_commandQueue.Get() );
 
     DirectX::XMStoreFloat4x4( &m_world, DirectX::XMMatrixIdentity() );
     AdjustProjection();
@@ -215,11 +213,11 @@ void BoxDemo::RenderImGui()
     ImGui_ImplDX12_NewFrame();
     ImGui::NewFrame();
 
-    const float framerate = ImGui::GetIO().Framerate;
+    const float frameRate = ImGui::GetIO().Framerate;
 
     ImGui::Begin( "Options" );
-    ImGui::Text( "FPS:       %.0f", framerate );
-    ImGui::Text( "FrameTime: %.3f", 1000.0f / framerate );
+    ImGui::Text( "FPS:       %.0f", frameRate );
+    ImGui::Text( "FrameTime: %.3f", 1000.0f / frameRate );
     ImGui::Checkbox( "Wireframe", &m_isWireframeEnabled );
     ImGui::End();
 
@@ -249,7 +247,7 @@ void BoxDemo::ProcessInput( const Input& input )
     if ( input.IsButtonPressed( MouseButton::Right ) && !ImGui::GetIO().WantCaptureMouse )
     {
         const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
-        m_viewRadius += 0.01f * static_cast<float>( mouseDelta.x - mouseDelta.y );
+        m_viewRadius += 0.01f * ( mouseDelta.x - mouseDelta.y );
     }
 }
 
