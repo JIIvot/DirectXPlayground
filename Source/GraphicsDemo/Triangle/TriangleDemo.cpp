@@ -114,10 +114,12 @@ void Demo::InitShaders()
 
 void Demo::InitGeometry()
 {
+    using namespace DirectX;
+
     static constexpr Vertex kVertices[] = {
-        { .position = DirectX::XMFLOAT3( -0.5f, -0.5f, +0.0f ), .color = DirectX::XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
-        { .position = DirectX::XMFLOAT3( -0.0f, +0.5f, +0.0f ), .color = DirectX::XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) },
-        { .position = DirectX::XMFLOAT3( -0.5f, -0.5f, +0.0f ), .color = DirectX::XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) }
+        { .position = XMFLOAT3( -0.5f, -0.5f, +0.0f ), .color = XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
+        { .position = XMFLOAT3( -0.0f, +0.5f, +0.0f ), .color = XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) },
+        { .position = XMFLOAT3( -0.5f, -0.5f, +0.0f ), .color = XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) }
     };
 
     static constexpr uint16_t kIndices[] = { 0, 1, 2 };

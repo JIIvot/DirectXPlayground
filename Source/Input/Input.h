@@ -8,7 +8,7 @@
 class Input
 {
 public:
-    Input( int32_t initalMouseX, int32_t initialMouseY );
+    Input( int32_t initialMouseX, int32_t initialMouseY );
 
     void OnKeyDown( int32_t key );
     void OnKeyUp( int32_t key );

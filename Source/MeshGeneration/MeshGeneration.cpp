@@ -6,13 +6,73 @@ namespace MeshGeneration
 {
 namespace
 {
-void Subdivide( Data& data )
+[[nodiscard]] Vertex GetAveragedVertex( const Vertex& vertex0, const Vertex& vertex1 )
 {
+    using namespace DirectX;
+
+    const XMVECTOR position0 = XMLoadFloat3( &vertex0.position );
+    const XMVECTOR normal0 = XMLoadFloat3( &vertex0.normal );
+    const XMVECTOR tangentU0 = XMLoadFloat3( &vertex0.tangentU );
+    const XMVECTOR textureCoord0 = XMLoadFloat2( &vertex0.textureCoord );
+
+    const XMVECTOR position1 = XMLoadFloat3( &vertex1.position );
+    const XMVECTOR normal1 = XMLoadFloat3( &vertex1.normal );
+    const XMVECTOR tangentU1 = XMLoadFloat3( &vertex1.tangentU );
+    const XMVECTOR textureCoord1 = XMLoadFloat2( &vertex1.textureCoord );
+
+    const XMVECTOR newPosition = 0.5f * ( position0 + position1 );
+    const XMVECTOR newNormal = XMVector3Normalize( 0.5f * ( normal0 + normal1 ) );
+    const XMVECTOR newTangentU = XMVector3Normalize( 0.5f * ( tangentU0 + tangentU1 ) );
+    const XMVECTOR newTextureCoord = 0.5f * ( textureCoord0 + textureCoord1 );
+
+    Vertex newVertex;
+    XMStoreFloat3( &newVertex.position, newPosition );
+    XMStoreFloat3( &newVertex.normal, newNormal );
+    XMStoreFloat3( &newVertex.tangentU, newTangentU );
+    XMStoreFloat2( &newVertex.textureCoord, newTextureCoord );
+
+    return newVertex;
 }
 
-[[nodiscard]] Vertex GetAveragedVertex( const Vertex& first, const Vertex& second )
+void Subdivide( Data& data )
 {
-    return {};
+    const Data inputData = data;
+
+    data.vertices.clear();
+    data.vertices.reserve( inputData.vertices.size() * 2 );
+
+    data.indices32.clear();
+    data.indices32.reserve( inputData.indices32.size() * 4 );
+
+    for ( uint32_t triangleIndex = 0; triangleIndex < inputData.vertices.size() / 3; ++triangleIndex )
+    {
+        const Vertex& vertex0 = inputData.vertices[inputData.indices32[triangleIndex * 3 + 0]];
+        const Vertex& vertex1 = inputData.vertices[inputData.indices32[triangleIndex * 3 + 1]];
+        const Vertex& vertex2 = inputData.vertices[inputData.indices32[triangleIndex * 3 + 2]];
+
+        data.vertices.push_back( vertex0 );
+        data.vertices.push_back( vertex1 );
+        data.vertices.push_back( vertex2 );
+        data.vertices.push_back( GetAveragedVertex( vertex0, vertex1 ) );
+        data.vertices.push_back( GetAveragedVertex( vertex1, vertex2 ) );
+        data.vertices.push_back( GetAveragedVertex( vertex0, vertex2 ) );
+
+        data.indices32.push_back( triangleIndex * 6 + 0 );
+        data.indices32.push_back( triangleIndex * 6 + 3 );
+        data.indices32.push_back( triangleIndex * 6 + 5 );
+
+        data.indices32.push_back( triangleIndex * 6 + 3 );
+        data.indices32.push_back( triangleIndex * 6 + 4 );
+        data.indices32.push_back( triangleIndex * 6 + 5 );
+
+        data.indices32.push_back( triangleIndex * 6 + 5 );
+        data.indices32.push_back( triangleIndex * 6 + 4 );
+        data.indices32.push_back( triangleIndex * 6 + 2 );
+
+        data.indices32.push_back( triangleIndex * 6 + 3 );
+        data.indices32.push_back( triangleIndex * 6 + 1 );
+        data.indices32.push_back( triangleIndex * 6 + 4 );
+    }
 }
 
 void BuildCylinderTopCap( float topRadius, float height, uint32_t numSlices, uint32_t numStacks, Data& data )
@@ -115,11 +175,10 @@ Data CreateSphere( float radius, uint32_t numSlices, uint32_t numStacks )
     const float azimuthalAngleStep = DirectX::XM_PI / static_cast<float>( numStacks );
     const float polarAngleStep = 2.0f * DirectX::XM_PI / static_cast<float>( numSlices );
 
-    std::vector<Vertex>& vertices = data.vertices;
-    vertices.reserve( numVertices );
+    data.vertices.reserve( numVertices );
 
     // Top vertex
-    vertices.push_back( { .position = { 0.0f, radius, 0.0f }, .normal = { 0.0f, 1.0f, 0.0f }, .tangentU = { 1.0f, 0.0f, 0.0f }, .textureCoord = { 0.0f, 0.0f } } );
+    data.vertices.push_back( { .position = { 0.0f, radius, 0.0f }, .normal = { 0.0f, 1.0f, 0.0f }, .tangentU = { 1.0f, 0.0f, 0.0f }, .textureCoord = { 0.0f, 0.0f } } );
 
     for ( uint32_t stack = 1; stack < numStacks; ++stack )
     {
@@ -132,15 +191,15 @@ Data CreateSphere( float radius, uint32_t numSlices, uint32_t numStacks )
             Vertex vertex;
 
             vertex.position = {
-                .x = radius * std::sin( azimuthalAngle ) * std::cos( polarAngle ),
-                .y = radius * std::cos( azimuthalAngle ),
-                .z = radius * std::sin( azimuthalAngle ) * std::sin( polarAngle )
+                radius * std::sin( azimuthalAngle ) * std::cos( polarAngle ),
+                radius * std::cos( azimuthalAngle ),
+                radius * std::sin( azimuthalAngle ) * std::sin( polarAngle )
             };
 
             vertex.tangentU = {
-                .x = -radius * std::sin( azimuthalAngle ) * std::sin( polarAngle ),
-                .y = 0.0f,
-                .z = +radius * std::sin( azimuthalAngle ) * std::cos( polarAngle )
+                -radius * std::sin( azimuthalAngle ) * std::sin( polarAngle ),
+                0.0f,
+                +radius * std::sin( azimuthalAngle ) * std::cos( polarAngle )
             };
 
             // Normalize tangentU
@@ -151,22 +210,21 @@ Data CreateSphere( float radius, uint32_t numSlices, uint32_t numStacks )
 
             vertex.textureCoord = { polarAngle / DirectX::XM_2PI, azimuthalAngle / DirectX::XM_PI };
 
-            vertices.push_back( vertex );
+            data.vertices.push_back( vertex );
         }
     }
 
     // Bottom vertex
-    vertices.push_back( { .position = { 0.0f, -radius, 0.0f }, .normal = { 0.0f, -1.0f, 0.0f }, .tangentU = { 1.0f, 0.0f, 0.0f }, .textureCoord = { 0.0f, 1.0f } } );
+    data.vertices.push_back( { .position = { 0.0f, -radius, 0.0f }, .normal = { 0.0f, -1.0f, 0.0f }, .tangentU = { 1.0f, 0.0f, 0.0f }, .textureCoord = { 0.0f, 1.0f } } );
 
     // Indices
-    std::vector<uint32_t> indices = data.indices32;
-    indices.reserve( numIndices );
+    data.indices32.reserve( numIndices );
 
     for ( uint32_t i = 1; i <= numSlices; ++i )
     {
-        indices.push_back( 0 );
-        indices.push_back( i + 1 );
-        indices.push_back( i );
+        data.indices32.push_back( 0 );
+        data.indices32.push_back( i + 1 );
+        data.indices32.push_back( i );
     }
 
     uint32_t       baseIndex = 1;
@@ -176,13 +234,13 @@ Data CreateSphere( float radius, uint32_t numSlices, uint32_t numStacks )
     {
         for ( uint32_t slice = 0; slice < numSlices; ++slice )
         {
-            indices.push_back( baseIndex + stack * numRingVertices + slice );
-            indices.push_back( baseIndex + stack * numRingVertices + slice + 1 );
-            indices.push_back( baseIndex + ( stack + 1 ) * numRingVertices + slice );
+            data.indices32.push_back( baseIndex + stack * numRingVertices + slice );
+            data.indices32.push_back( baseIndex + stack * numRingVertices + slice + 1 );
+            data.indices32.push_back( baseIndex + ( stack + 1 ) * numRingVertices + slice );
 
-            indices.push_back( baseIndex + ( stack + 1 ) * numRingVertices + slice );
-            indices.push_back( baseIndex + stack * numRingVertices + slice + 1 );
-            indices.push_back( baseIndex + ( stack + 1 ) * numRingVertices + slice + 1 );
+            data.indices32.push_back( baseIndex + ( stack + 1 ) * numRingVertices + slice );
+            data.indices32.push_back( baseIndex + stack * numRingVertices + slice + 1 );
+            data.indices32.push_back( baseIndex + ( stack + 1 ) * numRingVertices + slice + 1 );
         }
     }
 
@@ -191,9 +249,9 @@ Data CreateSphere( float radius, uint32_t numSlices, uint32_t numStacks )
 
     for ( uint32_t slice = 0; slice < numSlices; ++slice )
     {
-        indices.push_back( southPoleIndex );
-        indices.push_back( baseIndex + slice );
-        indices.push_back( baseIndex + slice + 1 );
+        data.indices32.push_back( southPoleIndex );
+        data.indices32.push_back( baseIndex + slice );
+        data.indices32.push_back( baseIndex + slice + 1 );
     }
 
     return data;

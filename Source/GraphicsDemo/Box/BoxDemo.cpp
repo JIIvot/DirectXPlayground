@@ -11,6 +11,9 @@
 
 namespace BoxDemo
 {
+
+using namespace DirectX;
+
 namespace
 {
 enum RootArgument : uint8_t
@@ -103,14 +106,14 @@ void Demo::OnResize( int32_t width, int32_t height )
 void Demo::InitGeometry()
 {
     static const Vertex kVertices[] = {
-        { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Wheat ) },
-        { .position = DirectX::XMFLOAT3( -1.0f, +1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Coral ) },
-        { .position = DirectX::XMFLOAT3( +1.0f, +1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Red ) },
-        { .position = DirectX::XMFLOAT3( +1.0f, -1.0f, -1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::LightSeaGreen ) },
-        { .position = DirectX::XMFLOAT3( -1.0f, -1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Blue ) },
-        { .position = DirectX::XMFLOAT3( -1.0f, +1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Orange ) },
-        { .position = DirectX::XMFLOAT3( +1.0f, +1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::Purple ) },
-        { .position = DirectX::XMFLOAT3( +1.0f, -1.0f, +1.0f ), .color = DirectX::XMFLOAT4( DirectX::Colors::DeepSkyBlue ) }
+        { .position = XMFLOAT3( -1.0f, -1.0f, -1.0f ), .color = XMFLOAT4( Colors::Wheat ) },
+        { .position = XMFLOAT3( -1.0f, +1.0f, -1.0f ), .color = XMFLOAT4( Colors::Coral ) },
+        { .position = XMFLOAT3( +1.0f, +1.0f, -1.0f ), .color = XMFLOAT4( Colors::Red ) },
+        { .position = XMFLOAT3( +1.0f, -1.0f, -1.0f ), .color = XMFLOAT4( Colors::LightSeaGreen ) },
+        { .position = XMFLOAT3( -1.0f, -1.0f, +1.0f ), .color = XMFLOAT4( Colors::Blue ) },
+        { .position = XMFLOAT3( -1.0f, +1.0f, +1.0f ), .color = XMFLOAT4( Colors::Orange ) },
+        { .position = XMFLOAT3( +1.0f, +1.0f, +1.0f ), .color = XMFLOAT4( Colors::Purple ) },
+        { .position = XMFLOAT3( +1.0f, -1.0f, +1.0f ), .color = XMFLOAT4( Colors::DeepSkyBlue ) }
     };
 
     static constexpr uint16_t kIndices[] = {
@@ -227,8 +230,8 @@ void Demo::RenderImGui()
 
 void Demo::AdjustProjection()
 {
-    const DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH( DirectX::XM_PIDIV4, m_aspectRatio, 1.0f, 1000.0f );
-    DirectX::XMStoreFloat4x4( &m_projection, projection );
+    const XMMATRIX projection = XMMatrixPerspectiveFovLH( XM_PIDIV4, m_aspectRatio, 1.0f, 1000.0f );
+    XMStoreFloat4x4( &m_projection, projection );
 }
 
 void Demo::ProcessInput( const Input& input )
@@ -240,14 +243,14 @@ void Demo::ProcessInput( const Input& input )
 
     if ( input.IsButtonPressed( MouseButton::Left ) && !ImGui::GetIO().WantCaptureMouse )
     {
-        const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
-        m_viewPolarAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.x );
-        m_viewAzimuthalAngle += DirectX::XMConvertToRadians( 0.25f * mouseDelta.y );
+        const XMFLOAT2 mouseDelta = input.GetMouseDelta();
+        m_viewPolarAngle += XMConvertToRadians( 0.25f * mouseDelta.x );
+        m_viewAzimuthalAngle += XMConvertToRadians( 0.25f * mouseDelta.y );
     }
 
     if ( input.IsButtonPressed( MouseButton::Right ) && !ImGui::GetIO().WantCaptureMouse )
     {
-        const DirectX::XMFLOAT2 mouseDelta = input.GetMouseDelta();
+        const XMFLOAT2 mouseDelta = input.GetMouseDelta();
         m_viewRadius += 0.01f * ( mouseDelta.x - mouseDelta.y );
     }
 }
@@ -255,25 +258,25 @@ void Demo::ProcessInput( const Input& input )
 void Demo::UpdateConstBuffers()
 {
     // Convert from spherical coordinates to cartesian
-    const DirectX::XMVECTOR position = DirectX::XMVectorSet(
+    const XMVECTOR position = XMVectorSet(
         m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::cos( m_viewPolarAngle ),
         m_viewRadius * std::cos( m_viewAzimuthalAngle ),
         m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::sin( m_viewPolarAngle ),
         1.0f );
 
-    const DirectX::XMVECTOR target = DirectX::XMVectorZero();
-    const DirectX::XMVECTOR up = DirectX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+    const XMVECTOR target = XMVectorZero();
+    const XMVECTOR up = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 
-    const DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH( position, target, up );
-    const DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4( &m_projection );
-    const DirectX::XMMATRIX viewProjection = view * projection;
+    const XMMATRIX view = XMMatrixLookAtLH( position, target, up );
+    const XMMATRIX projection = XMLoadFloat4x4( &m_projection );
+    const XMMATRIX viewProjection = view * projection;
 
     ObjectConstants objectConstants;
-    DirectX::XMStoreFloat4x4( &objectConstants.world, DirectX::XMMatrixTranspose( DirectX::XMLoadFloat4x4( &m_world ) ) );
+    XMStoreFloat4x4( &objectConstants.world, XMMatrixTranspose( XMLoadFloat4x4( &m_world ) ) );
     m_objectConstBuffer.SetElement( 0, objectConstants );
 
     PassConstants passConstants;
-    DirectX::XMStoreFloat4x4( &passConstants.viewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
+    XMStoreFloat4x4( &passConstants.viewProjection, XMMatrixTranspose( viewProjection ) );
     m_passConstBuffer.SetElement( 0, passConstants );
 }
 } // namespace BoxDemo
