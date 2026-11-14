@@ -4,18 +4,20 @@ namespace MeshGeneration
 {
 Submesh Data::AppendSubmesh( const Data& data )
 {
+    using namespace DirectX;
+
     const int32_t  vertexOffset = static_cast<int32_t>( vertices.size() );
     const uint32_t indexOffset = static_cast<uint32_t>( indices32.size() );
 
-    DirectX::XMVECTOR minBound = DirectX::XMVectorSet( -FLT_MIN, -FLT_MAX, -FLT_MAX, 0.0f );
-    DirectX::XMVECTOR maxBound = DirectX::XMVectorSet( FLT_MAX, FLT_MAX, FLT_MAX, 0.0f );
+    XMVECTOR minBound = XMVectorSet( -FLT_MIN, -FLT_MAX, -FLT_MAX, 0.0f );
+    XMVECTOR maxBound = XMVectorSet( +FLT_MAX, +FLT_MAX, +FLT_MAX, 0.0f );
 
     for ( const Vertex& vertex : data.vertices )
     {
-        const DirectX::XMVECTOR position = DirectX::XMLoadFloat3( &vertex.position );
+        const XMVECTOR position = XMLoadFloat3( &vertex.position );
 
-        minBound = DirectX::XMVectorMin( minBound, position );
-        maxBound = DirectX::XMVectorMax( maxBound, position );
+        minBound = XMVectorMin( minBound, position );
+        maxBound = XMVectorMax( maxBound, position );
     }
 
     Submesh submesh = {
@@ -25,8 +27,8 @@ Submesh Data::AppendSubmesh( const Data& data )
         .numVertices = static_cast<uint32_t>( vertices.size() )
     };
 
-    DirectX::XMStoreFloat3( &submesh.boundingBox.Center, DirectX::XMVectorScale( DirectX::XMVectorAdd( minBound, maxBound ), 0.5f ) );
-    DirectX::XMStoreFloat3( &submesh.boundingBox.Extents, DirectX::XMVectorScale( DirectX::XMVectorSubtract( maxBound, minBound ), 0.5f ) );
+    XMStoreFloat3( &submesh.boundingBox.Center, 0.5f * ( minBound + maxBound ) );
+    XMStoreFloat3( &submesh.boundingBox.Extents, 0.5f * ( maxBound - minBound ) );
 
     vertices.insert( vertices.end(), data.vertices.begin(), data.vertices.end() );
     indices32.insert( indices32.end(), data.indices32.begin(), data.indices32.end() );

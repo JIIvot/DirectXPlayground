@@ -11,9 +11,6 @@
 
 namespace BoxDemo
 {
-
-using namespace DirectX;
-
 namespace
 {
 enum RootArgument : uint8_t
@@ -105,6 +102,8 @@ void Demo::OnResize( int32_t width, int32_t height )
 
 void Demo::InitGeometry()
 {
+    using namespace DirectX;
+
     static const Vertex kVertices[] = {
         { .position = XMFLOAT3( -1.0f, -1.0f, -1.0f ), .color = XMFLOAT4( Colors::Wheat ) },
         { .position = XMFLOAT3( -1.0f, +1.0f, -1.0f ), .color = XMFLOAT4( Colors::Coral ) },
@@ -230,12 +229,16 @@ void Demo::RenderImGui()
 
 void Demo::AdjustProjection()
 {
+    using namespace DirectX;
+
     const XMMATRIX projection = XMMatrixPerspectiveFovLH( XM_PIDIV4, m_aspectRatio, 1.0f, 1000.0f );
     XMStoreFloat4x4( &m_projection, projection );
 }
 
 void Demo::ProcessInput( const Input& input )
 {
+    using namespace DirectX;
+
     if ( input.IsKeyJustPressed( 'F' ) )
     {
         m_wireframeEnabled = !m_wireframeEnabled;
@@ -257,6 +260,8 @@ void Demo::ProcessInput( const Input& input )
 
 void Demo::UpdateConstBuffers()
 {
+    using namespace DirectX;
+
     // Convert from spherical coordinates to cartesian
     const XMVECTOR position = XMVectorSet(
         m_viewRadius * std::sin( m_viewAzimuthalAngle ) * std::cos( m_viewPolarAngle ),
