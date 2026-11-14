@@ -77,7 +77,7 @@ void Demo::OnRender( const GameTimer& timer )
     m_commandList->IASetIndexBuffer( &m_mesh.GetIndexBufferView() );
 
     const Submesh& submesh = m_mesh.submeshMap["box"];
-    m_commandList->DrawIndexedInstanced( submesh.numIndices, 1, submesh.baseIndex, submesh.baseVertex, 0 );
+    m_commandList->DrawIndexedInstanced( submesh.numIndices, 1, submesh.startIndex, submesh.baseVertex, 0 );
 
     ImGui_ImplDX12_RenderDrawData( ImGui::GetDrawData(), m_commandList.Get() );
 
@@ -153,7 +153,7 @@ void Demo::InitGeometry()
 
     m_mesh.submeshMap.emplace(
         "box",
-        Submesh{ .baseIndex = 0, .numIndices = std::size( kIndices ), .baseVertex = 0, .numVertices = std::size( kVertices ) } );
+        Submesh{ .startIndex = 0, .numIndices = std::size( kIndices ), .baseVertex = 0, .numVertices = std::size( kVertices ) } );
 
     m_mesh.name = "Box";
 }

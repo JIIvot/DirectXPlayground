@@ -23,7 +23,6 @@ Demo::Demo( const GraphicsDemoCreateInfo& info )
     InitRootSignature();
     InitShaders();
     InitPipelineStates();
-    InitFrameResources();
 
     uploadResult.wait();
 }
