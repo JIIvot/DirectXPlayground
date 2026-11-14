@@ -11,10 +11,9 @@ namespace ShapesDemo
 {
 struct RenderItem
 {
-    D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
-    DirectX::XMFLOAT4X4    world;
-    DirectX::XMFLOAT4X4    textureTransform;
-
+    D3D_PRIMITIVE_TOPOLOGY    primitiveTopology;
+    DirectX::XMFLOAT4X4       world;
+    DirectX::XMFLOAT4X4       textureTransform;
     ObjectConstants           objectConstants;
     DirectX::GraphicsResource objectConstBufferHandle;
     Mesh*                     mesh;

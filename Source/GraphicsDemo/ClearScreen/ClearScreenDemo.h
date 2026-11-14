@@ -8,7 +8,7 @@ class Demo final : public GraphicsDemo
 {
 public:
     explicit Demo( const GraphicsDemoCreateInfo& info )
-        : GraphicsDemo( info )
+        : GraphicsDemo( info, 1 )
     {
     }
 

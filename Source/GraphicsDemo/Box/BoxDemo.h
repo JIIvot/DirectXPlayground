@@ -52,6 +52,6 @@ private:
     float m_viewAzimuthalAngle = DirectX::XM_PIDIV4;
     float m_viewRadius = 10.0f;
 
-    bool m_isWireframeEnabled = false;
+    bool m_wireframeEnabled = false;
 };
 } // namespace BoxDemo

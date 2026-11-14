@@ -28,7 +28,7 @@ public:
     void OnQuit();
 
 protected:
-    explicit GraphicsDemo( const GraphicsDemoCreateInfo& info );
+    explicit GraphicsDemo( const GraphicsDemoCreateInfo& info, int32_t numFramesInFlight );
 
     virtual void UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height );
 
@@ -48,7 +48,7 @@ private:
     void InitCommandObjects();
     void InitSwapChainAndDepthStencilBuffer( HWND windowHandle, int32_t width, int32_t height );
     void InitFenceObjects();
-    void InitImGui( HWND windowHandle );
+    void InitImGui( HWND windowHandle, int32_t numFramesInFlight );
 
     void CreateDepthStencilBufferAndView( int32_t width, int32_t height );
     void ResizeSwapChain( int32_t width, int32_t height );

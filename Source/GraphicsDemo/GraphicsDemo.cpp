@@ -8,7 +8,7 @@
 
 static constexpr uint32_t kCbvSrvUavHeapCapacity = 16384;
 
-GraphicsDemo::GraphicsDemo( const GraphicsDemoCreateInfo& info )
+GraphicsDemo::GraphicsDemo( const GraphicsDemoCreateInfo& info, int32_t numFramesInFlight )
     : m_dxgiFactory( info.dxgiFactory )
     , m_device( info.device )
     , m_uploadBatch( info.device )
@@ -22,7 +22,7 @@ GraphicsDemo::GraphicsDemo( const GraphicsDemoCreateInfo& info )
     InitCommandObjects();
     InitSwapChainAndDepthStencilBuffer( info.windowHandle, info.clientWidth, info.clientHeight );
     InitFenceObjects();
-    InitImGui( info.windowHandle );
+    InitImGui( info.windowHandle, numFramesInFlight );
 
     LOG_INFO( "Demo initialized.\n" );
 }
@@ -70,7 +70,7 @@ void GraphicsDemo::InitFenceObjects()
     m_fenceEventHandle = CreateEventEx( nullptr, nullptr, 0, EVENT_ALL_ACCESS );
 }
 
-void GraphicsDemo::InitImGui( HWND windowHandle )
+void GraphicsDemo::InitImGui( HWND windowHandle, int32_t numFramesInFlight )
 {
     ImGui::CreateContext();
     ImGui::StyleColorsClassic();
@@ -79,7 +79,7 @@ void GraphicsDemo::InitImGui( HWND windowHandle )
     ImGui_ImplDX12_InitInfo initInfo;
     initInfo.Device = m_device.Get();
     initInfo.CommandQueue = m_commandQueue.Get();
-    initInfo.NumFramesInFlight = 1;
+    initInfo.NumFramesInFlight = numFramesInFlight;
     initInfo.RTVFormat = kBackBufferFormat;
     initInfo.DSVFormat = kDepthStencilFormat;
     initInfo.UserData = &m_cbvSrvUavHeap;

@@ -22,7 +22,7 @@ enum RootArgument : uint8_t
 } // namespace
 
 Demo::Demo( const GraphicsDemoCreateInfo& info )
-    : GraphicsDemo( info )
+    : GraphicsDemo( info, 1 )
     , m_objectConstBuffer( info.device, 1 )
     , m_passConstBuffer( info.device, 1 )
 {
@@ -51,7 +51,7 @@ void Demo::OnUpdate( const GameTimer& timer, const Input& input )
 void Demo::OnRender( const GameTimer& timer )
 {
     ASSERT_SUCCEEDED( m_commandAllocator->Reset() );
-    ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_isWireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );
+    ASSERT_SUCCEEDED( m_commandList->Reset( m_commandAllocator.Get(), m_wireframeEnabled ? m_psoWireframe.Get() : m_psoSolid.Get() ) );
 
     RenderImGui();
 
@@ -164,12 +164,11 @@ void Demo::InitRootSignature()
     rootParameters[eRootArgument_ObjectConstBuffer].InitAsConstantBufferView( 0 );
     rootParameters[eRootArgument_PassConstBuffer].InitAsConstantBufferView( 1 );
 
-    const CD3DX12_ROOT_SIGNATURE_DESC desc(
-        std::size( rootParameters ),
-        rootParameters,
-        0,
-        nullptr,
-        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT );
+    const D3D12_ROOT_SIGNATURE_DESC desc = {
+        .NumParameters = std::size( rootParameters ),
+        .pParameters = rootParameters,
+        .Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
+    };
 
     Microsoft::WRL::ComPtr<ID3DBlob> serializedBlob;
     Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
@@ -220,7 +219,7 @@ void Demo::RenderImGui()
     ImGui::Begin( "Options" );
     ImGui::Text( "FPS:       %.0f", frameRate );
     ImGui::Text( "FrameTime: %.3f", 1000.0f / frameRate );
-    ImGui::Checkbox( "Wireframe", &m_isWireframeEnabled );
+    ImGui::Checkbox( "Wireframe", &m_wireframeEnabled );
     ImGui::End();
 
     ImGui::Render();
@@ -236,7 +235,7 @@ void Demo::ProcessInput( const Input& input )
 {
     if ( input.IsKeyJustPressed( 'F' ) )
     {
-        m_isWireframeEnabled = !m_isWireframeEnabled;
+        m_wireframeEnabled = !m_wireframeEnabled;
     }
 
     if ( input.IsButtonPressed( MouseButton::Left ) && !ImGui::GetIO().WantCaptureMouse )
@@ -277,4 +276,4 @@ void Demo::UpdateConstBuffers()
     DirectX::XMStoreFloat4x4( &passConstants.viewProjection, DirectX::XMMatrixTranspose( viewProjection ) );
     m_passConstBuffer.SetElement( 0, passConstants );
 }
-} // namespace Demo
+} // namespace BoxDemo

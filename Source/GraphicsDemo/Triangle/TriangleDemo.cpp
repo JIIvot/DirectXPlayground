@@ -12,7 +12,7 @@
 namespace TriangleDemo
 {
 Demo::Demo( const GraphicsDemoCreateInfo& info )
-    : GraphicsDemo( info )
+    : GraphicsDemo( info, 1 )
 {
     m_uploadBatch.Begin();
     InitGeometry();

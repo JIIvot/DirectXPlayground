@@ -9,9 +9,9 @@ namespace Utility
 {
 Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath, uint32_t numCompileArgs, const wchar_t** compileArgs )
 {
-    static Microsoft::WRL::ComPtr<IDxcUtils>          s_utils;
-    static Microsoft::WRL::ComPtr<IDxcCompiler3>      s_compiler;
-    static Microsoft::WRL::ComPtr<IDxcIncludeHandler> s_includeHandler;
+    static Microsoft::WRL::ComPtr<IDxcUtils>          dxcUtils;
+    static Microsoft::WRL::ComPtr<IDxcCompiler3>      dxcCompiler;
+    static Microsoft::WRL::ComPtr<IDxcIncludeHandler> dxcIncludeHandler;
 
     if ( !std::filesystem::exists( filePath ) )
     {
@@ -19,20 +19,20 @@ Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath,
         return nullptr;
     }
 
-    if ( !s_compiler )
+    if ( !dxcCompiler )
     {
-        assert( !s_utils );
-        assert( !s_includeHandler );
+        assert( !dxcUtils );
+        assert( !dxcIncludeHandler );
 
-        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcUtils, IID_PPV_ARGS( s_utils.GetAddressOf() ) ) );
-        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcCompiler, IID_PPV_ARGS( s_compiler.GetAddressOf() ) ) );
-        ASSERT_SUCCEEDED( s_utils->CreateDefaultIncludeHandler( s_includeHandler.GetAddressOf() ) );
+        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcUtils, IID_PPV_ARGS( dxcUtils.GetAddressOf() ) ) );
+        ASSERT_SUCCEEDED( DxcCreateInstance( CLSID_DxcCompiler, IID_PPV_ARGS( dxcCompiler.GetAddressOf() ) ) );
+        ASSERT_SUCCEEDED( dxcUtils->CreateDefaultIncludeHandler( dxcIncludeHandler.GetAddressOf() ) );
     }
 
     uint32_t                                 codePage = CP_UTF8;
     Microsoft::WRL::ComPtr<IDxcBlobEncoding> sourceBlob;
 
-    ASSERT_SUCCEEDED( s_utils->LoadFile( filePath, &codePage, sourceBlob.GetAddressOf() ) );
+    ASSERT_SUCCEEDED( dxcUtils->LoadFile( filePath, &codePage, sourceBlob.GetAddressOf() ) );
 
     const DxcBuffer sourceBuffer = {
         .Ptr = sourceBlob->GetBufferPointer(),
@@ -45,7 +45,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath,
 #ifdef _DEBUG
     Microsoft::WRL::ComPtr<IDxcBlobEncoding> errorMessages;
 
-    const HRESULT hr = s_compiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, s_includeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) );
+    const HRESULT hr = dxcCompiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, dxcIncludeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) );
     ASSERT_SUCCEEDED( result->GetErrorBuffer( errorMessages.GetAddressOf() ) );
 
     if ( errorMessages->GetBufferSize() > 0 )
@@ -56,7 +56,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> CompileShaderFromFile( const wchar_t* filePath,
 
     ASSERT_SUCCEEDED( hr );
 #else
-    s_compiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, s_includeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) );
+    dxcCompiler->Compile( &sourceBuffer, compileArgs, numCompileArgs, dxcIncludeHandler.Get(), IID_PPV_ARGS( result.GetAddressOf() ) );
 #endif
 
     Microsoft::WRL::ComPtr<IDxcBlob> shaderBlob;
