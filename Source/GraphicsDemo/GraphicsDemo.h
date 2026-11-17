@@ -28,7 +28,7 @@ public:
     void OnQuit();
 
 protected:
-    explicit GraphicsDemo( const GraphicsDemoCreateInfo& info, int32_t numFramesInFlight );
+    explicit GraphicsDemo( const GraphicsDemoCreateInfo& info, int32_t numFramesInFlight, int32_t rtvHeapExtraSize = 0 );
 
     virtual void UpdateViewportScissorsAndAspectRatio( int32_t width, int32_t height );
 

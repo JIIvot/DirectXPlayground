@@ -149,6 +149,7 @@
     <ClCompile Include="Source\CbvSrvUavHeap.cpp" />
     <ClCompile Include="Source\GameTimer.cpp" />
     <ClCompile Include="Source\GraphicsDemo\Box\BoxDemo.cpp" />
+    <ClCompile Include="Source\GraphicsDemo\RenderTexture\RenderTextureDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\Shapes\ShapesDemo.cpp" />
     <ClCompile Include="Source\GraphicsDemo\Shapes\ShapesFrameResource.cpp" />
     <ClCompile Include="Source\GraphicsDemo\Triangle\TriangleDemo.cpp" />
@@ -352,6 +353,7 @@
     <ClInclude Include="Source\GraphicsDemo\Box\BoxObjectConstants.h" />
     <ClInclude Include="Source\GraphicsDemo\Box\BoxPassConstants.h" />
     <ClInclude Include="Source\GraphicsDemo\GraphicsDemoCreateInfo.h" />
+    <ClInclude Include="Source\GraphicsDemo\RenderTexture\RenderTextureDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\Shapes\ShapesDemo.h" />
     <ClInclude Include="Source\GraphicsDemo\Shapes\ShapesFrameResource.h" />
     <ClInclude Include="Source\GraphicsDemo\Shapes\ShapesObjectConstants.h" />

@@ -8,13 +8,13 @@
 
 static constexpr uint32_t kCbvSrvUavHeapCapacity = 16384;
 
-GraphicsDemo::GraphicsDemo( const GraphicsDemoCreateInfo& info, int32_t numFramesInFlight )
+GraphicsDemo::GraphicsDemo( const GraphicsDemoCreateInfo& info, int32_t numFramesInFlight, int32_t rtvHeapExtraSize )
     : m_dxgiFactory( info.dxgiFactory )
     , m_device( info.device )
     , m_uploadBatch( info.device )
     , m_viewport( 0.0f, 0.0f, static_cast<float>( info.clientWidth ), static_cast<float>( info.clientHeight ), 0.0f, 1.0f )
     , m_scissorRect( 0, 0, info.clientWidth, info.clientHeight )
-    , m_rtvHeap( info.device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, kNumSwapChainBuffers )
+    , m_rtvHeap( info.device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, kNumSwapChainBuffers + rtvHeapExtraSize )
     , m_dsvHeap( info.device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1 )
     , m_cbvSrvUavHeap( info.device, kCbvSrvUavHeapCapacity )
     , m_aspectRatio( m_viewport.Width / m_viewport.Height )

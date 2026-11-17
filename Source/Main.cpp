@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "GraphicsDemo/Box/BoxDemo.h"
+#include "GraphicsDemo/RenderTexture/RenderTextureDemo.h"
 
 extern "C"
 {
@@ -9,7 +9,7 @@ extern "C"
 
 int main()
 {
-    Application::Init<BoxDemo::Demo>();
+    Application::Init<RenderTextureDemo::Demo>();
     Application::Get().Run();
     Application::Destroy();
 }
