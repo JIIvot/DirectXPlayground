@@ -840,5 +840,8 @@
     <ClInclude Include="Source\GraphicsDemo\RenderTexture\RenderTextureDemo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\GraphicsDemo\RenderTexture\RenderTextureVertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
